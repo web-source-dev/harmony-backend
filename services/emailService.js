@@ -1,0 +1,277 @@
+const Brevo = require('@getbrevo/brevo');
+const fs = require('fs');
+const path = require('path');
+const { 
+  WelcomeEmailTemplate, 
+  BlogNotificationEmailTemplate, 
+  ContactFormEmailTemplate,
+  DonationEmailTemplate,
+  DonationAdminEmailTemplate,
+  NewsletterEmailTemplate,
+  VolunteerEmailTemplate,
+} = require('./templates');
+require('dotenv').config();
+
+class EmailService {
+  constructor() {
+    this.apiInstance = new Brevo.TransactionalEmailsApi();
+    this.apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+    
+    // Validate required environment variables
+    if (!process.env.BREVO_API_KEY) {
+      console.error('BREVO_API_KEY is not set in environment variables');
+    }
+    if (!process.env.BREVO_SENDER_EMAIL) {
+      console.error('BREVO_SENDER_EMAIL is not set in environment variables');
+    }
+  }
+
+  // Get sender configuration with validation
+  getSenderConfig() {
+    const senderEmail = process.env.BREVO_SENDER_EMAIL;
+    console.log('Sender email:', senderEmail);
+    if (!senderEmail) {
+      throw new Error('BREVO_SENDER_EMAIL environment variable is not set');
+    }
+    
+    return {
+      name: "Harmony 4 All",
+      email: senderEmail
+    };
+  }
+
+  // Read image file and convert to base64
+  readImageAsBase64(imagePath) {
+    try {
+      const fullPath = path.join(__dirname, '..', imagePath);
+      const imageBuffer = fs.readFileSync(fullPath);
+      return imageBuffer.toString('base64');
+    } catch (error) {
+      console.error(`Error reading image ${imagePath}:`, error);
+      return null;
+    }
+  }
+
+  // Send blog notification email
+  async sendBlogNotification(user, blog) {
+    try {
+      const sendSmtpEmail = new Brevo.SendSmtpEmail();
+      
+      sendSmtpEmail.subject = `New Blog Post: ${blog.title}`;
+      sendSmtpEmail.htmlContent = BlogNotificationEmailTemplate.generateHTML(user, blog);
+      sendSmtpEmail.textContent = BlogNotificationEmailTemplate.generateText(user, blog);
+      sendSmtpEmail.sender = this.getSenderConfig();
+      sendSmtpEmail.to = [{
+        email: user.email,
+        name: `${user.firstName} ${user.lastName}`
+      }];
+
+      // Add logo and candid images as attachments
+      const attachments = [];
+      
+      // Add logo image
+      const logoBase64 = this.readImageAsBase64('logo.png');
+      if (logoBase64) {
+        attachments.push({
+          name: 'logo.png',
+          content: logoBase64
+        });
+      }
+      
+      // Add candid image
+      const candidBase64 = this.readImageAsBase64('cadid.png');
+      if (candidBase64) {
+        attachments.push({
+          name: 'candid.png',
+          content: candidBase64
+        });
+      }
+      
+      // Add social media icons
+      const socialIcons = ['facebook.png', 'instagram.png', 'linkedin.png', 'mail.png', 'youtube.png', 'arrow.png'];
+      for (const icon of socialIcons) {
+        const iconBase64 = this.readImageAsBase64(icon);
+        if (iconBase64) {
+          attachments.push({
+            name: icon,
+            content: iconBase64
+          });
+        }
+      }
+      
+      if (attachments.length > 0) {
+        sendSmtpEmail.attachment = attachments;
+      }
+
+      const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
+      console.log(`Blog notification sent to ${user.email}:`, result.messageId);
+      return result;
+    } catch (error) {
+      console.error(`Failed to send blog notification to ${user.email}:`, error);
+      throw error;
+    }
+  }
+
+  // Send blog notifications to all users
+  async sendBlogNotificationsToAllUsers(blog, users) {
+    const results = {
+      successful: [],
+      failed: []
+    };
+
+    for (const user of users) {
+      try {
+        if (user.isActive && user.emailPreferences.blogNotifications) {
+          await this.sendBlogNotification(user, blog);
+          results.successful.push(user.email);
+        }
+      } catch (error) {
+        console.error(`Failed to send to ${user.email}:`, error.message);
+        results.failed.push(user.email);
+      }
+    }
+
+    console.log(`Blog notifications sent: ${results.successful.length} successful, ${results.failed.length} failed`);
+    return results;
+  }
+
+  // Send welcome email
+  async sendWelcomeEmail(userData) {
+    try {
+      const sendSmtpEmail = new Brevo.SendSmtpEmail();
+      
+      sendSmtpEmail.subject = `Welcome to Harmony 4 All, ${userData.firstName}!`;
+      sendSmtpEmail.htmlContent = await WelcomeEmailTemplate.generateHTML(userData);
+      sendSmtpEmail.textContent = WelcomeEmailTemplate.generateText(userData);
+      sendSmtpEmail.sender = this.getSenderConfig();
+      sendSmtpEmail.to = [{
+        email: userData.email,
+        name: `${userData.firstName} ${userData.lastName}`
+      }];
+
+      const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
+      console.log(`Welcome email sent to ${userData.email}:`, result.messageId);
+      return result;
+    } catch (error) {
+      console.error(`Failed to send welcome email to ${userData.email}:`, error);
+      throw error;
+    }
+  }
+
+  // Send contact form notification to admin
+  async sendContactFormNotification(contactData) {
+    try {
+      const sendSmtpEmail = new Brevo.SendSmtpEmail();
+      
+      sendSmtpEmail.subject = `New Contact Form Submission - ${contactData.firstName || ''} ${contactData.lastName || ''}`;
+      sendSmtpEmail.htmlContent = ContactFormEmailTemplate.generateHTML(contactData);
+      sendSmtpEmail.textContent = ContactFormEmailTemplate.generateText(contactData);
+      sendSmtpEmail.sender = this.getSenderConfig();
+      sendSmtpEmail.to = [{
+        email: process.env.ADMIN_EMAIL || process.env.BREVO_SENDER_EMAIL,
+        name: "Harmony 4 All Admin"
+      }];
+
+      const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
+      console.log(`Contact form notification sent to admin:`, result.messageId);
+      return result;
+    } catch (error) {
+      console.error(`Failed to send contact form notification:`, error);
+      throw error;
+    }
+  }
+
+  // Send donation confirmation to donor
+  async sendDonationConfirmation(donationData) {
+    try {
+      const sendSmtpEmail = new Brevo.SendSmtpEmail();
+      
+      sendSmtpEmail.subject = `Thank You for Your Donation - Harmony 4 All`;
+      sendSmtpEmail.htmlContent = DonationEmailTemplate.generateHTML(donationData);
+      sendSmtpEmail.textContent = DonationEmailTemplate.generateText(donationData);
+      sendSmtpEmail.sender = this.getSenderConfig();
+      sendSmtpEmail.to = [{
+        email: donationData.email,
+        name: donationData.isAnonymous ? 'Anonymous Donor' : donationData.donorName
+      }];
+
+      const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
+      console.log(`Donation confirmation sent to ${donationData.email}:`, result.messageId);
+      return result;
+    } catch (error) {
+      console.error(`Failed to send donation confirmation to ${donationData.email}:`, error);
+      throw error;
+    }
+  }
+
+  // Send donation notification to admin
+  async sendDonationNotificationToAdmin(donationData) {
+    try {
+      const sendSmtpEmail = new Brevo.SendSmtpEmail();
+      
+      sendSmtpEmail.subject = `New Donation Received - $${donationData.amount}`;
+      sendSmtpEmail.htmlContent = DonationAdminEmailTemplate.generateHTML(donationData);
+      sendSmtpEmail.textContent = DonationAdminEmailTemplate.generateText(donationData);
+      sendSmtpEmail.sender = this.getSenderConfig();
+      sendSmtpEmail.to = [{
+        email: process.env.ADMIN_EMAIL || process.env.BREVO_SENDER_EMAIL,
+        name: "Harmony 4 All Admin"
+      }];
+
+      const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
+      console.log(`Donation notification sent to admin:`, result.messageId);
+      return result;
+    } catch (error) {
+      console.error(`Failed to send donation notification to admin:`, error);
+      throw error;
+    }
+  }
+
+  // Send newsletter subscription notification to admin
+  async sendNewsletterNotification(newsletterData) {
+    try {
+      const sendSmtpEmail = new Brevo.SendSmtpEmail();
+      
+      sendSmtpEmail.subject = `New Newsletter Subscription - ${newsletterData.email}`;
+      sendSmtpEmail.htmlContent = NewsletterEmailTemplate.generateHTML(newsletterData);
+      sendSmtpEmail.textContent = NewsletterEmailTemplate.generateText(newsletterData);
+      sendSmtpEmail.sender = this.getSenderConfig();
+      sendSmtpEmail.to = [{
+        email: process.env.ADMIN_EMAIL || process.env.BREVO_SENDER_EMAIL,
+        name: "Harmony 4 All Admin"
+      }];
+
+      const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
+      console.log(`Newsletter notification sent to admin:`, result.messageId);
+      return result;
+    } catch (error) {
+      console.error(`Failed to send newsletter notification to admin:`, error);
+      throw error;
+    }
+  }
+
+  // Send volunteer application notification to admin
+  async sendVolunteerNotification(volunteerData) {
+    try {
+      const sendSmtpEmail = new Brevo.SendSmtpEmail();
+      
+      sendSmtpEmail.subject = `New Volunteer Application - ${volunteerData.firstName} ${volunteerData.lastName}`;
+      sendSmtpEmail.htmlContent = VolunteerEmailTemplate.generateHTML(volunteerData);
+      sendSmtpEmail.textContent = VolunteerEmailTemplate.generateText(volunteerData);
+      sendSmtpEmail.sender = this.getSenderConfig();
+      sendSmtpEmail.to = [{
+        email: process.env.ADMIN_EMAIL || process.env.BREVO_SENDER_EMAIL,
+        name: "Harmony 4 All Admin"
+      }];
+
+      const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
+      console.log(`Volunteer notification sent to admin:`, result.messageId);
+      return result;
+    } catch (error) {
+      console.error(`Failed to send volunteer notification to admin:`, error);
+      throw error;
+    }
+  }
+}
+
+module.exports = new EmailService();
