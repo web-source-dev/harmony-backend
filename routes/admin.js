@@ -89,11 +89,90 @@ router.get("/donations", async (req, res) => {
   }
 });
 
-// Get all customers for admin
+// Get all customers for admin with pagination and filters
 router.get("/customers", async (req, res) => {
   try {
-    const customers = await Customer.find().sort({ createdAt: -1 });
-    res.json(customers);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+    
+    // Build filter query
+    const filterQuery = {};
+    
+    // Search filter
+    if (req.query.search) {
+      const searchRegex = new RegExp(req.query.search, 'i');
+      filterQuery.$or = [
+        { firstName: searchRegex },
+        { lastName: searchRegex },
+        { email: searchRegex },
+        { phone: searchRegex },
+        { phone1: searchRegex },
+        { phone2: searchRegex }
+      ];
+    }
+    
+    // Subscription status filter
+    if (req.query.subscriptionStatus) {
+      if (req.query.subscriptionStatus === 'subscribed') {
+        filterQuery.isSubscribed = true;
+      } else if (req.query.subscriptionStatus === 'unsubscribed') {
+        filterQuery.isSubscribed = false;
+      }
+    }
+    
+    // Email subscriber status filter
+    if (req.query.emailStatus) {
+      filterQuery.emailSubscriberStatus = req.query.emailStatus;
+    }
+    
+    // SMS subscriber status filter
+    if (req.query.smsStatus) {
+      filterQuery.smsSubscriberStatus = req.query.smsStatus;
+    }
+    
+    // Source filter
+    if (req.query.source) {
+      filterQuery.source = req.query.source;
+    }
+    
+    // Labels filter
+    if (req.query.labels) {
+      filterQuery.labels = { $in: req.query.labels.split(',') };
+    }
+    
+    // Date range filter
+    if (req.query.dateFrom || req.query.dateTo) {
+      filterQuery.createdAt = {};
+      if (req.query.dateFrom) {
+        filterQuery.createdAt.$gte = new Date(req.query.dateFrom);
+      }
+      if (req.query.dateTo) {
+        filterQuery.createdAt.$lte = new Date(req.query.dateTo);
+      }
+    }
+
+    // Get total count for pagination
+    const totalCustomers = await Customer.countDocuments(filterQuery);
+    const totalPages = Math.ceil(totalCustomers / limit);
+
+    // Get customers with pagination and filters
+    const customers = await Customer.find(filterQuery)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    res.json({
+      customers,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCustomers,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+        limit
+      }
+    });
   } catch (error) {
     console.error("Error fetching customers:", error);
     res.status(500).json({ message: "Failed to fetch customers" });
@@ -103,7 +182,13 @@ router.get("/customers", async (req, res) => {
 // Create new customer
 router.post("/customers", async (req, res) => {
   try {
-    const { firstName, lastName, email, phone, address, isSubscribed } = req.body;
+    const { 
+      firstName, lastName, email, phone, phone1, phone2,
+      address, address1Street, address1City, address1State, address1Zip, address1Country,
+      address2Street, address2City, address2State, address2Zip, address2Country,
+      address3Street, address3StreetLine2, address3City, address3Country,
+      position, labels, isSubscribed, emailSubscriberStatus, smsSubscriberStatus, source
+    } = req.body;
     
     // Check if customer already exists
     const existingCustomer = await Customer.findOne({ email: email.toLowerCase().trim() });
@@ -116,8 +201,29 @@ router.post("/customers", async (req, res) => {
       lastName: lastName?.trim() || '',
       email: email.toLowerCase().trim(),
       phone: phone?.trim() || '',
+      phone1: phone1?.trim() || '',
+      phone2: phone2?.trim() || '',
       address: address?.trim() || '',
+      address1Street: address1Street?.trim() || '',
+      address1City: address1City?.trim() || '',
+      address1State: address1State?.trim() || '',
+      address1Zip: address1Zip?.trim() || '',
+      address1Country: address1Country?.trim() || '',
+      address2Street: address2Street?.trim() || '',
+      address2City: address2City?.trim() || '',
+      address2State: address2State?.trim() || '',
+      address2Zip: address2Zip?.trim() || '',
+      address2Country: address2Country?.trim() || '',
+      address3Street: address3Street?.trim() || '',
+      address3StreetLine2: address3StreetLine2?.trim() || '',
+      address3City: address3City?.trim() || '',
+      address3Country: address3Country?.trim() || '',
+      position: position?.trim() || '',
+      labels: Array.isArray(labels) ? labels : [],
       isSubscribed: isSubscribed !== undefined ? isSubscribed : true,
+      emailSubscriberStatus: emailSubscriberStatus || 'subscribed',
+      smsSubscriberStatus: smsSubscriberStatus || 'subscribed',
+      source: source || 'website',
       subscribedAt: new Date()
     });
 
@@ -132,7 +238,13 @@ router.post("/customers", async (req, res) => {
 // Update customer
 router.put("/customers/:id", async (req, res) => {
   try {
-    const { firstName, lastName, email, phone, address, isSubscribed } = req.body;
+    const { 
+      firstName, lastName, email, phone, phone1, phone2,
+      address, address1Street, address1City, address1State, address1Zip, address1Country,
+      address2Street, address2City, address2State, address2Zip, address2Country,
+      address3Street, address3StreetLine2, address3City, address3Country,
+      position, labels, isSubscribed, emailSubscriberStatus, smsSubscriberStatus, source
+    } = req.body;
     
     // Check if email is being changed and if it already exists
     const customer = await Customer.findById(req.params.id);
@@ -154,8 +266,29 @@ router.put("/customers/:id", async (req, res) => {
         lastName: lastName?.trim() || '',
         email: email?.toLowerCase().trim() || customer.email,
         phone: phone?.trim() || '',
+        phone1: phone1?.trim() || '',
+        phone2: phone2?.trim() || '',
         address: address?.trim() || '',
-        isSubscribed: isSubscribed !== undefined ? isSubscribed : customer.isSubscribed
+        address1Street: address1Street?.trim() || '',
+        address1City: address1City?.trim() || '',
+        address1State: address1State?.trim() || '',
+        address1Zip: address1Zip?.trim() || '',
+        address1Country: address1Country?.trim() || '',
+        address2Street: address2Street?.trim() || '',
+        address2City: address2City?.trim() || '',
+        address2State: address2State?.trim() || '',
+        address2Zip: address2Zip?.trim() || '',
+        address2Country: address2Country?.trim() || '',
+        address3Street: address3Street?.trim() || '',
+        address3StreetLine2: address3StreetLine2?.trim() || '',
+        address3City: address3City?.trim() || '',
+        address3Country: address3Country?.trim() || '',
+        position: position?.trim() || '',
+        labels: Array.isArray(labels) ? labels : [],
+        isSubscribed: isSubscribed !== undefined ? isSubscribed : customer.isSubscribed,
+        emailSubscriberStatus: emailSubscriberStatus || customer.emailSubscriberStatus,
+        smsSubscriberStatus: smsSubscriberStatus || customer.smsSubscriberStatus,
+        source: source || customer.source
       },
       { new: true }
     );
@@ -199,6 +332,37 @@ router.patch("/customers/:id/toggle-subscription", async (req, res) => {
   } catch (error) {
     console.error("Error toggling customer subscription:", error);
     res.status(500).json({ message: "Failed to toggle subscription" });
+  }
+});
+
+// Get all unique sources from customers
+router.get("/customers/sources", async (req, res) => {
+  try {
+    const sources = await Customer.distinct('source');
+    res.json(sources.filter(source => source && source.trim() !== ''));
+  } catch (error) {
+    console.error("Error fetching sources:", error);
+    res.status(500).json({ message: "Failed to fetch sources" });
+  }
+});
+
+// Get all unique labels from customers
+router.get("/customers/labels", async (req, res) => {
+  try {
+    const customers = await Customer.find({ labels: { $exists: true, $ne: [] } });
+    const allLabels = customers.reduce((acc, customer) => {
+      if (customer.labels && Array.isArray(customer.labels)) {
+        acc.push(...customer.labels);
+      }
+      return acc;
+    }, []);
+    
+    // Remove duplicates and sort
+    const uniqueLabels = [...new Set(allLabels)].sort();
+    res.json(uniqueLabels);
+  } catch (error) {
+    console.error("Error fetching labels:", error);
+    res.status(500).json({ message: "Failed to fetch labels" });
   }
 });
 

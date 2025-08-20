@@ -126,7 +126,7 @@ router.post('/', blogImageUpload.single('image'), async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const query = { isActive: true };
-    const { category, tag, featured } = req.query;
+    const { category, tag, featured, page = 1, limit = 12 } = req.query;
     
     // Apply filters if provided
     if (category) {
@@ -141,13 +141,33 @@ router.get('/', async (req, res) => {
       query.isFeatured = true;
     }
     
+    // Pagination
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+    
+    // Get total count for pagination
+    const totalBlogs = await Blog.countDocuments(query);
+    const totalPages = Math.ceil(totalBlogs / limitNum);
+    
     const blogs = await Blog.find(query)
       .populate('writer', 'name email image bio')
       .populate('comments')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum);
 
-    
-    res.json(blogs);
+    res.json({
+      blogs,
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalBlogs,
+        hasNextPage: pageNum < totalPages,
+        hasPrevPage: pageNum > 1,
+        limit: limitNum
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -218,7 +238,7 @@ router.get('/admin/:id', async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id)
       .populate('writer', 'name email image bio')
-      .populate('revisions.updatedBy', 'firstName lastName name avatar')
+      .populate('revisions.updatedBy', 'name email image bio')
       .populate('comments');
     
     if (!blog) {
@@ -227,6 +247,7 @@ router.get('/admin/:id', async (req, res) => {
 
     res.json(blog);
   } catch (error) {
+    console.log(error);
 
     res.status(500).json({ message: error.message });
   }

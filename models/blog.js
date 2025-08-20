@@ -54,7 +54,7 @@ const BlogSchema = new mongoose.Schema({
   // Revision History
   revisions: [{
     updatedAt: Date,
-    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Writer" },
     changes: { type: String }, // Could store a diff or summary
   }]
 }, {
