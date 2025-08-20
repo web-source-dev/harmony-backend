@@ -4,6 +4,17 @@ const customerService = require('../services/customerService');
 const router = express.Router();
 const Volunteer = require('../models/volunteer');
 
+// Get all volunteer applications (for analytics)
+router.get('/', async (req, res) => {
+    try {
+        const volunteers = await Volunteer.find().sort({ submittedAt: -1 });
+        res.json(volunteers);
+    } catch (error) {
+        console.error("Error fetching volunteers:", error);
+        res.status(500).json({ message: "Failed to fetch volunteers" });
+    }
+});
+
 // Submit volunteer application
 router.post('/submit', async (req, res) => {
   try {

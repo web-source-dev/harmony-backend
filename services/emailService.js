@@ -63,7 +63,7 @@ class EmailService {
       sendSmtpEmail.sender = this.getSenderConfig();
       sendSmtpEmail.to = [{
         email: user.email,
-        name: `${user.firstName} ${user.lastName}`
+        name: `${user.firstName || user.name || ''} ${user.lastName || ''}`
       }];
 
       // Add logo and candid images as attachments
@@ -112,27 +112,53 @@ class EmailService {
     }
   }
 
-  // Send blog notifications to all users
-  async sendBlogNotificationsToAllUsers(blog, users) {
-    const results = {
-      successful: [],
-      failed: []
-    };
+  // Send blog notifications to all customers
+  async sendBlogNotificationsToAllCustomers(blog) {
+    try {
+      // Import Customer model
+      const Customer = require('../models/customer');
+      
+      // Get all active customers who are subscribed
+      const customers = await Customer.find({
+        isSubscribed: true
+      });
 
-    for (const user of users) {
-      try {
-        if (user.isActive && user.emailPreferences.blogNotifications) {
-          await this.sendBlogNotification(user, blog);
-          results.successful.push(user.email);
-        }
-      } catch (error) {
-        console.error(`Failed to send to ${user.email}:`, error.message);
-        results.failed.push(user.email);
+      if (customers.length === 0) {
+        console.log('No subscribed customers found for blog notification');
+        return { successful: [], failed: [] };
       }
-    }
 
-    console.log(`Blog notifications sent: ${results.successful.length} successful, ${results.failed.length} failed`);
-    return results;
+      console.log(`Sending blog notifications to ${customers.length} customers`);
+
+      const results = {
+        successful: [],
+        failed: []
+      };
+
+      for (const customer of customers) {
+        try {
+          // Create a user-like object for the email template
+          const customerForEmail = {
+            email: customer.email,
+            firstName: customer.firstName || '',
+            lastName: customer.lastName || '',
+            name: `${customer.firstName || ''} ${customer.lastName || ''}`.trim() || 'Valued Customer'
+          };
+
+          await this.sendBlogNotification(customerForEmail, blog);
+          results.successful.push(customer.email);
+        } catch (error) {
+          console.error(`Failed to send to customer ${customer.email}:`, error.message);
+          results.failed.push(customer.email);
+        }
+      }
+
+      console.log(`Blog notifications sent to customers: ${results.successful.length} successful, ${results.failed.length} failed`);
+      return results;
+    } catch (error) {
+      console.error('Failed to send blog notifications to customers:', error);
+      throw error;
+    }
   }
 
   // Send welcome email

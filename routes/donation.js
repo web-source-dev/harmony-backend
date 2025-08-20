@@ -133,13 +133,18 @@ router.post('/create-checkout-session', async (req, res) => {
 // Webhook to handle Stripe events
 router.post('/webhook', handleWebhook, async (req, res) => {
 
+  console.log('Webhook received');
   const sig = req.headers['stripe-signature'];
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  console.log('Webhook signature:', sig);
+  console.log('Webhook endpoint secret:', endpointSecret);
 
   let event;
 
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+    console.log('Webhook event:', event);
   } catch (err) {
     console.error('Webhook signature verification failed:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);

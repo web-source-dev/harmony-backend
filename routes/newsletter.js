@@ -4,6 +4,17 @@ const customerService = require("../services/customerService");
 const router = express.Router();
 const Newsletter = require("../models/newsletter");
 
+// Get all newsletter subscriptions (for analytics)
+router.get("/", async (req, res) => {
+    try {
+        const newsletters = await Newsletter.find().sort({ subscribedAt: -1 });
+        res.json(newsletters);
+    } catch (error) {
+        console.error("Error fetching newsletters:", error);
+        res.status(500).json({ message: "Failed to fetch newsletters" });
+    }
+});
+
 // Subscribe to newsletter
 router.post("/subscribe", async (req, res) => {
     try {

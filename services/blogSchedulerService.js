@@ -108,20 +108,8 @@ class BlogSchedulerService {
   // Send notifications when a blog is published
   async sendPublishNotifications(blog) {
     try {
-      // Import User model here to avoid circular dependencies
-      const { User } = require('../models/user');
-      
-      // Get all active users who have opted in for blog notifications
-      const users = await User.find({
-        isActive: true,
-        'emailPreferences.blogNotifications': true
-      });
-
-      if (users.length > 0) {
-        console.log(`Sending blog notifications to ${users.length} users`);
-        await this.emailService.sendBlogNotificationsToAllUsers(blog, users);
-      }
-
+      console.log('Sending blog notifications to all customers');
+      await this.emailService.sendBlogNotificationsToAllCustomers(blog);
     } catch (error) {
       console.error('Failed to send publish notifications:', error);
       // Don't throw error here as it shouldn't prevent the blog from being published

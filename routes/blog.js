@@ -7,6 +7,7 @@ const {
   socialImageUpload, 
   deleteImageFromCloudinary 
 } = require('../config/cloudinary');
+const emailService = require('../services/emailService');
 
 // Upload image for blog content (inline images)
 router.post('/upload/images', contentImageUpload.single('image'), async (req, res) => {
@@ -101,7 +102,18 @@ router.post('/', blogImageUpload.single('image'), async (req, res) => {
     console.log(blog);
     await blog.save();
     
-
+    // Send blog notifications to all customers if the blog is published
+    if (blog.status === 'published' && blog.isActive) {
+      try {
+        // Populate writer information for the email template
+        await blog.populate('writer', 'name email image bio');
+        await emailService.sendBlogNotificationsToAllCustomers(blog);
+        console.log('Blog notifications sent to customers');
+      } catch (error) {
+        console.error('Failed to send blog notifications:', error);
+        // Don't fail the blog creation if email sending fails
+      }
+    }
 
     res.status(201).json(blog);
   } catch (error) {

@@ -3,6 +3,9 @@ class BlogNotificationEmailTemplate {
   static generateHTML(user, blog) {
     const blogUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/blog/${blog.slug}`;
     const unsubscribeUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/unsubscribe?email=${encodeURIComponent(user.email)}`;
+    
+    // Get author name from populated writer or use default
+    const authorName = blog.writer && blog.writer.name ? blog.writer.name : 'Harmony 4 All Team';
 
     return `
       <!DOCTYPE html>
@@ -245,7 +248,7 @@ class BlogNotificationEmailTemplate {
           
           <div class="content">
             <h1 class="blog-title">${blog.title}</h1>
-            <div class="blog-author">By: ${blog.author}</div>
+            <div class="blog-author">By: ${authorName}</div>
             
             <div class="blog-image-box">
               <a href="${blog.url}" target="_blank">
@@ -310,12 +313,15 @@ class BlogNotificationEmailTemplate {
   static generateText(user, blog) {
     const blogUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/blog/${blog.slug}`;
     const unsubscribeUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/unsubscribe?email=${encodeURIComponent(user.email)}`;
+    
+    // Get author name from populated writer or use default
+    const authorName = blog.writer && blog.writer.name ? blog.writer.name : 'Harmony 4 All Team';
 
     return `
 Harmony 4 All - Making Music Accessible
 
 New Blog Post: ${blog.title}
-By: ${blog.author}
+By: ${authorName}
 
 ${blog.content}
 

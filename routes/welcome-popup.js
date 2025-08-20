@@ -4,6 +4,17 @@ const WelcomePopup = require("../models/welcome-popup");
 const emailService = require("../services/emailService");
 const customerService = require("../services/customerService");
 
+// Get all welcome popup submissions (for analytics)
+router.get("/", async (req, res) => {
+    try {
+        const welcomePopups = await WelcomePopup.find().sort({ submittedAt: -1 });
+        res.json(welcomePopups);
+    } catch (error) {
+        console.error("Error fetching welcome popups:", error);
+        res.status(500).json({ message: "Failed to fetch welcome popups" });
+    }
+});
+
 // Submit welcome popup form
 router.post("/submit", async (req, res) => {
     try {

@@ -5,6 +5,17 @@ const customerService = require("../services/customerService");
 const router = express.Router();
 const Contact = require("../models/contact");
 
+// Get all contacts (for analytics)
+router.get("/", async (req, res) => {
+    try {
+        const contacts = await Contact.find().sort({ createdAt: -1 });
+        res.json(contacts);
+    } catch (error) {
+        console.error("Error fetching contacts:", error);
+        res.status(500).json({ message: "Failed to fetch contacts" });
+    }
+});
+
 router.post("/", async (req, res) => {
     try {
         const { firstName, lastName, email, phone, subject, message } = req.body;
