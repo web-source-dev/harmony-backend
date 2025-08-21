@@ -5,9 +5,12 @@ const {
   blogImageUpload, 
   contentImageUpload, 
   socialImageUpload, 
-  deleteImageFromCloudinary 
+  videoUpload,
+  deleteImageFromCloudinary,
+  deleteVideoFromCloudinary
 } = require('../config/cloudinary');
 const emailService = require('../services/emailService');
+const webhookService = require('../services/webhookService');
 
 // Upload image for blog content (inline images)
 router.post('/upload/images', contentImageUpload.single('image'), async (req, res) => {
@@ -48,8 +51,30 @@ router.post('/upload/social-image', socialImageUpload.single('image'), async (re
   }
 });
 
+// Upload video for blog content
+router.post('/upload/video', videoUpload.single('video'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No video file provided' });
+    }
+
+    // Cloudinary returns the URL directly
+    const videoUrl = req.file.path;
+
+    res.status(201).json({
+      url: videoUrl,
+      success: true
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Create blog (admin only)
-router.post('/', blogImageUpload.single('image'), async (req, res) => {
+router.post('/', blogImageUpload.fields([
+  { name: 'image', maxCount: 1 },
+  { name: 'blogVideo', maxCount: 1 }
+]), async (req, res) => {
   try {
     // Basic blog details
     const blog = new Blog({
@@ -57,8 +82,9 @@ router.post('/', blogImageUpload.single('image'), async (req, res) => {
       description: req.body.description,
       content: req.body.content,
       writer: req.body.writer,
-      image: req.file ? req.file.path : null,
+      image: req.files?.image ? req.files.image[0].path : null,
       imageAlt: req.body.imageAlt || '',
+      blogVideo: req.files?.blogVideo ? req.files.blogVideo[0].path : null,
       url: req.body.url || '',
       
       // Status & Visibility
@@ -109,6 +135,14 @@ router.post('/', blogImageUpload.single('image'), async (req, res) => {
         await blog.populate('writer', 'name email image bio');
         await emailService.sendBlogNotificationsToAllCustomers(blog);
         console.log('Blog notifications sent to customers');
+        
+        // Send webhook notification to Zapier
+        const webhookResult = await webhookService.sendBlogToZapier(blog);
+        if (webhookResult.success) {
+          console.log('Blog sent to Zapier webhook successfully');
+        } else {
+          console.error('Failed to send blog to Zapier webhook:', webhookResult.error);
+        }
       } catch (error) {
         console.error('Failed to send blog notifications:', error);
         // Don't fail the blog creation if email sending fails
@@ -347,7 +381,10 @@ router.put('/:id/toggleFeatured', async (req, res) => {
 });
 
 // Update blog (admin only)
-router.patch('/:id', blogImageUpload.single('image'), async (req, res) => {
+router.patch('/:id', blogImageUpload.fields([
+  { name: 'image', maxCount: 1 },
+  { name: 'blogVideo', maxCount: 1 }
+]), async (req, res) => {
   try {
     // Get the existing blog
     const existingBlog = await Blog.findById(req.params.id);
@@ -402,7 +439,7 @@ router.patch('/:id', blogImageUpload.single('image'), async (req, res) => {
     if (req.body.language !== undefined) updates.language = req.body.language;
     
     // Handle main image upload
-    if (req.file) {
+    if (req.files?.image) {
       // Delete old image from Cloudinary if it exists
       if (existingBlog.image && existingBlog.image.includes('cloudinary.com')) {
         try {
@@ -412,7 +449,21 @@ router.patch('/:id', blogImageUpload.single('image'), async (req, res) => {
           // Continue with update even if old image deletion fails
         }
       }
-      updates.image = req.file.path;
+      updates.image = req.files.image[0].path;
+    }
+    
+    // Handle blog video upload
+    if (req.files?.blogVideo) {
+      // Delete old video from Cloudinary if it exists
+      if (existingBlog.blogVideo && existingBlog.blogVideo.includes('cloudinary.com')) {
+        try {
+          await deleteVideoFromCloudinary(existingBlog.blogVideo);
+        } catch (deleteError) {
+          console.error('Error deleting old video from Cloudinary:', deleteError);
+          // Continue with update even if old video deletion fails
+        }
+      }
+      updates.blogVideo = req.files.blogVideo[0].path;
     }
     
     // Add a revision record
@@ -429,9 +480,27 @@ router.patch('/:id', blogImageUpload.single('image'), async (req, res) => {
       req.params.id, 
       updates, 
       { new: true }
-    );
+    ).populate('writer', 'name email image bio');
     
-    
+    // Check if blog status was changed to published and is active
+    if (req.body.status === 'published' && blog.isActive && existingBlog.status !== 'published') {
+      try {
+        // Send email notifications
+        await emailService.sendBlogNotificationsToAllCustomers(blog);
+        console.log('Blog notifications sent to customers');
+        
+        // Send webhook notification to Zapier
+        const webhookResult = await webhookService.sendBlogToZapier(blog);
+        if (webhookResult.success) {
+          console.log('Blog sent to Zapier webhook successfully');
+        } else {
+          console.error('Failed to send blog to Zapier webhook:', webhookResult.error);
+        }
+      } catch (error) {
+        console.error('Failed to send blog notifications:', error);
+        // Don't fail the blog update if notification sending fails
+      }
+    }
     
     res.json(blog);
   } catch (error) {
@@ -456,6 +525,16 @@ router.delete('/:id', async (req, res) => {
       } catch (deleteError) {
         console.error('Error deleting image from Cloudinary:', deleteError);
         // Continue with deletion even if image deletion fails
+      }
+    }
+    
+    // Delete video from Cloudinary if it exists
+    if (blog.blogVideo && blog.blogVideo.includes('cloudinary.com')) {
+      try {
+        await deleteVideoFromCloudinary(blog.blogVideo);
+      } catch (deleteError) {
+        console.error('Error deleting video from Cloudinary:', deleteError);
+        // Continue with deletion even if video deletion fails
       }
     }
     
@@ -511,6 +590,40 @@ router.post('/:id/like', async (req, res) => {
 });
 
 
+
+// Test webhook endpoint
+router.post('/test-webhook', async (req, res) => {
+  try {
+    const result = await webhookService.testWebhook();
+    if (result.success) {
+      res.json({ message: 'Webhook test successful', status: result.status });
+    } else {
+      res.status(500).json({ message: 'Webhook test failed', error: result.error });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Webhook test failed', error: error.message });
+  }
+});
+
+// Manually trigger webhook for a specific blog (for testing)
+router.post('/:id/trigger-webhook', async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id).populate('writer', 'name email image bio');
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+
+    const result = await webhookService.sendBlogToZapier(blog);
+    console.log(result);
+    if (result.success) {
+      res.json({ message: 'Blog sent to Zapier webhook successfully', status: result.status });
+    } else {
+      res.status(500).json({ message: 'Failed to send blog to Zapier webhook', error: result.error });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to trigger webhook', error: error.message });
+  }
+});
 
 // Add share functionality
 router.post('/:id/share', async (req, res) => {

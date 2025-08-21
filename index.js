@@ -61,6 +61,7 @@ const donationRoute = require("./routes/donation");
 const blogsRoute = require("./routes/blog");
 const adminRoute = require("./routes/admin");
 const writersRoute = require("./routes/writers");
+const mediaRoute = require("./routes/media");
 
 // Initialize blog scheduler service
 const blogSchedulerService = require("./services/blogSchedulerService");
@@ -77,6 +78,7 @@ app.use("/api/donation", donationRoute);
 app.use("/api/blogs", blogsRoute);
 app.use("/api/admin", adminRoute);
 app.use("/api/writers", writersRoute);
+app.use("/api/media", mediaRoute);
 
 const PORT = process.env.PORT || 5000;
 

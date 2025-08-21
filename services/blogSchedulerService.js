@@ -2,6 +2,7 @@ const cron = require('node-cron');
 const moment = require('moment-timezone');
 const { Blog } = require('../models/blog');
 const emailService = require('./emailService');
+const webhookService = require('./webhookService');
 
 class BlogSchedulerService {
   constructor() {
@@ -96,6 +97,9 @@ class BlogSchedulerService {
 
       // Send notifications if configured
       await this.sendPublishNotifications(updatedBlog);
+      
+      // Send webhook notification to Zapier
+      await this.sendWebhookNotification(updatedBlog);
 
       return updatedBlog;
 
@@ -112,6 +116,23 @@ class BlogSchedulerService {
       await this.emailService.sendBlogNotificationsToAllCustomers(blog);
     } catch (error) {
       console.error('Failed to send publish notifications:', error);
+      // Don't throw error here as it shouldn't prevent the blog from being published
+    }
+  }
+
+  // Send webhook notification when a blog is published
+  async sendWebhookNotification(blog) {
+    try {
+      console.log('Sending blog to Zapier webhook');
+      const result = await webhookService.sendBlogToZapier(blog);
+      
+      if (result.success) {
+        console.log('Successfully sent blog to Zapier webhook');
+      } else {
+        console.error('Failed to send blog to Zapier webhook:', result.error);
+      }
+    } catch (error) {
+      console.error('Failed to send webhook notification:', error);
       // Don't throw error here as it shouldn't prevent the blog from being published
     }
   }

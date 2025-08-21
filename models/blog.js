@@ -9,6 +9,7 @@ const BlogSchema = new mongoose.Schema({
   writer: { type: mongoose.Schema.Types.ObjectId, ref: "Writer", required: true },
   image: { type: String },
   imageAlt: { type: String },
+  blogVideo: { type: String }, // New field for blog video
   url: { type: String },
 
   // Status & Visibility

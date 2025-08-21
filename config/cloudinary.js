@@ -25,11 +25,30 @@ const createCloudinaryStorage = (folder) => {
   });
 };
 
+// Create storage for videos
+const createVideoStorage = (folder) => {
+  return new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+      folder: folder,
+      resource_type: 'video',
+      allowed_formats: ['mp4', 'webm', 'ogv', 'mov', 'avi', 'wmv', 'flv'],
+      transformation: [
+        { quality: 'auto:good' }, // Optimize quality
+        { fetch_format: 'auto' } // Auto-format
+      ],
+    },
+  });
+};
+
 // Storage configurations for different image types
 const blogImageStorage = createCloudinaryStorage('harmony4all/blogs');
 const writerImageStorage = createCloudinaryStorage('harmony4all/writers');
 const contentImageStorage = createCloudinaryStorage('harmony4all/content');
 const socialImageStorage = createCloudinaryStorage('harmony4all/social');
+const videoStorage = createVideoStorage('harmony4all/videos');
+const mediaImageStorage = createCloudinaryStorage('harmony4all/media');
+const mediaVideoStorage = createVideoStorage('harmony4all/media');
 
 // Multer upload configurations
 const blogImageUpload = multer({
@@ -88,6 +107,20 @@ const socialImageUpload = multer({
   },
 });
 
+const videoUpload = multer({
+  storage: videoStorage,
+  limits: {
+    fileSize: 100 * 1024 * 1024, // 100MB limit for videos
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('video/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only video files are allowed!'), false);
+    }
+  },
+});
+
 // Helper function to delete image from Cloudinary
 const deleteImageFromCloudinary = async (publicId) => {
   try {
@@ -107,6 +140,29 @@ const deleteImageFromCloudinary = async (publicId) => {
     return result;
   } catch (error) {
     console.error('Error deleting image from Cloudinary:', error);
+    throw error;
+  }
+};
+
+// Helper function to delete video from Cloudinary
+const deleteVideoFromCloudinary = async (publicId) => {
+  try {
+    if (!publicId) return;
+    
+    // Extract public ID from URL if full URL is provided
+    let cloudinaryPublicId = publicId;
+    if (publicId.includes('cloudinary.com')) {
+      const urlParts = publicId.split('/');
+      const uploadIndex = urlParts.indexOf('upload');
+      if (uploadIndex !== -1 && uploadIndex + 2 < urlParts.length) {
+        cloudinaryPublicId = urlParts.slice(uploadIndex + 2).join('/').split('.')[0];
+      }
+    }
+    
+    const result = await cloudinary.uploader.destroy(cloudinaryPublicId, { resource_type: 'video' });
+    return result;
+  } catch (error) {
+    console.error('Error deleting video from Cloudinary:', error);
     throw error;
   }
 };
@@ -153,6 +209,10 @@ module.exports = {
   writerImageUpload,
   contentImageUpload,
   socialImageUpload,
+  videoUpload,
+  mediaImageStorage,
+  mediaVideoStorage,
   deleteImageFromCloudinary,
+  deleteVideoFromCloudinary,
   getOptimizedImageUrl,
 };
