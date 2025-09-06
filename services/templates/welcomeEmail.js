@@ -179,9 +179,9 @@ If you're at one of our live events, show this email for your free gift while su
 Go back to site: ${frontendUrl}
 
 Follow us on our social media:
-- Facebook: https://www.facebook.com/share/AF62w5VRMmUyR69x/?mibextid=kFxxJD
-- Instagram: https://www.instagram.com/_harmony4all_/
-- LinkedIn: https://www.linkedin.com/company/harmony4all/?viewAsMember=true
+- Facebook: https://web.facebook.com/JoinHarmony4All/
+- Instagram: https://www.instagram.com/joinharmony4all/
+- LinkedIn: https://www.linkedin.com/company/joinharmony4all/?viewAsMember=true
 - YouTube: https://youtu.be/CQXnJpY_zR8
 
 Best regards,
