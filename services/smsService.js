@@ -63,7 +63,7 @@ class SMSService {
         return { success: false, message: 'Admin phone number not configured' };
       }
 
-      const message = `New Harmony 4 All submission from ${submissionData.firstName} ${submissionData.lastName} (${submissionData.email}). Please check your admin email for details.`;
+      const message = `New Harmony 4 All submission from ${submissionData.firstName} ${submissionData.lastName} (${submissionData.email}). Please check your email for details.`;
 
       await this.sendSMS(adminPhone, message);
       return { success: true, message: 'Admin notification SMS sent' };
