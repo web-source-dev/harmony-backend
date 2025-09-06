@@ -1,9 +1,10 @@
 const Brevo = require('@getbrevo/brevo');
 const fs = require('fs');
 const path = require('path');
-const { 
-  WelcomeEmailTemplate, 
-  BlogNotificationEmailTemplate, 
+const {
+  WelcomeEmailTemplate,
+  WelcomePopupAdminEmailTemplate,
+  BlogNotificationEmailTemplate,
   ContactFormEmailTemplate,
   DonationEmailTemplate,
   DonationAdminEmailTemplate,
@@ -280,7 +281,7 @@ class EmailService {
   async sendVolunteerNotification(volunteerData) {
     try {
       const sendSmtpEmail = new Brevo.SendSmtpEmail();
-      
+
       sendSmtpEmail.subject = `New Volunteer Application - ${volunteerData.firstName} ${volunteerData.lastName}`;
       sendSmtpEmail.htmlContent = VolunteerEmailTemplate.generateHTML(volunteerData);
       sendSmtpEmail.textContent = VolunteerEmailTemplate.generateText(volunteerData);
@@ -295,6 +296,29 @@ class EmailService {
       return result;
     } catch (error) {
       console.error(`Failed to send volunteer notification to admin:`, error);
+      throw error;
+    }
+  }
+
+  // Send welcome popup submission notification to admin
+  async sendWelcomePopupNotification(welcomeData) {
+    try {
+      const sendSmtpEmail = new Brevo.SendSmtpEmail();
+
+      sendSmtpEmail.subject = `New Submission - ${welcomeData.firstName} ${welcomeData.lastName}`;
+      sendSmtpEmail.htmlContent = WelcomePopupAdminEmailTemplate.generateHTML(welcomeData);
+      sendSmtpEmail.textContent = WelcomePopupAdminEmailTemplate.generateText(welcomeData);
+      sendSmtpEmail.sender = this.getSenderConfig();
+      sendSmtpEmail.to = [{
+        email: process.env.ADMIN_EMAIL || process.env.BREVO_SENDER_EMAIL,
+        name: "Harmony 4 All Admin"
+      }];
+
+      const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
+      console.log(`Welcome popup notification sent to admin:`, result.messageId);
+      return result;
+    } catch (error) {
+      console.error(`Failed to send welcome popup notification to admin:`, error);
       throw error;
     }
   }

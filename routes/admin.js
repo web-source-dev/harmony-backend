@@ -50,9 +50,9 @@ router.get("/recent-data", async (req, res) => {
   try {
     // Recent blogs (last 10)
     const recentBlogs = await Blog.find()
-      .sort({ createdAt: -1 })
+      .sort({ publishedAt: -1, createdAt: -1 })
       .limit(10)
-      .select('title status views createdAt');
+      .select('title status views createdAt publishedAt');
 
     // Recent donations (last 10)
     const recentDonations = await Donation.find()

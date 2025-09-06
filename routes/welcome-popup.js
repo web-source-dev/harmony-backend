@@ -84,7 +84,7 @@ router.post("/submit", async (req, res) => {
             // Don't fail the request if customer creation fails
         }
         
-        // Send welcome email
+        // Send welcome email to user
         try {
             await emailService.sendWelcomeEmail({
                 firstName: firstName.trim(),
@@ -94,6 +94,21 @@ router.post("/submit", async (req, res) => {
             });
         } catch (emailError) {
             console.error("Failed to send welcome email:", emailError);
+            // Don't fail the request if email fails
+        }
+
+        // Send notification email to admin
+        try {
+            await emailService.sendWelcomePopupNotification({
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
+                email: email.toLowerCase().trim(),
+                cellNumber: cellNumber.trim(),
+                promotionalUpdates: promotionalUpdates,
+                agreeToTerms: agreeToTerms
+            });
+        } catch (emailError) {
+            console.error("Failed to send welcome popup notification to admin:", emailError);
             // Don't fail the request if email fails
         }
         

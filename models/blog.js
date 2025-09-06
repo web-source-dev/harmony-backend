@@ -64,7 +64,7 @@ const BlogSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Auto-generate slug from title if not provided
+// Auto-generate slug from title if not provided and set publishedAt date
 BlogSchema.pre('save', function(next) {
   if (!this.slug && this.title) {
     this.slug = this.title
@@ -72,6 +72,12 @@ BlogSchema.pre('save', function(next) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '');
   }
+
+  // Set publishedAt date when status changes to 'published'
+  if (this.status === 'published' && !this.publishedAt) {
+    this.publishedAt = new Date();
+  }
+
   next();
 });
 

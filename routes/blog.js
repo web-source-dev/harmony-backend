@@ -187,7 +187,7 @@ router.get('/', async (req, res) => {
     const blogs = await Blog.find(query)
       .populate('writer', 'name email image bio')
       .populate('comments')
-      .sort({ createdAt: -1 })
+      .sort({ publishedAt: -1})
       .skip(skip)
       .limit(limitNum);
 
@@ -213,7 +213,7 @@ router.get('/all', async (req, res) => {
     const blogs = await Blog.find()
       .populate('writer', 'name email image bio')
       .populate('comments')
-      .sort({ createdAt: -1 });
+      .sort({ publishedAt: -1 });
 
     
     res.json(blogs);
@@ -229,7 +229,7 @@ router.get('/featured', async (req, res) => {
     const blogs = await Blog.find({ isActive: true, isFeatured: true })
       .populate('writer', 'name email image bio')
       .populate('comments')
-      .sort({ createdAt: -1 })
+      .sort({ publishedAt: -1 })
       .limit(limit);
       
     
@@ -347,7 +347,7 @@ router.get('/:id/related', async (req, res) => {
     })
     .populate('writer', 'name email image bio')
     .populate('comments')
-    .sort({ createdAt: -1 })
+    .sort({ publishedAt: -1 })
     .limit(limit);
     
     res.json(relatedBlogs);
