@@ -135,20 +135,20 @@ class WelcomeEmailTemplate {
           </a>
           <img src="https://static.wixstatic.com/media/d717d4_c5ec3d5af40d4806a096c4fdfb0f9012~mv2.png/v1/fill/w_540,h_35,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/d717d4_c5ec3d5af40d4806a096c4fdfb0f9012~mv2.png" alt="Divider">
           <div class="qr-code-container">
-            <img class="qr-code-image" src="${qrCodeDataUrl}" alt="QR Code" title="${userData.firstName}" />
+            <img class="qr-code-image" src="${qrCodeDataUrl}" alt="QR Code" title="${userData.firstName} ${userData.lastName}" />
           </div>
-          <p>${userData.firstName}</p>
+          <p>${userData.firstName} ${userData.lastName}</p>
           <p>If you're at one of our live events, show this email for your free gift while supplies last.</p>
-          <a href="${frontendUrl}" class="button" style="display: inline-block; background-color: #000000; color: #ffffff; text-decoration: none; border-radius: 5px; padding-top: 15px;">Go back to site</a>
+          <a href="${frontendUrl}" class="button" style="display: inline-block; background-color: #000000; color: #ffffff; text-decoration: none; border-radius: 5px; padding: 5px; width: 100%;">Go back to site</a>
           <p>Follow us on our social media</p>
           <div class="social-media">
-            <a href="https://www.facebook.com/share/AF62w5VRMmUyR69x/?mibextid=kFxxJD" target="_blank">
+            <a href="https://web.facebook.com/JoinHarmony4All/" target="_blank">
               <img src="https://static.wixstatic.com/media/d717d4_a95b17288dbd45c187b27bc7af2b6232~mv2.png/v1/fill/w_49,h_54,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/logo-facebook-best-facebook-logo-icons-gif-transparent-png-images-9.png" alt="Visit Facebook" style="border-radius: 50%;" width="35" height="35">
             </a>
-            <a href="https://www.instagram.com/_harmony4all_/" target="_blank">
+            <a href="https://www.instagram.com/joinharmony4all/" target="_blank">
               <img src="https://static.wixstatic.com/media/d717d4_60183cb859124e98ba88127217ce21db~mv2.png/v1/fill/w_51,h_54,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/images.png" alt="Visit Instagram" style="border-radius: 50%;" width="35" height="35">
             </a>
-            <a href="https://www.linkedin.com/company/harmony4all/?viewAsMember=true" target="_blank">
+            <a href="https://www.linkedin.com/company/joinharmony4all/?viewAsMember=true" target="_blank">
               <img src="https://static.wixstatic.com/media/d717d4_91022b808471402ca81cbbec9935fdde~mv2.png" alt="Visit Linked In" style="border-radius: 50%;" width="35" height="35">
             </a>
             <a href="https://youtu.be/CQXnJpY_zR8" target="_blank">
