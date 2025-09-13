@@ -14,9 +14,20 @@ const webhookService = require('../services/webhookService');
 
 // Upload image for blog content (inline images)
 router.post('/upload/images', contentImageUpload.single('image'), async (req, res) => {
-
   try {
+    console.log('Blog content image upload request received:', {
+      hasFile: !!req.file,
+      fileInfo: req.file ? {
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+        fieldname: req.file.fieldname
+      } : null,
+      body: req.body
+    });
+    
     if (!req.file) {
+      console.error('No file provided in blog upload request');
       return res.status(400).json({ message: 'No image file provided' });
     }
 
@@ -151,8 +162,16 @@ router.post('/', blogImageUpload.fields([
 
     res.status(201).json(blog);
   } catch (error) {
-    console.log(error);
-    res.status(400).json({ message: error.message });
+    console.error('Blog operation error:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      code: error.code
+    });
+    res.status(400).json({ 
+      message: error.message || 'Operation failed',
+      error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 
@@ -321,8 +340,16 @@ router.get('/:slugOrId', async (req, res) => {
 
     res.json(blog);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: error.message });
+    console.error('Blog upload error:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      code: error.code
+    });
+    res.status(500).json({ 
+      message: error.message || 'Upload failed',
+      error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 
@@ -504,8 +531,16 @@ router.patch('/:id', blogImageUpload.fields([
     
     res.json(blog);
   } catch (error) {
-    console.log(error);
-    res.status(400).json({ message: error.message });
+    console.error('Blog operation error:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      code: error.code
+    });
+    res.status(400).json({ 
+      message: error.message || 'Operation failed',
+      error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 

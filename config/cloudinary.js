@@ -15,7 +15,7 @@ const createCloudinaryStorage = (folder) => {
     cloudinary: cloudinary,
     params: {
       folder: folder,
-      allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+      allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp','svg','avif'],
       transformation: [
         { width: 1200, height: 630, crop: 'limit' }, // Limit max dimensions
         { quality: 'auto:good' }, // Optimize quality

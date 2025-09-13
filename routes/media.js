@@ -60,8 +60,16 @@ router.get('/', async (req, res) => {
       }
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: error.message });
+    console.error('Media upload error:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      code: error.code
+    });
+    res.status(500).json({ 
+      message: error.message || 'Upload failed',
+      error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 
@@ -105,9 +113,37 @@ const mediaVideoUpload = multer({
 });
 
 // Upload image
-router.post('/upload/image', mediaImageUpload.single('image'), async (req, res) => {
+router.post('/upload/image', (req, res, next) => {
+  mediaImageUpload.single('image')(req, res, (err) => {
+    if (err) {
+      console.error('Multer error in media upload:', {
+        message: err.message,
+        code: err.code,
+        field: err.field,
+        storageErrors: err.storageErrors
+      });
+      return res.status(400).json({ 
+        message: err.message || 'File upload failed',
+        code: err.code
+      });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
+    console.log('Media upload request received:', {
+      hasFile: !!req.file,
+      fileInfo: req.file ? {
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+        fieldname: req.file.fieldname
+      } : null,
+      body: req.body
+    });
+    
     if (!req.file) {
+      console.error('No file provided in request');
       return res.status(400).json({ message: 'No image file provided' });
     }
 
@@ -157,7 +193,16 @@ router.post('/upload/image', mediaImageUpload.single('image'), async (req, res) 
       tags: media.tags
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Media upload error:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      code: error.code
+    });
+    res.status(500).json({ 
+      message: error.message || 'Upload failed',
+      error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 
@@ -201,7 +246,16 @@ router.post('/upload/video', mediaVideoUpload.single('video'), async (req, res) 
       tags: media.tags
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Media upload error:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      code: error.code
+    });
+    res.status(500).json({ 
+      message: error.message || 'Upload failed',
+      error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 
@@ -216,7 +270,16 @@ router.get('/:id', async (req, res) => {
     
     res.json(media);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Media upload error:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      code: error.code
+    });
+    res.status(500).json({ 
+      message: error.message || 'Upload failed',
+      error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 

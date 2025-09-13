@@ -32,7 +32,11 @@ const connectDB = async () => {
         await mongoose.connect(process.env.MONGO_URI);
         console.log("Connected to MongoDB");
     } catch (error) {
-        console.log(error);
+        console.error("MongoDB connection error:", {
+            message: error.message,
+            name: error.name,
+            code: error.code
+        });
     }
 }
 
@@ -82,8 +86,48 @@ app.use("/api/writers", writersRoute);
 app.use("/api/media", mediaRoute);
 app.use("/api/video", videoRoute);
 
+// Error handling middleware - must be after all routes
+app.use((error, req, res, next) => {
+  console.error('Global error handler:', {
+    message: error.message,
+    stack: error.stack,
+    name: error.name,
+    code: error.code,
+    url: req.url,
+    method: req.method
+  });
+  
+  // Don't send stack trace in production
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  
+  res.status(error.status || 500).json({
+    message: error.message || 'Internal Server Error',
+    error: isDevelopment ? error.stack : undefined,
+    status: error.status || 500
+  });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({
+    message: 'Route not found',
+    status: 404,
+    url: req.url,
+    method: req.method
+  });
+});
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`API URL: http://localhost:${PORT}`);
+    
+    // Check Cloudinary configuration
+    if (process.env.CLOUDINARY_CLOUD_NAME) {
+        console.log(`Cloudinary configured: ${process.env.CLOUDINARY_CLOUD_NAME}`);
+    } else {
+        console.warn('WARNING: Cloudinary not configured - uploads will fail');
+    }
 });
