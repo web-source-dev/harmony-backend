@@ -44,13 +44,50 @@ class EmailService {
   // Read image file and convert to base64
   readImageAsBase64(imagePath) {
     try {
-      const fullPath = path.join(__dirname, '..', imagePath);
+      const fullPath = path.join(__dirname, '..', 'public', imagePath);
       const imageBuffer = fs.readFileSync(fullPath);
       return imageBuffer.toString('base64');
     } catch (error) {
       console.error(`Error reading image ${imagePath}:`, error);
       return null;
     }
+  }
+
+  // Get common email attachments
+  getCommonAttachments() {
+    const attachments = [];
+    
+    // Add logo image
+    const logoBase64 = this.readImageAsBase64('logo.png');
+    if (logoBase64) {
+      attachments.push({
+        name: 'logo.png',
+        content: logoBase64
+      });
+    }
+    
+    // Add candid image
+    const candidBase64 = this.readImageAsBase64('cadid.png');
+    if (candidBase64) {
+      attachments.push({
+        name: 'candid.png',
+        content: candidBase64
+      });
+    }
+    
+    // Add social media icons
+    const socialIcons = ['facebook.png', 'instagram.png', 'linkedin.png', 'mail.png', 'youtube.png', 'arrow.png'];
+    for (const icon of socialIcons) {
+      const iconBase64 = this.readImageAsBase64(icon);
+      if (iconBase64) {
+        attachments.push({
+          name: icon,
+          content: iconBase64
+        });
+      }
+    }
+    
+    return attachments;
   }
 
   // Send blog notification email
@@ -67,39 +104,8 @@ class EmailService {
         name: `${user.firstName || user.name || ''} ${user.lastName || ''}`
       }];
 
-      // Add logo and candid images as attachments
-      const attachments = [];
-      
-      // Add logo image
-      const logoBase64 = this.readImageAsBase64('logo.png');
-      if (logoBase64) {
-        attachments.push({
-          name: 'logo.png',
-          content: logoBase64
-        });
-      }
-      
-      // Add candid image
-      const candidBase64 = this.readImageAsBase64('cadid.png');
-      if (candidBase64) {
-        attachments.push({
-          name: 'candid.png',
-          content: candidBase64
-        });
-      }
-      
-      // Add social media icons
-      const socialIcons = ['facebook.png', 'instagram.png', 'linkedin.png', 'mail.png', 'youtube.png', 'arrow.png'];
-      for (const icon of socialIcons) {
-        const iconBase64 = this.readImageAsBase64(icon);
-        if (iconBase64) {
-          attachments.push({
-            name: icon,
-            content: iconBase64
-          });
-        }
-      }
-      
+      // Add common attachments
+      const attachments = this.getCommonAttachments();
       if (attachments.length > 0) {
         sendSmtpEmail.attachment = attachments;
       }
@@ -176,6 +182,12 @@ class EmailService {
         name: `${userData.firstName} ${userData.lastName}`
       }];
 
+      // Add common attachments
+      const attachments = this.getCommonAttachments();
+      if (attachments.length > 0) {
+        sendSmtpEmail.attachment = attachments;
+      }
+
       const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`Welcome email sent to ${userData.email}:`, result.messageId);
       return result;
@@ -198,6 +210,12 @@ class EmailService {
         email: process.env.ADMIN_EMAIL || process.env.BREVO_SENDER_EMAIL,
         name: "Harmony 4 All Admin"
       }];
+
+      // Add common attachments
+      const attachments = this.getCommonAttachments();
+      if (attachments.length > 0) {
+        sendSmtpEmail.attachment = attachments;
+      }
 
       const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`Contact form notification sent to admin:`, result.messageId);
@@ -222,6 +240,12 @@ class EmailService {
         name: donationData.isAnonymous ? 'Anonymous Donor' : donationData.donorName
       }];
 
+      // Add common attachments
+      const attachments = this.getCommonAttachments();
+      if (attachments.length > 0) {
+        sendSmtpEmail.attachment = attachments;
+      }
+
       const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`Donation confirmation sent to ${donationData.email}:`, result.messageId);
       return result;
@@ -244,6 +268,12 @@ class EmailService {
         email: process.env.ADMIN_EMAIL || process.env.BREVO_SENDER_EMAIL,
         name: "Harmony 4 All Admin"
       }];
+
+      // Add common attachments
+      const attachments = this.getCommonAttachments();
+      if (attachments.length > 0) {
+        sendSmtpEmail.attachment = attachments;
+      }
 
       const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`Donation notification sent to admin:`, result.messageId);
@@ -268,6 +298,12 @@ class EmailService {
         name: "Harmony 4 All Admin"
       }];
 
+      // Add common attachments
+      const attachments = this.getCommonAttachments();
+      if (attachments.length > 0) {
+        sendSmtpEmail.attachment = attachments;
+      }
+
       const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`Newsletter notification sent to admin:`, result.messageId);
       return result;
@@ -291,6 +327,12 @@ class EmailService {
         name: "Harmony 4 All Admin"
       }];
 
+      // Add common attachments
+      const attachments = this.getCommonAttachments();
+      if (attachments.length > 0) {
+        sendSmtpEmail.attachment = attachments;
+      }
+
       const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`Volunteer notification sent to admin:`, result.messageId);
       return result;
@@ -313,6 +355,12 @@ class EmailService {
         email: process.env.ADMIN_EMAIL || process.env.BREVO_SENDER_EMAIL,
         name: "Harmony 4 All Admin"
       }];
+
+      // Add common attachments
+      const attachments = this.getCommonAttachments();
+      if (attachments.length > 0) {
+        sendSmtpEmail.attachment = attachments;
+      }
 
       const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`Welcome popup notification sent to admin:`, result.messageId);

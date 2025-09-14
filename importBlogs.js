@@ -18,33 +18,6 @@ async function connectDB() {
   }
 }
 
-async function createDefaultWriter() {
-  try {
-    // Check if writer already exists
-    let writer = await Writer.findOne({ email: 'harmony4all@gmail.com' });
-    
-    if (!writer) {
-      writer = new Writer({
-        name: 'Harmony 4 All',
-        email: 'harmony4all@gmail.com',
-        bio: '',
-        image: 'https://static.wixstatic.com/media/ef9da7_33fad5009cca4b5f9db9118d253b8b94%7Emv2.jpg/v1/fill/w_40,h_40,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/ef9da7_33fad5009cca4b5f9db9118d253b8b94%7Emv2.jpg',
-        socialLinks: {}
-      });
-      
-      await writer.save();
-      console.log('Created default writer:', writer.name);
-    } else {
-      console.log('Using existing writer:', writer.name);
-    }
-    
-    return writer;
-  } catch (error) {
-    console.error('Error creating writer:', error);
-    throw error;
-  }
-}
-
 function parseTags(tagsString) {
   if (!tagsString || tagsString === '[]') {
     return [];
@@ -60,6 +33,15 @@ function parseTags(tagsString) {
     console.warn('Error parsing tags:', tagsString, error);
     return [];
   }
+}
+
+async function handleWriterCreation() {
+  const writer = await Writer.findOne({ email: 'joshua.quddus@gmail.com' });
+  if (!writer) {
+    const defaultWriter = await Writer.create({ email: 'joshua.quddus@gmail.com', name: 'Joshua Quddus' });
+    return defaultWriter._id;
+  }
+  return writer._id;
 }
 
 function parseCategories(categoriesString) {
@@ -124,7 +106,7 @@ async function importBlogs(writerId) {
   const blogs = [];
   
   return new Promise((resolve, reject) => {
-    fs.createReadStream('./Posts (3).csv')
+    fs.createReadStream('./Posts (8).csv')
       .pipe(csv())
       .on('data', (row) => {
         try {
@@ -196,11 +178,10 @@ async function main() {
     await connectDB();
     
     // Create or get default writer
-    const writer = await createDefaultWriter();
-    
+    const writerId = await handleWriterCreation();
     // Import blogs from CSV
     console.log('Importing blogs from CSV...');
-    const blogs = await importBlogs(writer._id);
+    const blogs = await importBlogs(writerId);
     console.log(`Found ${blogs.length} blogs to import`);
     
     // Save blogs to database
