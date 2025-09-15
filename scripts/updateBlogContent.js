@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const fs = require('fs');
 const csv = require('csv-parser');
-const { Blog } = require('./models/blog');
+const { Blog } = require('../models/blog');
 require('dotenv').config();
 
 // MongoDB connection
@@ -23,7 +23,7 @@ async function updateBlogContentFromCSV() {
   const notFound = [];
 
   return new Promise((resolve, reject) => {
-    fs.createReadStream('./Posts All.csv')
+    fs.createReadStream('../backend/csv/PostsAll1.csv')
       .pipe(csv())
       .on('data', (row) => {
         updates.push(row);
@@ -33,39 +33,39 @@ async function updateBlogContentFromCSV() {
 
         for (let i = 0; i < updates.length; i++) {
           const row = updates[i];
-          const slug = row.Slug || generateSlug(row.Title || 'untitled');
+          const title = row.Title || 'untitled';
 
           try {
             // Find blog by slug
-            const blog = await Blog.findOne({ slug: slug });
+            const blog = await Blog.findOne({ title: title });
 
             if (!blog) {
               notFound.push({
                 title: row.Title,
-                slug: slug,
+                title: title,
                 reason: 'Blog not found in database'
               });
               continue;
             }
 
-            // Update only the content field with Rich Content
-            const richContent = row['Rich Content'] || '';
+            // Update only the slug field with Slug
+            const slug = row['Slug'] || '';
 
-            if (richContent.trim()) {
+            if (slug.trim()) {
               await Blog.findByIdAndUpdate(blog._id, {
-                content: richContent
+                slug: slug
               });
 
-              console.log(`Updated blog ${i + 1}/${updates.length}: "${blog.title}" (slug: ${slug})`);
+              console.log(`Updated blog ${i + 1}/${updates.length}: "${blog.title}" (slug: ${title})`);
             } else {
-              console.log(`Skipped blog ${i + 1}/${updates.length}: "${blog.title}" - No rich content found`);
+              console.log(`Skipped blog ${i + 1}/${updates.length}: "${blog.title}" - No slug found`);
             }
 
           } catch (error) {
             console.error(`Error updating blog ${i + 1}:`, row.Title, error.message);
             errors.push({
               title: row.Title,
-              slug: slug,
+              title: title,
               error: error.message
             });
           }
@@ -79,14 +79,7 @@ async function updateBlogContentFromCSV() {
   });
 }
 
-function generateSlug(title) {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim('-');
-}
+
 
 async function main() {
   try {
@@ -111,7 +104,7 @@ async function main() {
     if (notFound.length > 0) {
       console.log('\n=== Blogs Not Found ===');
       notFound.forEach((item, index) => {
-        console.log(`${index + 1}. "${item.title}" (slug: ${item.slug})`);
+        console.log(`${index + 1}. "${item.title}" (slug: ${item.title})`);
       });
     }
 

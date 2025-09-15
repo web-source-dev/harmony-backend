@@ -93,7 +93,7 @@ router.post('/', blogImageUpload.fields([
       description: req.body.description,
       content: req.body.content,
       writer: req.body.writer,
-      image: req.files?.image ? req.files.image[0].path : null,
+      image: req.files?.image ? req.files.image[0].path : (req.body.imageUrl || null),
       imageAlt: req.body.imageAlt || '',
       blogVideo: req.files?.blogVideo ? req.files.blogVideo[0].path : null,
       url: req.body.url || '',
@@ -465,7 +465,7 @@ router.patch('/:id', blogImageUpload.fields([
     if (req.body.wordCount !== undefined) updates.wordCount = parseInt(req.body.wordCount);
     if (req.body.language !== undefined) updates.language = req.body.language;
     
-    // Handle main image upload
+    // Handle main image upload or URL
     if (req.files?.image) {
       // Delete old image from Cloudinary if it exists
       if (existingBlog.image && existingBlog.image.includes('cloudinary.com')) {
@@ -477,6 +477,9 @@ router.patch('/:id', blogImageUpload.fields([
         }
       }
       updates.image = req.files.image[0].path;
+    } else if (req.body.imageUrl !== undefined) {
+      // Handle media manager URL selection
+      updates.image = req.body.imageUrl || null;
     }
     
     // Handle blog video upload

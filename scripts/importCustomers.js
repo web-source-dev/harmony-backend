@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const fs = require('fs');
 const csv = require('csv-parser');
-const Customer = require('./models/customer');
+const Customer = require('../models/customer');
 require('dotenv').config();
 
 // MongoDB connection
