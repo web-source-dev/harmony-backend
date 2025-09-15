@@ -174,7 +174,7 @@ router.post("/submit", async (req, res) => {
         }
         
         res.status(201).json({ 
-            message: "Thank you for joining our mission! Check your email for a special welcome message." 
+            message: "Thank you for joining our mission!" 
         });
     } catch (error) {
         console.error("Welcome popup submission error:", error);
