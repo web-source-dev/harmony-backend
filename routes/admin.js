@@ -4,6 +4,9 @@ const Contact = require("../models/contact");
 const { Blog } = require("../models/blog");
 const Donation = require("../models/donation");
 const Customer = require("../models/customer");
+const emailService = require("../services/emailService");
+const smsService = require("../services/smsService");
+const customerService = require("../services/customerService");
 
 // Get comprehensive statistics for dashboard
 router.get("/stats", async (req, res) => {
@@ -226,6 +229,62 @@ router.post("/customers", async (req, res) => {
       source: source || 'website',
       subscribedAt: new Date()
     });
+
+     
+        // Send welcome email to user
+        try {
+          await emailService.sendWelcomeEmail({
+              firstName: firstName.trim(),
+              lastName: lastName.trim(),
+              email: email.toLowerCase().trim(),
+              cellNumber: phone.trim() || phone1.trim() || phone2.trim()
+          });
+      } catch (emailError) {
+          console.error("Failed to send welcome email:", emailError);
+          // Don't fail the request if email fails
+      }
+
+      // Send notification email to admin
+      try {
+          await emailService.sendWelcomePopupNotification({
+              firstName: firstName.trim(),
+              lastName: lastName.trim(),
+              email: email.toLowerCase().trim(),
+              cellNumber: phone.trim() || phone1.trim() || phone2.trim(),
+              promotionalUpdates: isSubscribed,
+              agreeToTerms: true
+          });
+      } catch (emailError) {
+          console.error("Failed to send welcome popup notification to admin:", emailError);
+          // Don't fail the request if email fails
+      }
+
+      // Send welcome SMS to user
+      try {
+          await smsService.sendWelcomeSMS({
+              firstName: firstName.trim(),
+              lastName: lastName.trim(),
+              email: email.toLowerCase().trim(),
+              cellNumber: phone.trim() || phone1.trim() || phone2.trim()
+          });
+      } catch (smsError) {
+          console.error("Failed to send welcome SMS:", smsError);
+          // Don't fail the request if SMS fails
+      }
+
+      // Send admin notification SMS
+      try {
+          await smsService.sendAdminNotificationSMS({
+              firstName: firstName.trim(),
+              lastName: lastName.trim(),
+              email: email.toLowerCase().trim(),
+              cellNumber: phone.trim() || phone1.trim() || phone2.trim()
+          });
+      } catch (smsError) {
+          console.error("Failed to send admin notification SMS:", smsError);
+          // Don't fail the request if SMS fails
+      }
+      
 
     await customer.save();
     res.status(201).json(customer);
