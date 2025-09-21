@@ -239,7 +239,7 @@ router.post("/customers", async (req, res) => {
               email: email.toLowerCase().trim(),
               cellNumber: phone.trim() || phone1.trim() || phone2.trim()
           });
-      } catch (emailError) {
+      } catch (emailError) { 
           console.error("Failed to send welcome email:", emailError);
           // Don't fail the request if email fails
       }
