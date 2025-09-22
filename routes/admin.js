@@ -196,7 +196,8 @@ router.post("/customers", async (req, res) => {
     // Check if customer already exists
     const existingCustomer = await Customer.findOne({ email: email.toLowerCase().trim() });
     if (existingCustomer) {
-      return res.status(400).json({ message: "Customer with this email already exists" });
+     
+     return res.status(201).json(existingCustomer);
     }
 
     const customer = new Customer({
