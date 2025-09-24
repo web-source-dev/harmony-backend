@@ -182,6 +182,61 @@ router.get("/customers", async (req, res) => {
   }
 });
 
+// Helper function to send welcome communications
+async function sendWelcomeCommunications(customerData) {
+  const { firstName, lastName, email, phone, phone1, phone2, isSubscribed } = customerData;
+  
+  // Send welcome email to user
+  try {
+    await emailService.sendWelcomeEmail({
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.toLowerCase().trim(),
+      cellNumber: phone.trim() || phone1.trim() || phone2.trim()
+    });
+  } catch (emailError) { 
+    console.error("Failed to send welcome email:", emailError);
+  }
+
+  // Send notification email to admin
+  try {
+    await emailService.sendWelcomePopupNotification({
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.toLowerCase().trim(),
+      cellNumber: phone.trim() || phone1.trim() || phone2.trim(),
+      promotionalUpdates: isSubscribed,
+      agreeToTerms: true
+    });
+  } catch (emailError) {
+    console.error("Failed to send welcome popup notification to admin:", emailError);
+  }
+
+  // Send welcome SMS to user
+  try {
+    await smsService.sendWelcomeSMS({
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.toLowerCase().trim(),
+      cellNumber: phone.trim() || phone1.trim() || phone2.trim()
+    });
+  } catch (smsError) {
+    console.error("Failed to send welcome SMS:", smsError);
+  }
+
+  // Send admin notification SMS
+  try {
+    await smsService.sendAdminNotificationSMS({
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.toLowerCase().trim(),
+      cellNumber: phone.trim() || phone1.trim() || phone2.trim()
+    });
+  } catch (smsError) {
+    console.error("Failed to send admin notification SMS:", smsError);
+  }
+}
+
 // Create new customer
 router.post("/customers", async (req, res) => {
   try {
@@ -195,11 +250,63 @@ router.post("/customers", async (req, res) => {
     
     // Check if customer already exists
     const existingCustomer = await Customer.findOne({ email: email.toLowerCase().trim() });
+    
     if (existingCustomer) {
-     
-     return res.status(201).json(existingCustomer);
+      // Update existing customer
+      const updatedCustomer = await Customer.findByIdAndUpdate(
+        existingCustomer._id,
+        {
+          firstName: firstName?.trim() || existingCustomer.firstName,
+          lastName: lastName?.trim() || existingCustomer.lastName,
+          email: email?.toLowerCase().trim() || existingCustomer.email,
+          phone: phone?.trim() || existingCustomer.phone,
+          phone1: phone1?.trim() || existingCustomer.phone1,
+          phone2: phone2?.trim() || existingCustomer.phone2,
+          address: address?.trim() || existingCustomer.address,
+          address1Street: address1Street?.trim() || existingCustomer.address1Street,
+          address1City: address1City?.trim() || existingCustomer.address1City,
+          address1State: address1State?.trim() || existingCustomer.address1State,
+          address1Zip: address1Zip?.trim() || existingCustomer.address1Zip,
+          address1Country: address1Country?.trim() || existingCustomer.address1Country,
+          address2Street: address2Street?.trim() || existingCustomer.address2Street,
+          address2City: address2City?.trim() || existingCustomer.address2City,
+          address2State: address2State?.trim() || existingCustomer.address2State,
+          address2Zip: address2Zip?.trim() || existingCustomer.address2Zip,
+          address2Country: address2Country?.trim() || existingCustomer.address2Country,
+          address3Street: address3Street?.trim() || existingCustomer.address3Street,
+          address3StreetLine2: address3StreetLine2?.trim() || existingCustomer.address3StreetLine2,
+          address3City: address3City?.trim() || existingCustomer.address3City,
+          address3Country: address3Country?.trim() || existingCustomer.address3Country,
+          position: position?.trim() || existingCustomer.position,
+          labels: Array.isArray(labels) ? labels : existingCustomer.labels || [],
+          isSubscribed: isSubscribed !== undefined ? isSubscribed : existingCustomer.isSubscribed,
+          emailSubscriberStatus: emailSubscriberStatus || existingCustomer.emailSubscriberStatus,
+          smsSubscriberStatus: smsSubscriberStatus || existingCustomer.smsSubscriberStatus,
+          source: source || existingCustomer.source,
+          updatedAt: new Date()
+        },
+        { new: true }
+      );
+
+      // Send welcome communications for existing customer
+      await sendWelcomeCommunications({
+        firstName: firstName?.trim() || existingCustomer.firstName,
+        lastName: lastName?.trim() || existingCustomer.lastName,
+        email: email.toLowerCase().trim(),
+        phone: phone?.trim() || existingCustomer.phone,
+        phone1: phone1?.trim() || existingCustomer.phone1,
+        phone2: phone2?.trim() || existingCustomer.phone2,
+        isSubscribed: isSubscribed !== undefined ? isSubscribed : existingCustomer.isSubscribed
+      });
+
+      return res.status(200).json({
+        customer: updatedCustomer,
+        message: "Customer updated successfully",
+        isExisting: true
+      });
     }
 
+    // Create new customer
     const customer = new Customer({
       firstName: firstName?.trim() || '',
       lastName: lastName?.trim() || '',
@@ -231,64 +338,24 @@ router.post("/customers", async (req, res) => {
       subscribedAt: new Date()
     });
 
-     
-        // Send welcome email to user
-        try {
-          await emailService.sendWelcomeEmail({
-              firstName: firstName.trim(),
-              lastName: lastName.trim(),
-              email: email.toLowerCase().trim(),
-              cellNumber: phone.trim() || phone1.trim() || phone2.trim()
-          });
-      } catch (emailError) { 
-          console.error("Failed to send welcome email:", emailError);
-          // Don't fail the request if email fails
-      }
-
-      // Send notification email to admin
-      try {
-          await emailService.sendWelcomePopupNotification({
-              firstName: firstName.trim(),
-              lastName: lastName.trim(),
-              email: email.toLowerCase().trim(),
-              cellNumber: phone.trim() || phone1.trim() || phone2.trim(),
-              promotionalUpdates: isSubscribed,
-              agreeToTerms: true
-          });
-      } catch (emailError) {
-          console.error("Failed to send welcome popup notification to admin:", emailError);
-          // Don't fail the request if email fails
-      }
-
-      // Send welcome SMS to user
-      try {
-          await smsService.sendWelcomeSMS({
-              firstName: firstName.trim(),
-              lastName: lastName.trim(),
-              email: email.toLowerCase().trim(),
-              cellNumber: phone.trim() || phone1.trim() || phone2.trim()
-          });
-      } catch (smsError) {
-          console.error("Failed to send welcome SMS:", smsError);
-          // Don't fail the request if SMS fails
-      }
-
-      // Send admin notification SMS
-      try {
-          await smsService.sendAdminNotificationSMS({
-              firstName: firstName.trim(),
-              lastName: lastName.trim(),
-              email: email.toLowerCase().trim(),
-              cellNumber: phone.trim() || phone1.trim() || phone2.trim()
-          });
-      } catch (smsError) {
-          console.error("Failed to send admin notification SMS:", smsError);
-          // Don't fail the request if SMS fails
-      }
-      
-
     await customer.save();
-    res.status(201).json(customer);
+
+    // Send welcome communications for new customer
+    await sendWelcomeCommunications({
+      firstName: firstName?.trim() || '',
+      lastName: lastName?.trim() || '',
+      email: email.toLowerCase().trim(),
+      phone: phone?.trim() || '',
+      phone1: phone1?.trim() || '',
+      phone2: phone2?.trim() || '',
+      isSubscribed: isSubscribed !== undefined ? isSubscribed : true
+    });
+
+    res.status(201).json({
+      customer,
+      message: "Customer created successfully",
+      isExisting: false
+    });
   } catch (error) {
     console.error("Error creating customer:", error);
     res.status(500).json({ message: "Failed to create customer" });

@@ -5,6 +5,61 @@ const emailService = require("../services/emailService");
 const smsService = require("../services/smsService");
 const customerService = require("../services/customerService");
 
+// Helper function to send welcome communications
+async function sendWelcomeCommunications(customerData) {
+  const { firstName, lastName, email, cellNumber, promotionalUpdates, agreeToTerms } = customerData;
+  
+  // Send welcome email to user
+  try {
+    await emailService.sendWelcomeEmail({
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.toLowerCase().trim(),
+      cellNumber: cellNumber.trim()
+    });
+  } catch (emailError) { 
+    console.error("Failed to send welcome email:", emailError);
+  }
+
+  // Send notification email to admin
+  try {
+    await emailService.sendWelcomePopupNotification({
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.toLowerCase().trim(),
+      cellNumber: cellNumber.trim(),
+      promotionalUpdates: promotionalUpdates,
+      agreeToTerms: agreeToTerms
+    });
+  } catch (emailError) {
+    console.error("Failed to send welcome popup notification to admin:", emailError);
+  }
+
+  // Send welcome SMS to user
+  try {
+    await smsService.sendWelcomeSMS({
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.toLowerCase().trim(),
+      cellNumber: cellNumber.trim()
+    });
+  } catch (smsError) {
+    console.error("Failed to send welcome SMS:", smsError);
+  }
+
+  // Send admin notification SMS
+  try {
+    await smsService.sendAdminNotificationSMS({
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.toLowerCase().trim(),
+      cellNumber: cellNumber.trim()
+    });
+  } catch (smsError) {
+    console.error("Failed to send admin notification SMS:", smsError);
+  }
+}
+
 // Get all welcome popup submissions (for analytics)
 router.get("/", async (req, res) => {
     try {
@@ -77,19 +132,59 @@ router.post("/submit", async (req, res) => {
             });
         }
 
-        // Check if email already exists
-        const existingSubmission = await WelcomePopup.findOne({ email: email.toLowerCase().trim() });
-        if (existingSubmission) {
-            return res.status(400).json({ 
-                message: "An account with this email already exists" 
-            });
-        }
-
         // Basic phone number validation (should contain at least 10 digits)
         const phoneDigits = cellNumber.replace(/\D/g, '');
         if (phoneDigits.length < 10) {
             return res.status(400).json({ 
                 message: "Please provide a valid phone number" 
+            });
+        }
+
+        // Check if email already exists
+        const existingSubmission = await WelcomePopup.findOne({ email: email.toLowerCase().trim() });
+        
+        if (existingSubmission) {
+            // Update existing submission
+            const updatedSubmission = await WelcomePopup.findByIdAndUpdate(
+                existingSubmission._id,
+                {
+                    firstName: firstName.trim(),
+                    lastName: lastName.trim(),
+                    email: email.toLowerCase().trim(),
+                    cellNumber: cellNumber.trim(),
+                    promotionalUpdates: promotionalUpdates || false,
+                    agreeToTerms: agreeToTerms,
+                    updatedAt: new Date()
+                },
+                { new: true }
+            );
+
+            // Create/update customer
+            try {
+                await customerService.createCustomerIfNotExists({
+                    firstName: firstName.trim(),
+                    lastName: lastName.trim(),
+                    email: email.toLowerCase().trim(),
+                    phone: cellNumber.trim(),
+                    isSubscribed: promotionalUpdates
+                });
+            } catch (customerError) {
+                console.error("Failed to create/update customer:", customerError);
+            }
+
+            // Send welcome communications for existing user
+            await sendWelcomeCommunications({
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
+                email: email.toLowerCase().trim(),
+                cellNumber: cellNumber.trim(),
+                promotionalUpdates: promotionalUpdates,
+                agreeToTerms: agreeToTerms
+            });
+
+            return res.status(200).json({ 
+                message: "Thank you for updating your information!",
+                isExisting: true
             });
         }
 
@@ -118,63 +213,20 @@ router.post("/submit", async (req, res) => {
             console.error("Failed to create customer:", customerError);
             // Don't fail the request if customer creation fails
         }
-        
-        // Send welcome email to user
-        try {
-            await emailService.sendWelcomeEmail({
-                firstName: firstName.trim(),
-                lastName: lastName.trim(),
-                email: email.toLowerCase().trim(),
-                cellNumber: cellNumber.trim()
-            });
-        } catch (emailError) {
-            console.error("Failed to send welcome email:", emailError);
-            // Don't fail the request if email fails
-        }
 
-        // Send notification email to admin
-        try {
-            await emailService.sendWelcomePopupNotification({
-                firstName: firstName.trim(),
-                lastName: lastName.trim(),
-                email: email.toLowerCase().trim(),
-                cellNumber: cellNumber.trim(),
-                promotionalUpdates: promotionalUpdates,
-                agreeToTerms: agreeToTerms
-            });
-        } catch (emailError) {
-            console.error("Failed to send welcome popup notification to admin:", emailError);
-            // Don't fail the request if email fails
-        }
-
-        // Send welcome SMS to user
-        try {
-            await smsService.sendWelcomeSMS({
-                firstName: firstName.trim(),
-                lastName: lastName.trim(),
-                email: email.toLowerCase().trim(),
-                cellNumber: cellNumber.trim()
-            });
-        } catch (smsError) {
-            console.error("Failed to send welcome SMS:", smsError);
-            // Don't fail the request if SMS fails
-        }
-
-        // Send admin notification SMS
-        try {
-            await smsService.sendAdminNotificationSMS({
-                firstName: firstName.trim(),
-                lastName: lastName.trim(),
-                email: email.toLowerCase().trim(),
-                cellNumber: cellNumber.trim()
-            });
-        } catch (smsError) {
-            console.error("Failed to send admin notification SMS:", smsError);
-            // Don't fail the request if SMS fails
-        }
+        // Send welcome communications for new user
+        await sendWelcomeCommunications({
+            firstName: firstName.trim(),
+            lastName: lastName.trim(),
+            email: email.toLowerCase().trim(),
+            cellNumber: cellNumber.trim(),
+            promotionalUpdates: promotionalUpdates,
+            agreeToTerms: agreeToTerms
+        });
         
         res.status(201).json({ 
-            message: "Thank you for joining our mission!" 
+            message: "Thank you for joining our mission!",
+            isExisting: false
         });
     } catch (error) {
         console.error("Welcome popup submission error:", error);
