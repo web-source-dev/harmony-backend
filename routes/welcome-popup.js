@@ -21,43 +21,43 @@ async function sendWelcomeCommunications(customerData) {
     console.error("Failed to send welcome email:", emailError);
   }
 
-  // Send notification email to admin
-  try {
-    await emailService.sendWelcomePopupNotification({
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      email: email.toLowerCase().trim(),
-      cellNumber: cellNumber.trim(),
-      promotionalUpdates: promotionalUpdates,
-      agreeToTerms: agreeToTerms
-    });
-  } catch (emailError) {
-    console.error("Failed to send welcome popup notification to admin:", emailError);
-  }
+//   // Send notification email to admin
+//   try {
+//     await emailService.sendWelcomePopupNotification({
+//       firstName: firstName.trim(),
+//       lastName: lastName.trim(),
+//       email: email.toLowerCase().trim(),
+//       cellNumber: cellNumber.trim(),
+//       promotionalUpdates: promotionalUpdates,
+//       agreeToTerms: agreeToTerms
+//     });
+//   } catch (emailError) {
+//     console.error("Failed to send welcome popup notification to admin:", emailError);
+//   }
 
-  // Send welcome SMS to user
-  try {
-    await smsService.sendWelcomeSMS({
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      email: email.toLowerCase().trim(),
-      cellNumber: cellNumber.trim()
-    });
-  } catch (smsError) {
-    console.error("Failed to send welcome SMS:", smsError);
-  }
+//   // Send welcome SMS to user
+//   try {
+//     await smsService.sendWelcomeSMS({
+//       firstName: firstName.trim(),
+//       lastName: lastName.trim(),
+//       email: email.toLowerCase().trim(),
+//       cellNumber: cellNumber.trim()
+//     });
+//   } catch (smsError) {
+//     console.error("Failed to send welcome SMS:", smsError);
+//   }
 
-  // Send admin notification SMS
-  try {
-    await smsService.sendAdminNotificationSMS({
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      email: email.toLowerCase().trim(),
-      cellNumber: cellNumber.trim()
-    });
-  } catch (smsError) {
-    console.error("Failed to send admin notification SMS:", smsError);
-  }
+//   // Send admin notification SMS
+//   try {
+//     await smsService.sendAdminNotificationSMS({
+//       firstName: firstName.trim(),
+//       lastName: lastName.trim(),
+//       email: email.toLowerCase().trim(),
+//       cellNumber: cellNumber.trim()
+//     });
+//   } catch (smsError) {
+//     console.error("Failed to send admin notification SMS:", smsError);
+//   }
 }
 
 // Get all welcome popup submissions (for analytics)

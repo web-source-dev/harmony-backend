@@ -90,6 +90,22 @@ class EmailService {
     return attachments;
   }
 
+  // Get welcome email attachments (PDF only)
+  getWelcomeEmailAttachments() {
+    const attachments = [];
+    
+    // Add PDF attachment only
+    const pdfBase64 = this.readImageAsBase64('harmony4all.pdf');
+    if (pdfBase64) {
+      attachments.push({
+        name: 'Harmony4All.pdf',
+        content: pdfBase64
+      });
+    }
+    
+    return attachments;
+  }
+
   // Send blog notification email
   async sendBlogNotification(user, blog) {
     try {
@@ -182,8 +198,8 @@ class EmailService {
         name: `${userData.firstName} ${userData.lastName}`
       }];
 
-      // Add common attachments
-      const attachments = this.getCommonAttachments();
+      // Add welcome email attachments (includes PDF)
+      const attachments = this.getWelcomeEmailAttachments();
       if (attachments.length > 0) {
         sendSmtpEmail.attachment = attachments;
       }
