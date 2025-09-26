@@ -71,7 +71,7 @@ class WelcomeEmailTemplate {
                 </tr>
                 <tr>
                   <td style="padding: 10px 20px; text-align: center;">
-                    <p style="color: #666; font-size: 14px; line-height: 1.4; margin: 8px 0; max-width: 100%; word-wrap: break-word;">Dear <strong>${userData.firstName} ${userData.lastName}</strong>, as you join us in 'Making Music Accessible,' please accept the attached eBook as our gift of gratitude.</p>
+                    <p style="color: #666; font-size: 14px; line-height: 1.4; margin: 8px 0; max-width: 100%; word-wrap: break-word;">Dear <strong>${userData.firstName} ${userData.lastName}</strong>, as you join us in <strong>'Making Music Accessible,'</strong> please accept the attached eBook as our gift of gratitude.</p>
                   </td>
                 </tr>
                 <tr>
