@@ -23,25 +23,19 @@ class WelcomeEmailTemplate {
         <title>Harmony4All!</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
       </head>
-      <body style="background-color: #f5f5f5; font-family: Arial, sans-serif; font-size: 16px; padding: 20px; margin: 0; text-align: center;">
+      <body style="background-color: #f5f5f5; font-family: Arial, sans-serif; font-size: 16px; padding: 0px; margin: 0; text-align: center;">
         <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #f5f5f5;">
           <tr>
-            <td align="center" style="padding: 20px;">
+            <td align="center" style="padding: 0px;">
               <table cellpadding="0" cellspacing="0" border="0" width="500" style="background-color: #fff; border-radius: 10px; box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); border: 15px solid black; max-width: 500px;">
                 <tr>
-                  <td style="padding: 20px; text-align: center; width: 100%;">
-                    <table cellpadding="0" cellspacing="0" border="0" width="100%" style="text-align: center;">
-                      <tr>
-                        <td style="text-align: center;">
-                          <img src="https://static.wixstatic.com/media/d717d4_f4049c46da4f4ceb9d3a42a4620c5ea9~mv2.jpg/v1/fill/w_175,h_99,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/Social%20Media%20Kit%20(3)_edited.jpg" alt="Harmony4All Logo" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
-                        </td>
-                      </tr>
-                    </table>
+                  <td style="padding: 20px; text-align: center;">
+                    <img src="https://static.wixstatic.com/media/d717d4_f4049c46da4f4ceb9d3a42a4620c5ea9~mv2.jpg/v1/fill/w_175,h_99,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/Social%20Media%20Kit%20(3)_edited.jpg" alt="Harmony4All Logo" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
                   </td>
                 </tr>
                 <tr>
                   <td style="padding: 0 20px; text-align: center;">
-                    <p style="color: #666; font-size: 12px; margin: 3px;">Hi <b>${userData.firstName} ${userData.lastName}</b></p>
+                    <p style="color: #666; font-size: 12px; margin: 3px;">Hi <strong>${userData.firstName} ${userData.lastName}</strong></p>
                     <p style="color: #666; font-size: 12px; margin: 3px;">Thank you for joining our mission</p>
                   </td>
                 </tr>
@@ -76,9 +70,8 @@ class WelcomeEmailTemplate {
                   </td>
                 </tr>
                 <tr>
-                  <td style="padding: 0 20px; text-align: center;">
-                    <p style="color: #666; font-size: 12px; margin: 3px;">${userData.firstName} ${userData.lastName}</p>
-                    <p style="color: #666; font-size: 12px; margin: 3px;">If you're at one of our live events, show this email for your free gift while supplies last.</p>
+                  <td style="padding: 10px 20px; text-align: center;">
+                    <p style="color: #666; font-size: 14px; line-height: 1.4; margin: 8px 0; max-width: 100%; word-wrap: break-word;">Dear <strong>${userData.firstName} ${userData.lastName}</strong>, as you join us in 'Making Music Accessible,' please accept the attached eBook as our gift of gratitude.</p>
                   </td>
                 </tr>
                 <tr>
@@ -86,7 +79,7 @@ class WelcomeEmailTemplate {
                     <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto; width: 100%;">
                       <tr>
                         <td style="text-align: center;">
-                          <a href="${frontendUrl}" style="display: inline-block; background-color: #000000; color: #ffffff; text-decoration: none; border-radius: 5px; padding: 8px 20px; box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); font-size: 12px; min-width: 120px; max-width: 300px; width: auto;">Go back to site</a>
+                          <a href="${frontendUrl}" style="display: inline-block; background-color: #000000; color: #ffffff; text-decoration: none; border-radius: 5px; padding: 14px 20px; box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); font-size: 16px; min-width: 160px; max-width: 300px; width: auto;">Go back to site</a>
                         </td>
                       </tr>
                     </table>
