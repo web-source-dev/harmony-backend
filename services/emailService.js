@@ -95,7 +95,7 @@ class EmailService {
     const attachments = [];
     
     // Add PDF attachment only
-    const pdfBase64 = this.readImageAsBase64('harmony4all.pdf');
+    const pdfBase64 = this.readImageAsBase64('harmony.pdf');
     if (pdfBase64) {
       attachments.push({
         name: 'Harmony4All.pdf',
