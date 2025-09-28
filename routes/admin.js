@@ -4,6 +4,7 @@ const Contact = require("../models/contact");
 const { Blog } = require("../models/blog");
 const Donation = require("../models/donation");
 const Customer = require("../models/customer");
+const Visitor = require("../models/visitor");
 const emailService = require("../services/emailService");
 const smsService = require("../services/smsService");
 const customerService = require("../services/customerService");
@@ -25,6 +26,31 @@ router.get("/stats", async (req, res) => {
     const customersTotal = await Customer.countDocuments();
     const customersSubscribed = await Customer.countDocuments({ isSubscribed: true });
 
+    // Visitors statistics
+    const visitorsTotal = await Visitor.countDocuments();
+    const activeVisitors = await Visitor.countDocuments({ 
+      lastActivityAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } // Last 24 hours
+    });
+    
+    const totalContactsFromVisitors = await Visitor.aggregate([
+      {
+        $project: {
+          totalContacts: {
+            $add: [
+              { $size: '$contactsCreated' },
+              { $size: '$offlineContactsCreated' }
+            ]
+          }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalContactsCreated: { $sum: '$totalContacts' }
+        }
+      }
+    ]);
+
     const stats = {
       blogs: {
         total: blogsTotal,
@@ -38,6 +64,11 @@ router.get("/stats", async (req, res) => {
       customers: {
         total: customersTotal,
         subscribed: customersSubscribed
+      },
+      visitors: {
+        total: visitorsTotal,
+        active: activeVisitors,
+        totalContactsCreated: totalContactsFromVisitors[0]?.totalContactsCreated || 0
       }
     };
 
@@ -245,7 +276,8 @@ router.post("/customers", async (req, res) => {
       address, address1Street, address1City, address1State, address1Zip, address1Country,
       address2Street, address2City, address2State, address2Zip, address2Country,
       address3Street, address3StreetLine2, address3City, address3Country,
-      position, labels, isSubscribed, emailSubscriberStatus, smsSubscriberStatus, source
+      position, labels, isSubscribed, emailSubscriberStatus, smsSubscriberStatus, source,
+      visitorEmail, visitorName, isOffline = false, localId = null
     } = req.body;
     
     // Check if customer already exists
@@ -288,16 +320,37 @@ router.post("/customers", async (req, res) => {
         { new: true }
       );
 
-      // Send welcome communications for existing customer
-      await sendWelcomeCommunications({
-        firstName: firstName?.trim() || existingCustomer.firstName,
-        lastName: lastName?.trim() || existingCustomer.lastName,
-        email: email.toLowerCase().trim(),
-        phone: phone?.trim() || existingCustomer.phone,
-        phone1: phone1?.trim() || existingCustomer.phone1,
-        phone2: phone2?.trim() || existingCustomer.phone2,
-        isSubscribed: isSubscribed !== undefined ? isSubscribed : existingCustomer.isSubscribed
-      });
+      // Track visitor contact creation if visitor info is provided and this is a new contact
+      if (visitorEmail && visitorName) {
+        try {
+          const visitor = await Visitor.findOrCreate(
+            { name: visitorName.trim(), email: visitorEmail.trim().toLowerCase() }
+          );
+          
+          await visitor.addContact({
+            contactId: updatedCustomer._id,
+            email: updatedCustomer.email,
+            firstName: updatedCustomer.firstName,
+            lastName: updatedCustomer.lastName
+          }, isOffline);
+          
+          console.log(`Visitor ${visitorEmail} tracked contact update for ${updatedCustomer.email}`);
+        } catch (visitorError) {
+          console.error('Failed to track visitor contact update:', visitorError);
+          // Don't fail the customer update if visitor tracking fails
+        }
+      }
+
+      // // Send welcome communications for existing customer
+      // await sendWelcomeCommunications({
+      //   firstName: firstName?.trim() || existingCustomer.firstName,
+      //   lastName: lastName?.trim() || existingCustomer.lastName,
+      //   email: email.toLowerCase().trim(),
+      //   phone: phone?.trim() || existingCustomer.phone,
+      //   phone1: phone1?.trim() || existingCustomer.phone1,
+      //   phone2: phone2?.trim() || existingCustomer.phone2,
+      //   isSubscribed: isSubscribed !== undefined ? isSubscribed : existingCustomer.isSubscribed
+      // });
 
       return res.status(200).json({
         customer: updatedCustomer,
@@ -340,16 +393,37 @@ router.post("/customers", async (req, res) => {
 
     await customer.save();
 
-    // Send welcome communications for new customer
-    await sendWelcomeCommunications({
-      firstName: firstName?.trim() || '',
-      lastName: lastName?.trim() || '',
-      email: email.toLowerCase().trim(),
-      phone: phone?.trim() || '',
-      phone1: phone1?.trim() || '',
-      phone2: phone2?.trim() || '',
-      isSubscribed: isSubscribed !== undefined ? isSubscribed : true
-    });
+    // Track visitor contact creation if visitor info is provided
+    if (visitorEmail && visitorName) {
+      try {
+        const visitor = await Visitor.findOrCreate(
+          { name: visitorName.trim(), email: visitorEmail.trim().toLowerCase() }
+        );
+        
+        await visitor.addContact({
+          contactId: customer._id,
+          email: customer.email,
+          firstName: customer.firstName,
+          lastName: customer.lastName
+        }, isOffline);
+        
+        console.log(`Visitor ${visitorEmail} tracked contact creation for ${customer.email}`);
+      } catch (visitorError) {
+        console.error('Failed to track visitor contact creation:', visitorError);
+        // Don't fail the customer creation if visitor tracking fails
+      }
+    }
+
+    // // Send welcome communications for new customer
+    // await sendWelcomeCommunications({
+    //   firstName: firstName?.trim() || '',
+    //   lastName: lastName?.trim() || '',
+    //   email: email.toLowerCase().trim(),
+    //   phone: phone?.trim() || '',
+    //   phone1: phone1?.trim() || '',
+    //   phone2: phone2?.trim() || '',
+    //   isSubscribed: isSubscribed !== undefined ? isSubscribed : true
+    // });
 
     res.status(201).json({
       customer,
