@@ -23,7 +23,7 @@ class WelcomeEmailTemplate {
         <title>Harmony4All!</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
       </head>
-      <body style="background-color: #f5f5f5; font-family: Arial, sans-serif; font-size: 16px; padding: 0px; margin: 0; text-align: center;">
+      <body style="background-color: #f5f5f5; font-family: Arial, sans-serif; font-size: 18px; padding: 0px; margin: 0; text-align: center;">
         <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #f5f5f5;">
           <tr>
             <td align="center" style="padding: 0px;">
@@ -35,8 +35,8 @@ class WelcomeEmailTemplate {
                 </tr>
                 <tr>
                   <td style="padding: 0 20px; text-align: center;">
-                    <p style="color: #666; font-size: 12px; margin: 3px;">Hi <strong>${userData.firstName} ${userData.lastName}</strong></p>
-                    <p style="color: #666; font-size: 12px; margin: 3px;">Thank you for joining our mission</p>
+                    <p style="color: #666; font-size: 16px; margin: 3px;">Hi <strong>${userData.firstName} ${userData.lastName}</strong></p>
+                    <p style="color: #666; font-size: 16px; margin: 3px;">Thank you for joining our mission</p>
                   </td>
                 </tr>
                 <tr>
@@ -46,8 +46,8 @@ class WelcomeEmailTemplate {
                 </tr>
                 <tr>
                   <td style="padding: 0 20px; text-align: center;">
-                    <p style="color: rgba(255, 0, 0, 0.781); font-size: 12px; margin: 3px;">Enjoy our playlist on</p>
-                    <h2 style="color: #666; font-size: 16px; margin: 3px;">Spotify</h2>
+                    <p style="color: rgba(255, 0, 0, 0.781); font-size: 16px; margin: 3px;">Enjoy our playlist on</p>
+                    <h2 style="color: #666; font-size: 20px; margin: 3px;">Spotify</h2>
                     <a href="https://open.spotify.com/playlist/3hcRG3wpX69t95zyw9wWTU?si=OBEXYDzKTteewvUnwhPFQA" target="_blank" style="border-radius: 50%; width: auto; height: auto; display: inline-block;">
                       <img src="https://cdn2.iconfinder.com/data/icons/social-icons-33/128/Spotify-48.png" alt="Visit spotify" style="border-radius: 50%; width: auto; height: auto;">
                     </a>
@@ -71,7 +71,7 @@ class WelcomeEmailTemplate {
                 </tr>
                 <tr>
                   <td style="padding: 10px 20px; text-align: center;">
-                    <p style="color: #666; font-size: 14px; line-height: 1.4; margin: 8px 0; max-width: 100%; word-wrap: break-word;">Dear <strong>${userData.firstName} ${userData.lastName}</strong>, as you join us in <strong>'Making Music Accessible,'</strong> please accept the attached eBook as our gift of gratitude.</p>
+                    <p style="color: #666; font-size: 16px; line-height: 1.4; margin: 8px 0; max-width: 100%; word-wrap: break-word;">Dear <strong>${userData.firstName} ${userData.lastName}</strong>, as you join us in <strong>'Making Music Accessible,'</strong> please accept the attached eBook as our gift of gratitude.</p>
                   </td>
                 </tr>
                 <tr>
@@ -79,7 +79,7 @@ class WelcomeEmailTemplate {
                     <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto; width: 100%;">
                       <tr>
                         <td style="text-align: center;">
-                          <a href="${frontendUrl}" style="display: inline-block; background-color: #000000; color: #ffffff; text-decoration: none; border-radius: 5px; padding: 14px 20px; box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); font-size: 16px; min-width: 160px; max-width: 300px; width: auto;">Go back to site</a>
+                          <a href="${frontendUrl}" style="display: inline-block; background-color: #000000; color: #ffffff; text-decoration: none; border-radius: 5px; padding: 14px 20px; box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); font-size: 18px; min-width: 160px; max-width: 300px; width: auto;">Go back to site</a>
                         </td>
                       </tr>
                     </table>
@@ -87,7 +87,7 @@ class WelcomeEmailTemplate {
                 </tr>
                 <tr>
                   <td style="padding: 0 20px; text-align: center;">
-                    <p style="color: #666; font-size: 12px; margin: 3px;">Follow us on our social media</p>
+                    <p style="color: #666; font-size: 16px; margin: 3px;">Follow us on our social media</p>
                   </td>
                 </tr>
                 <tr>

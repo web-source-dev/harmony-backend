@@ -53,43 +53,6 @@ class EmailService {
     }
   }
 
-  // Get common email attachments
-  getCommonAttachments() {
-    const attachments = [];
-    
-    // Add logo image
-    const logoBase64 = this.readImageAsBase64('logo.png');
-    if (logoBase64) {
-      attachments.push({
-        name: 'logo.png',
-        content: logoBase64
-      });
-    }
-    
-    // Add candid image
-    const candidBase64 = this.readImageAsBase64('cadid.png');
-    if (candidBase64) {
-      attachments.push({
-        name: 'candid.png',
-        content: candidBase64
-      });
-    }
-    
-    // Add social media icons
-    const socialIcons = ['facebook.png', 'instagram.png', 'linkedin.png', 'mail.png', 'youtube.png', 'arrow.png'];
-    for (const icon of socialIcons) {
-      const iconBase64 = this.readImageAsBase64(icon);
-      if (iconBase64) {
-        attachments.push({
-          name: icon,
-          content: iconBase64
-        });
-      }
-    }
-    
-    return attachments;
-  }
-
   // Get welcome email attachments (PDF only)
   getWelcomeEmailAttachments() {
     const attachments = [];
@@ -119,12 +82,6 @@ class EmailService {
         email: user.email,
         name: `${user.firstName || user.name || ''} ${user.lastName || ''}`
       }];
-
-      // Add common attachments
-      const attachments = this.getCommonAttachments();
-      if (attachments.length > 0) {
-        sendSmtpEmail.attachment = attachments;
-      }
 
       const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`Blog notification sent to ${user.email}:`, result.messageId);
@@ -227,12 +184,6 @@ class EmailService {
         name: "Harmony 4 All Admin"
       }];
 
-      // Add common attachments
-      const attachments = this.getCommonAttachments();
-      if (attachments.length > 0) {
-        sendSmtpEmail.attachment = attachments;
-      }
-
       const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`Contact form notification sent to admin:`, result.messageId);
       return result;
@@ -255,12 +206,6 @@ class EmailService {
         email: donationData.email,
         name: donationData.isAnonymous ? 'Anonymous Donor' : donationData.donorName
       }];
-
-      // Add common attachments
-      const attachments = this.getCommonAttachments();
-      if (attachments.length > 0) {
-        sendSmtpEmail.attachment = attachments;
-      }
 
       const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`Donation confirmation sent to ${donationData.email}:`, result.messageId);
@@ -285,11 +230,6 @@ class EmailService {
         name: "Harmony 4 All Admin"
       }];
 
-      // Add common attachments
-      const attachments = this.getCommonAttachments();
-      if (attachments.length > 0) {
-        sendSmtpEmail.attachment = attachments;
-      }
 
       const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`Donation notification sent to admin:`, result.messageId);
@@ -314,11 +254,6 @@ class EmailService {
         name: "Harmony 4 All Admin"
       }];
 
-      // Add common attachments
-      const attachments = this.getCommonAttachments();
-      if (attachments.length > 0) {
-        sendSmtpEmail.attachment = attachments;
-      }
 
       const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`Newsletter notification sent to admin:`, result.messageId);
@@ -343,11 +278,6 @@ class EmailService {
         name: "Harmony 4 All Admin"
       }];
 
-      // Add common attachments
-      const attachments = this.getCommonAttachments();
-      if (attachments.length > 0) {
-        sendSmtpEmail.attachment = attachments;
-      }
 
       const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`Volunteer notification sent to admin:`, result.messageId);
@@ -372,11 +302,6 @@ class EmailService {
         name: "Harmony 4 All Admin"
       }];
 
-      // Add common attachments
-      const attachments = this.getCommonAttachments();
-      if (attachments.length > 0) {
-        sendSmtpEmail.attachment = attachments;
-      }
 
       const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`Welcome popup notification sent to admin:`, result.messageId);
