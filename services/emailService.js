@@ -1,4 +1,5 @@
 const Brevo = require('@getbrevo/brevo');
+const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
 const {
@@ -11,12 +12,37 @@ const {
   NewsletterEmailTemplate,
   VolunteerEmailTemplate,
 } = require('./templates');
+const CustomEmailTemplate = require('./templates/customEmail');
 require('dotenv').config();
 
 class EmailService {
   constructor() {
     this.apiInstance = new Brevo.TransactionalEmailsApi();
     this.apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+    
+    // Gmail account configurations
+    this.gmailAccounts = [
+      {
+        email: process.env.GMAIL_ACCOUNT_1_EMAIL,
+        password: process.env.GMAIL_ACCOUNT_1_PASSWORD,
+        name: 'Harmony 4 All - Account 1'
+      },
+      {
+        email: process.env.GMAIL_ACCOUNT_2_EMAIL,
+        password: process.env.GMAIL_ACCOUNT_2_PASSWORD,
+        name: 'Harmony 4 All - Account 2'
+      },
+      {
+        email: process.env.GMAIL_ACCOUNT_3_EMAIL,
+        password: process.env.GMAIL_ACCOUNT_3_PASSWORD,
+        name: 'Harmony 4 All - Account 3'
+      },
+      {
+        email: process.env.GMAIL_ACCOUNT_4_EMAIL,
+        password: process.env.GMAIL_ACCOUNT_4_PASSWORD,
+        name: 'Harmony 4 All - Account 4'
+      }
+    ].filter(account => account.email && account.password);
     
     // Validate required environment variables
     if (!process.env.BREVO_API_KEY) {
@@ -310,6 +336,140 @@ class EmailService {
       console.error(`Failed to send welcome popup notification to admin:`, error);
       throw error;
     }
+  }
+
+  // Get Gmail account by index
+  getGmailAccount(accountIndex) {
+    if (accountIndex < 0 || accountIndex >= this.gmailAccounts.length) {
+      throw new Error('Invalid Gmail account index');
+    }
+    return this.gmailAccounts[accountIndex];
+  }
+
+  // Create Gmail transporter
+  createGmailTransporter(accountIndex) {
+    const account = this.getGmailAccount(accountIndex);
+    
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: account.email,
+        pass: account.password
+      }
+    });
+  }
+
+  // Send custom email using Gmail
+  async sendCustomEmail(emailData) {
+    try {
+      const {
+        senderAccountIndex,
+        recipientEmails,
+        title,
+        subject,
+        imageUrl,
+        content,
+        senderName,
+        headerLogoUrl,
+        joinMissionButtonText,
+        joinMissionButtonLink,
+        followUsText,
+        socialHandle,
+        socialHandleLink,
+        candidSealImageUrl,
+        footerEmail,
+        footerLocation,
+        siteLinkText,
+        siteLinkUrl,
+        socialMediaLinks,
+        socialMediaImages,
+        fundersData
+      } = emailData;
+
+      // Validate required fields
+      if (!recipientEmails || recipientEmails.length === 0) {
+        throw new Error('Recipient emails are required');
+      }
+
+      if (!title && !subject) {
+        throw new Error('Title or subject is required');
+      }
+
+      // Create transporter
+      const transporter = this.createGmailTransporter(senderAccountIndex);
+      const account = this.getGmailAccount(senderAccountIndex);
+
+      // Prepare email data
+      const emailTemplateData = {
+        title,
+        subject,
+        imageUrl,
+        content,
+        senderName: senderName || account.name,
+        headerLogoUrl,
+        joinMissionButtonText,
+        joinMissionButtonLink,
+        followUsText,
+        socialHandle,
+        socialHandleLink,
+        candidSealImageUrl,
+        footerEmail,
+        footerLocation,
+        siteLinkText,
+        siteLinkUrl,
+        socialMediaLinks,
+        socialMediaImages,
+        fundersData
+      };
+
+      // Generate email content
+      const htmlContent = CustomEmailTemplate.generateHTML(emailTemplateData);
+      const textContent = CustomEmailTemplate.generateText(emailTemplateData);
+      const emailSubject = CustomEmailTemplate.generateSubject(emailTemplateData);
+
+      // Send emails to all recipients
+      const results = {
+        successful: [],
+        failed: []
+      };
+
+      for (const recipientEmail of recipientEmails) {
+        try {
+          const mailOptions = {
+            from: {
+              name: account.name,
+              address: account.email
+            },
+            to: recipientEmail.trim(),
+            subject: emailSubject,
+            html: htmlContent,
+            text: textContent
+          };
+
+          const result = await transporter.sendMail(mailOptions);
+          console.log(`Custom email sent to ${recipientEmail}:`, result.messageId);
+          results.successful.push(recipientEmail);
+        } catch (error) {
+          console.error(`Failed to send custom email to ${recipientEmail}:`, error);
+          results.failed.push(recipientEmail);
+        }
+      }
+
+      console.log(`Custom email sending completed: ${results.successful.length} successful, ${results.failed.length} failed`);
+      return results;
+    } catch (error) {
+      console.error('Failed to send custom email:', error);
+      throw error;
+    }
+  }
+
+  // Get available Gmail accounts for frontend
+  getAvailableGmailAccounts() {
+    return this.gmailAccounts.map((account, index) => ({
+      index,
+      email: account.email,
+      name: account.name
+    }));
   }
 }
 

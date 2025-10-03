@@ -567,4 +567,106 @@ router.get("/customers/labels", async (req, res) => {
   }
 });
 
+// Get available Gmail accounts for custom email
+router.get("/email/accounts", async (req, res) => {
+  try {
+    const accounts = emailService.getAvailableGmailAccounts();
+    res.json(accounts);
+  } catch (error) {
+    console.error("Error fetching Gmail accounts:", error);
+    res.status(500).json({ message: "Failed to fetch Gmail accounts" });
+  }
+});
+
+// Send custom email
+router.post("/email/send-custom", async (req, res) => {
+  try {
+    const {
+      senderAccountIndex,
+      recipientEmails,
+      title,
+      subject,
+      imageUrl,
+      content,
+      senderName,
+      headerLogoUrl,
+      joinMissionButtonText,
+      joinMissionButtonLink,
+      followUsText,
+      socialHandle,
+      socialHandleLink,
+      candidSealImageUrl,
+      footerEmail,
+      footerLocation,
+      siteLinkText,
+      siteLinkUrl,
+      socialMediaLinks,
+      socialMediaImages,
+      fundersData
+    } = req.body;
+
+    // Validate required fields
+    if (senderAccountIndex === undefined || senderAccountIndex === null) {
+      return res.status(400).json({ message: "Sender account is required" });
+    }
+
+    if (!recipientEmails || !Array.isArray(recipientEmails) || recipientEmails.length === 0) {
+      return res.status(400).json({ message: "Recipient emails are required" });
+    }
+
+    if (!title && !subject) {
+      return res.status(400).json({ message: "Title or subject is required" });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const invalidEmails = recipientEmails.filter(email => !emailRegex.test(email.trim()));
+    if (invalidEmails.length > 0) {
+      return res.status(400).json({ 
+        message: `Invalid email format: ${invalidEmails.join(', ')}` 
+      });
+    }
+
+    // Send custom email
+    const results = await emailService.sendCustomEmail({
+      senderAccountIndex: parseInt(senderAccountIndex),
+      recipientEmails: recipientEmails.map(email => email.trim()),
+      title,
+      subject,
+      imageUrl,
+      content,
+      senderName,
+      headerLogoUrl,
+      joinMissionButtonText,
+      joinMissionButtonLink,
+      followUsText,
+      socialHandle,
+      socialHandleLink,
+      candidSealImageUrl,
+      footerEmail,
+      footerLocation,
+      siteLinkText,
+      siteLinkUrl,
+      socialMediaLinks,
+      socialMediaImages,
+      fundersData
+    });
+
+    res.json({
+      message: "Custom email sent successfully",
+      results: {
+        successful: results.successful.length,
+        failed: results.failed.length,
+        successfulEmails: results.successful,
+        failedEmails: results.failed
+      }
+    });
+  } catch (error) {
+    console.error("Error sending custom email:", error);
+    res.status(500).json({ 
+      message: error.message || "Failed to send custom email" 
+    });
+  }
+});
+
 module.exports = router;
