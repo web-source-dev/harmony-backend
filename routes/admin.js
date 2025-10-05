@@ -341,16 +341,16 @@ router.post("/customers", async (req, res) => {
         }
       }
 
-      // // Send welcome communications for existing customer
-      // await sendWelcomeCommunications({
-      //   firstName: firstName?.trim() || existingCustomer.firstName,
-      //   lastName: lastName?.trim() || existingCustomer.lastName,
-      //   email: email.toLowerCase().trim(),
-      //   phone: phone?.trim() || existingCustomer.phone,
-      //   phone1: phone1?.trim() || existingCustomer.phone1,
-      //   phone2: phone2?.trim() || existingCustomer.phone2,
-      //   isSubscribed: isSubscribed !== undefined ? isSubscribed : existingCustomer.isSubscribed
-      // });
+      // Send welcome communications for existing customer
+      await sendWelcomeCommunications({
+        firstName: firstName?.trim() || existingCustomer.firstName,
+        lastName: lastName?.trim() || existingCustomer.lastName,
+        email: email.toLowerCase().trim(),
+        phone: phone?.trim() || existingCustomer.phone,
+        phone1: phone1?.trim() || existingCustomer.phone1,
+        phone2: phone2?.trim() || existingCustomer.phone2,
+        isSubscribed: isSubscribed !== undefined ? isSubscribed : existingCustomer.isSubscribed
+      });
 
       return res.status(200).json({
         customer: updatedCustomer,
@@ -414,16 +414,16 @@ router.post("/customers", async (req, res) => {
       }
     }
 
-    // // Send welcome communications for new customer
-    // await sendWelcomeCommunications({
-    //   firstName: firstName?.trim() || '',
-    //   lastName: lastName?.trim() || '',
-    //   email: email.toLowerCase().trim(),
-    //   phone: phone?.trim() || '',
-    //   phone1: phone1?.trim() || '',
-    //   phone2: phone2?.trim() || '',
-    //   isSubscribed: isSubscribed !== undefined ? isSubscribed : true
-    // });
+    // Send welcome communications for new customer
+    await sendWelcomeCommunications({
+      firstName: firstName?.trim() || '',
+      lastName: lastName?.trim() || '',
+      email: email.toLowerCase().trim(),
+      phone: phone?.trim() || '',
+      phone1: phone1?.trim() || '',
+      phone2: phone2?.trim() || '',
+      isSubscribed: isSubscribed !== undefined ? isSubscribed : true
+    });
 
     res.status(201).json({
       customer,
