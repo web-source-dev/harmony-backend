@@ -416,7 +416,7 @@ class CustomEmailTemplate {
                         </td>
                         <td align="center" style="width: 33.33%; padding: 5px;">
                           <a href="${fundersData.link8 || '#'}" target="_blank" class="funders-logo-link">
-                            <img src="${fundersData.logo8 || 'cid:placeholder-logo.png'}" alt="Sponsor 8" style="max-width: 40px; max-height: 40px; object-fit: contain;">
+                            <img src="${fundersData.logo8 || 'cid:placeholder-logo.png'}" alt="Sponsor 8" class="funders-logo-img">
                           </a>
                         </td>
                         <td style="width: 17%;">
