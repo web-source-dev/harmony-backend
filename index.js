@@ -42,18 +42,21 @@ const connectDB = async () => {
 
 connectDB();
 
-// Initialize blog scheduler after database connection
-const initializeScheduler = async () => {
+// Initialize schedulers after database connection
+const initializeSchedulers = async () => {
     try {
         await blogSchedulerService.initialize();
         console.log("Blog scheduler initialized successfully");
+        
+        await videoSchedulerService.initialize();
+        console.log("Video scheduler initialized successfully");
     } catch (error) {
-        console.error("Failed to initialize blog scheduler:", error);
+        console.error("Failed to initialize schedulers:", error);
     }
 };
 
-// Initialize scheduler after a short delay to ensure DB is connected
-setTimeout(initializeScheduler, 2000);
+// Initialize schedulers after a short delay to ensure DB is connected
+setTimeout(initializeSchedulers, 2000);
 
 
 
@@ -69,8 +72,9 @@ const mediaRoute = require("./routes/media");
 const videoRoute = require("./routes/video");
 const visitorRoute = require("./routes/visitor");
 
-// Initialize blog scheduler service
+// Initialize scheduler services
 const blogSchedulerService = require("./services/blogSchedulerService");
+const videoSchedulerService = require("./services/videoSchedulerService");
 
 app.get("/status", (req, res) => {
     res.send("Server is running");

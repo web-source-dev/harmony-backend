@@ -32,11 +32,7 @@ const createVideoStorage = (folder) => {
     params: {
       folder: folder,
       resource_type: 'video',
-      allowed_formats: ['mp4', 'webm', 'ogv', 'mov', 'avi', 'wmv', 'flv'],
-      transformation: [
-        { quality: 'auto:good' }, // Optimize quality
-        { fetch_format: 'auto' } // Auto-format
-      ],
+      allowed_formats: ['mp4', 'mov', 'avi', 'wmv', 'flv', 'mkv', 'webm'],
     },
   });
 };
@@ -46,7 +42,6 @@ const blogImageStorage = createCloudinaryStorage('harmony4all/blogs');
 const writerImageStorage = createCloudinaryStorage('harmony4all/writers');
 const contentImageStorage = createCloudinaryStorage('harmony4all/content');
 const socialImageStorage = createCloudinaryStorage('harmony4all/social');
-const videoStorage = createVideoStorage('harmony4all/videos');
 const mediaImageStorage = createCloudinaryStorage('harmony4all/media');
 const mediaVideoStorage = createVideoStorage('harmony4all/media');
 
@@ -107,8 +102,22 @@ const socialImageUpload = multer({
   },
 });
 
-const videoUpload = multer({
-  storage: videoStorage,
+const mediaImageUpload = multer({
+  storage: mediaImageStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'), false);
+    }
+  },
+});
+
+const mediaVideoUpload = multer({
+  storage: mediaVideoStorage,
   limits: {
     fileSize: 100 * 1024 * 1024, // 100MB limit for videos
   },
@@ -159,6 +168,7 @@ const deleteVideoFromCloudinary = async (publicId) => {
       }
     }
     
+    // Delete video (resource_type: 'video')
     const result = await cloudinary.uploader.destroy(cloudinaryPublicId, { resource_type: 'video' });
     return result;
   } catch (error) {
@@ -209,7 +219,8 @@ module.exports = {
   writerImageUpload,
   contentImageUpload,
   socialImageUpload,
-  videoUpload,
+  mediaImageUpload,
+  mediaVideoUpload,
   mediaImageStorage,
   mediaVideoStorage,
   deleteImageFromCloudinary,

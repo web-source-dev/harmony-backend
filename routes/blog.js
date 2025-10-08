@@ -5,7 +5,7 @@ const {
   blogImageUpload, 
   contentImageUpload, 
   socialImageUpload, 
-  videoUpload,
+  mediaVideoUpload,
   deleteImageFromCloudinary,
   deleteVideoFromCloudinary
 } = require('../config/cloudinary');
@@ -63,7 +63,7 @@ router.post('/upload/social-image', socialImageUpload.single('image'), async (re
 });
 
 // Upload video for blog content
-router.post('/upload/video', videoUpload.single('video'), async (req, res) => {
+router.post('/upload/video', mediaVideoUpload.single('video'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No video file provided' });

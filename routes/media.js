@@ -2,12 +2,11 @@ const express = require('express');
 const router = express.Router();
 const Media = require('../models/media');
 const { 
-  mediaImageStorage,
-  mediaVideoStorage,
+  mediaImageUpload,
+  mediaVideoUpload,
   deleteImageFromCloudinary,
   deleteVideoFromCloudinary
 } = require('../config/cloudinary');
-const multer = require('multer');
 
 // Get all media files with pagination and filtering
 router.get('/', async (req, res) => {
@@ -81,35 +80,6 @@ router.get('/stats', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-});
-
-// Create multer upload configurations for media
-const mediaImageUpload = multer({
-  storage: mediaImageStorage,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
-  },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only image files are allowed!'), false);
-    }
-  },
-});
-
-const mediaVideoUpload = multer({
-  storage: mediaVideoStorage,
-  limits: {
-    fileSize: 100 * 1024 * 1024, // 100MB limit for videos
-  },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('video/')) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only video files are allowed!'), false);
-    }
-  },
 });
 
 // Upload image
