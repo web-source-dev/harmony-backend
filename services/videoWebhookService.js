@@ -2,7 +2,7 @@ const axios = require('axios');
 
 class VideoWebhookService {
   constructor() {
-    this.webhookUrl = 'https://hooks.zapier.com/hooks/catch/21472219/ud54p7b/';
+    this.webhookUrl = 'https://hooks.zapier.com/hooks/catch/21472219/uyewgmk/';
   }
 
   /**

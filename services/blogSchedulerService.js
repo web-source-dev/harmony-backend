@@ -1,12 +1,9 @@
 const cron = require('node-cron');
 const moment = require('moment-timezone');
 const { Blog } = require('../models/blog');
-const emailService = require('./emailService');
-const webhookService = require('./webhookService');
 
 class BlogSchedulerService {
   constructor() {
-    this.emailService = emailService;
     this.isInitialized = false;
   }
 
@@ -20,8 +17,11 @@ class BlogSchedulerService {
     try {
       console.log('Initializing blog scheduler service...');
       
-      // Schedule the job to run every minute to check for blogs to publish
-      this.scheduleJob = cron.schedule('* * * * *', async () => {
+      // Schedule job for Monday, Wednesday, Friday, Sunday at 12:00 PM (noon) New York time
+      // Cron format: minute hour day-of-month month day-of-week
+      // Day of week: 0 = Sunday, 1 = Monday, 3 = Wednesday, 5 = Friday
+      this.scheduleJob = cron.schedule('0 12 * * 0,1,3,5', async () => {
+        console.log('Running scheduled blog check at 12:00 PM (noon) New York time...');
         await this.checkAndPublishScheduledBlogs();
       }, {
         scheduled: false,
@@ -32,8 +32,10 @@ class BlogSchedulerService {
       this.scheduleJob.start();
       this.isInitialized = true;
       
-      console.log('Blog scheduler service initialized successfully');
-      console.log('Scheduler timezone: America/New_York');
+      console.log('✅ Blog scheduler service initialized successfully');
+      console.log('📅 Scheduled days: Monday, Wednesday, Friday, Sunday');
+      console.log('🕐 Scheduled time: 12:00 PM (noon) New York time');
+      console.log('🕐 Timezone: America/New_York');
       
       // Check for any blogs that should have been published but weren't
       await this.checkForOverdueScheduledBlogs();
@@ -48,40 +50,53 @@ class BlogSchedulerService {
   async checkAndPublishScheduledBlogs() {
     try {
       const now = moment().tz('America/New_York');
+      const todayDate = now.format('YYYY-MM-DD');
+      const todayStart = moment.tz(todayDate, 'America/New_York').startOf('day').toDate();
+      const todayEnd = moment.tz(todayDate, 'America/New_York').endOf('day').toDate();
       
-      // Find blogs that are scheduled and should be published now
+      console.log(`\n🔍 Checking for blogs scheduled for ${todayDate}...`);
+      
+      // Find blogs that are scheduled for today only
       const blogsToPublish = await Blog.find({
         status: 'scheduled',
-        scheduledFor: { $lte: now.toDate() },
-        isActive: true
+        scheduledFor: {
+          $gte: todayStart,
+          $lte: todayEnd
+        },
+        isActive: false
       }).populate('writer');
 
       if (blogsToPublish.length === 0) {
+        console.log(`ℹ️  No blogs scheduled for ${todayDate}`);
         return;
       }
 
-      console.log(`Found ${blogsToPublish.length} scheduled blog(s) to publish`);
+      console.log(`📝 Found ${blogsToPublish.length} scheduled blog(s) for ${todayDate}`);
 
       for (const blog of blogsToPublish) {
         await this.publishScheduledBlog(blog);
       }
 
+      console.log(`✅ Completed processing blogs for ${todayDate}\n`);
+
     } catch (error) {
-      console.error('Error checking scheduled blogs:', error);
+      console.error('❌ Error checking scheduled blogs:', error);
     }
   }
 
   // Publish a scheduled blog
   async publishScheduledBlog(blog) {
     try {
-      console.log(`Publishing scheduled blog: ${blog.title} (ID: ${blog._id})`);
+      console.log(`\n📤 Publishing scheduled blog: "${blog.title}" (ID: ${blog._id})`);
+      console.log(`   Scheduled for: ${moment(blog.scheduledFor).tz('America/New_York').format('YYYY-MM-DD HH:mm:ss')} NY time`);
 
-      // Update blog status to published
+      // Update blog status to published (database only - no emails or webhooks)
       const updatedBlog = await Blog.findByIdAndUpdate(
         blog._id,
         {
           status: 'published',
           publishedAt: new Date(),
+          isActive: true,
           $push: {
             revisions: {
               updatedAt: new Date(),
@@ -93,47 +108,18 @@ class BlogSchedulerService {
         { new: true }
       ).populate('writer');
 
-      console.log(`Successfully published blog: ${blog.title}`);
+      console.log(`✅ Successfully published blog: "${blog.title}"`);
+      console.log(`   Status updated to: published`);
+      console.log(`   Published at: ${moment(updatedBlog.publishedAt).tz('America/New_York').format('YYYY-MM-DD HH:mm:ss')} NY time`);
 
-      // Send notifications if configured
-      await this.sendPublishNotifications(updatedBlog);
-      
-      // Send webhook notification to Zapier
-      await this.sendWebhookNotification(updatedBlog);
+      // NOTE: Email notifications and webhook calls are disabled for scheduled auto-publish
+      // Only database update is performed
 
       return updatedBlog;
 
     } catch (error) {
-      console.error(`Failed to publish blog ${blog.title}:`, error);
+      console.error(`❌ Failed to publish blog "${blog.title}":`, error);
       throw error;
-    }
-  }
-
-  // Send notifications when a blog is published
-  async sendPublishNotifications(blog) {
-    try {
-      console.log('Sending blog notifications to all customers');
-      await this.emailService.sendBlogNotificationsToAllCustomers(blog);
-    } catch (error) {
-      console.error('Failed to send publish notifications:', error);
-      // Don't throw error here as it shouldn't prevent the blog from being published
-    }
-  }
-
-  // Send webhook notification when a blog is published
-  async sendWebhookNotification(blog) {
-    try {
-      console.log('Sending blog to Zapier webhook');
-      const result = await webhookService.sendBlogToZapier(blog);
-      
-      if (result.success) {
-        console.log('Successfully sent blog to Zapier webhook');
-      } else {
-        console.error('Failed to send blog to Zapier webhook:', result.error);
-      }
-    } catch (error) {
-      console.error('Failed to send webhook notification:', error);
-      // Don't throw error here as it shouldn't prevent the blog from being published
     }
   }
 
@@ -141,25 +127,40 @@ class BlogSchedulerService {
   async checkForOverdueScheduledBlogs() {
     try {
       const now = moment().tz('America/New_York');
-      const oneHourAgo = now.clone().subtract(1, 'hour');
+      const currentDay = now.day(); // 0=Sunday, 1=Monday, 3=Wednesday, 5=Friday
+      
+      console.log(`\n🔍 Checking for overdue blogs...`);
+      console.log(`   Current NY time: ${now.format('YYYY-MM-DD HH:mm:ss')}`);
+      console.log(`   Current day: ${now.format('dddd')}`);
 
+      // Only check for overdue blogs on scheduled days (Monday, Wednesday, Friday, Sunday)
+      const scheduledDays = [0, 1, 3, 5]; // Sunday, Monday, Wednesday, Friday
+      
+      if (!scheduledDays.includes(currentDay)) {
+        console.log(`ℹ️  Today is not a scheduled publish day. Skipping overdue check.`);
+        return;
+      }
+
+      // Find blogs scheduled for past dates that are still in 'scheduled' status
       const overdueBlogs = await Blog.find({
         status: 'scheduled',
-        scheduledFor: { $lte: oneHourAgo.toDate() },
-        isActive: true
-      });
+        scheduledFor: { $lt: now.toDate() },
+        isActive: false
+      }).populate('writer');
 
       if (overdueBlogs.length > 0) {
-        console.log(`Found ${overdueBlogs.length} overdue scheduled blog(s)`);
+        console.log(`⚠️  Found ${overdueBlogs.length} overdue scheduled blog(s)`);
         
         for (const blog of overdueBlogs) {
-          console.log(`Publishing overdue blog: ${blog.title} (scheduled for: ${blog.scheduledFor})`);
+          console.log(`   - Publishing overdue blog: "${blog.title}" (scheduled for: ${moment(blog.scheduledFor).tz('America/New_York').format('YYYY-MM-DD HH:mm:ss')} NY time)`);
           await this.publishScheduledBlog(blog);
         }
+      } else {
+        console.log(`✅ No overdue blogs found`);
       }
 
     } catch (error) {
-      console.error('Error checking for overdue blogs:', error);
+      console.error('❌ Error checking for overdue blogs:', error);
     }
   }
 
@@ -264,11 +265,16 @@ class BlogSchedulerService {
 
   // Get scheduler status
   getStatus() {
+    const now = moment().tz('America/New_York');
     return {
       isInitialized: this.isInitialized,
-      isRunning: this.scheduleJob ? this.scheduleJob.getStatus() === 'scheduled' : false,
+      isRunning: this.scheduleJob ? true : false,
       timezone: 'America/New_York',
-      nextRun: this.scheduleJob ? this.scheduleJob.nextDate() : null
+      currentNYTime: now.format('YYYY-MM-DD HH:mm:ss'),
+      scheduledDays: ['Monday', 'Wednesday', 'Friday', 'Sunday'],
+      scheduledTime: '12:00 PM (noon)',
+      cronExpression: '0 12 * * 0,1,3,5',
+      description: 'Runs at 12:00 PM NY time on Monday, Wednesday, Friday, and Sunday'
     };
   }
 }
