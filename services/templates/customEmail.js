@@ -406,9 +406,6 @@ class CustomEmailTemplate {
                     <!-- Third Row: 2 logos -->
                     <table cellpadding="0" cellspacing="0" border="0" width="100%">
                       <tr>
-                         <td style="width: 17%;">
-                          <!-- Empty cell for spacing -->
-                        </td>
                         <td align="center" style="width: 33.33%; padding: 5px;">
                           <a href="${fundersData.link7 || '#'}" target="_blank" class="funders-logo-link">
                             <img src="${fundersData.logo7 || 'cid:placeholder-logo.png'}" alt="Sponsor 7" class="funders-logo-img">
@@ -419,8 +416,10 @@ class CustomEmailTemplate {
                             <img src="${fundersData.logo8 || 'cid:placeholder-logo.png'}" alt="Sponsor 8" class="funders-logo-img">
                           </a>
                         </td>
-                        <td style="width: 17%;">
-                          <!-- Empty cell for spacing -->
+                        <td align="center" style="width: 33.33%; padding: 5px;">
+                          <a href="${fundersData.link9 || '#'}" target="_blank" class="funders-logo-link">
+                            <img src="${fundersData.logo9 || 'cid:placeholder-logo.png'}" alt="Sponsor 9" class="funders-logo-img">
+                          </a>
                         </td>
                       </tr>
                     </table>
