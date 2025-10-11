@@ -489,19 +489,6 @@ class CustomEmailTemplate {
               <div class="candid-seal" style="margin-bottom: 25px;">
                 <img src="${candidSealImageUrl || 'cid:candid.png'}" alt="Platinum Transparency 2025 Candid" class="candid-image">
               </div>
-              
-              <!-- Contact Section Table -->
-              <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top: 25px; padding-top: 20px;">
-                <tr>
-                  <td align="left" style="width: 50%;" class="contact-info">
-                    ${footerLocation}<br>
-                    ${footerEmail}
-                  </td>
-                  <td align="right" style="width: 50%;" class="site-link">
-                    <a href="${siteLinkUrl}" class="site-link-text">${siteLinkText}</a>
-                  </td>
-                </tr>
-              </table>
             </td>
           </tr>
         </table>
