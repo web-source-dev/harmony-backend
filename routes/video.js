@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const Video = require("../models/video");
-const videoWebhookService = require("../services/videoWebhookService");
 
 // Get all videos
 router.get("/all", async (req, res) => {
@@ -99,15 +98,6 @@ router.post("/", async (req, res) => {
         });
 
         await video.save();
-        
-        // Send video data to webhook after successful save
-        try {
-            const webhookResult = await videoWebhookService.sendVideoToWebhook(video);
-            console.log('Webhook result:', webhookResult);
-        } catch (webhookError) {
-            // Log webhook error but don't fail the video creation
-            console.error('Webhook error (video still saved):', webhookError.message);
-        }
         
         res.status(201).json(video);
     } catch (error) {
