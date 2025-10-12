@@ -19,20 +19,18 @@ class VideoSchedulerService {
     try {
       console.log('Initializing video scheduler service...');
       
-      // Schedule job for 11:50 AM (10 minutes before noon) New York time
-      // Sends videos at 11:50 AM so they publish at 12:00 PM after Zapier processing
-      this.noonJob = cron.schedule('50 11 * * *', async () => {
-        console.log('Running 11:50 AM video scheduler check (10 mins before noon publishing)...');
+      // Sends videos at 12.00 PM NY time
+      this.noonJob = cron.schedule('0 12 * * *', async () => {
+        console.log('Running 12:00 PM video scheduler check...');
         await this.checkAndPublishVideos('12:00');
       }, {
         scheduled: false,
         timezone: 'America/New_York'
       });
 
-      // Schedule job for 5:50 PM (10 minutes before 6 PM) New York time
-      // Sends videos at 5:50 PM so they publish at 6:00 PM after Zapier processing
-      this.eveningJob = cron.schedule('50 17 * * *', async () => {
-        console.log('Running 5:50 PM video scheduler check (10 mins before 6 PM publishing)...');
+      // Sends videos at 6.00 PM NY time
+      this.eveningJob = cron.schedule('0 18 * * *', async () => {
+        console.log('Running 6:00 PM video scheduler check...');
         await this.checkAndPublishVideos('18:00');
       }, {
         scheduled: false,
@@ -45,8 +43,8 @@ class VideoSchedulerService {
       this.isInitialized = true;
       
       console.log('✅ Video scheduler service initialized successfully');
-      console.log('📅 Videos sent to webhook: 11:50 AM (for 12:00 PM publish) and 5:50 PM (for 6:00 PM publish)');
-      console.log('⏰ 10-minute buffer for Zapier processing to 10 platforms');
+      console.log('📅 Videos sent to webhook: 12:00 PM (for 12:00 PM publish) and 6:00 PM (for 6:00 PM publish)');
+      console.log('⏰ to 10 platforms');
       console.log('🕐 Timezone: America/New_York');
       
       // Check immediately for any videos that should have been published
@@ -65,7 +63,7 @@ class VideoSchedulerService {
       const todayDate = now.format('YYYY-MM-DD');
       
       console.log(`\n🔍 Checking for videos scheduled for ${todayDate} at ${scheduledTime}...`);
-      console.log(`⏰ Sending to webhook 10 minutes early for Zapier processing`);
+      console.log(`⏰ Sending to webhook`);
 
       // Find videos that are pending and scheduled for today at this time
       const videosToPublish = await Video.find({
@@ -102,7 +100,7 @@ class VideoSchedulerService {
       const now = moment().tz('America/New_York');
       console.log(`\n📤 Sending video to webhook: "${video.title}" (ID: ${video._id})`);
       console.log(`   Scheduled for: ${video.scheduledDate} at ${video.scheduledTime}`);
-      console.log(`   Sending at: ${now.format('YYYY-MM-DD hh:mm A')} (10 minutes early)`);
+      console.log(`   Sending at: ${now.format('YYYY-MM-DD hh:mm A')}`);
       console.log(`   Expected publish time: ${video.scheduledTime} (after Zapier processes to 10 platforms)`);
 
       // Send video to webhook
@@ -121,7 +119,7 @@ class VideoSchedulerService {
         console.log(`✅ Successfully sent video to webhook: "${video.title}"`);
         console.log(`   Status updated to: approved`);
         console.log(`   Webhook response: ${webhookResult.status}`);
-        console.log(`   Zapier will publish to 10 platforms by ${video.scheduledTime}`);
+        console.log(`   Will publish to 10 platforms by ${video.scheduledTime}`);
 
         return updatedVideo;
       } else {
@@ -239,12 +237,12 @@ class VideoSchedulerService {
     const currentHour = now.hour();
     const currentMinute = now.minute();
     
-    // Check if it's time to send for noon videos (11:50 AM - 11:59 AM)
-    if (currentHour === 11 && currentMinute >= 50) {
+    // Check if it's time to send for noon videos (12:00 PM - 12:09 PM)
+    if (currentHour === 12 && currentMinute >= 0) {
       await this.checkAndPublishVideos('12:00');
     } 
-    // Check if it's time to send for evening videos (5:50 PM - 5:59 PM)
-    else if (currentHour === 17 && currentMinute >= 50) {
+    // Check if it's time to send for evening videos (6:00 PM - 6:09 PM)
+    else if (currentHour === 18 && currentMinute >= 0) {
       await this.checkAndPublishVideos('18:00');
     }
     // Also allow manual trigger at the actual scheduled times
@@ -277,13 +275,13 @@ class VideoSchedulerService {
       timezone: 'America/New_York',
       currentNYTime: now.format('YYYY-MM-DD HH:mm:ss'),
       scheduledPublishTimes: ['12:00 PM (Noon)', '6:00 PM (Evening)'],
-      webhookSendTimes: ['11:50 AM (10 mins before noon)', '5:50 PM (10 mins before evening)'],
+      webhookSendTimes: ['12:00 PM (noon)', '6:00 PM (evening)'],
       processingBuffer: '10 minutes',
-      zapierPlatforms: 10,
-      cronExpressions: ['50 11 * * * (11:50 AM)', '50 17 * * * (5:50 PM)'],
-      description: 'Videos sent to webhook 10 minutes early for Zapier to process and publish to 10 platforms at scheduled time',
-      nextNoonSend: '11:50 AM daily (for 12:00 PM publish)',
-      nextEveningSend: '5:50 PM daily (for 6:00 PM publish)'
+      platforms: 10,
+      cronExpressions: ['0 12 * * * (12:00 PM)', '0 18 * * * (6:00 PM)'],
+      description: 'Videos sent to webhook and publish to 10 platforms at scheduled time',
+      nextNoonSend: '12:00 PM daily (for 12:00 PM publish)',
+      nextEveningSend: '6:00 PM daily (for 6:00 PM publish)'
     };
   }
 }
