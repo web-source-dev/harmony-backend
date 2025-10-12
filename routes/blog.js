@@ -9,8 +9,6 @@ const {
   deleteImageFromCloudinary,
   deleteVideoFromCloudinary
 } = require('../config/cloudinary');
-const emailService = require('../services/emailService');
-const webhookService = require('../services/webhookService');
 
 // Upload image for blog content (inline images)
 router.post('/upload/images', contentImageUpload.single('image'), async (req, res) => {
@@ -144,16 +142,6 @@ router.post('/', blogImageUpload.fields([
       try {
         // Populate writer information for the email template
         await blog.populate('writer', 'name email image bio');
-        await emailService.sendBlogNotificationsToAllCustomers(blog);
-        console.log('Blog notifications sent to customers');
-        
-        // Send webhook notification to Zapier
-        const webhookResult = await webhookService.sendBlogToZapier(blog);
-        if (webhookResult.success) {
-          console.log('Blog sent to Zapier webhook successfully');
-        } else {
-          console.error('Failed to send blog to Zapier webhook:', webhookResult.error);
-        }
       } catch (error) {
         console.error('Failed to send blog notifications:', error);
         // Don't fail the blog creation if email sending fails
@@ -512,25 +500,6 @@ router.patch('/:id', blogImageUpload.fields([
       { new: true }
     ).populate('writer', 'name email image bio');
     
-    // Check if blog status was changed to published and is active
-    if (req.body.status === 'published' && blog.isActive && existingBlog.status !== 'published') {
-      try {
-        // Send email notifications
-        await emailService.sendBlogNotificationsToAllCustomers(blog);
-        console.log('Blog notifications sent to customers');
-        
-        // Send webhook notification to Zapier
-        const webhookResult = await webhookService.sendBlogToZapier(blog);
-        if (webhookResult.success) {
-          console.log('Blog sent to Zapier webhook successfully');
-        } else {
-          console.error('Failed to send blog to Zapier webhook:', webhookResult.error);
-        }
-      } catch (error) {
-        console.error('Failed to send blog notifications:', error);
-        // Don't fail the blog update if notification sending fails
-      }
-    }
     
     res.json(blog);
   } catch (error) {
@@ -629,20 +598,6 @@ router.post('/:id/like', async (req, res) => {
 
 
 
-// Test webhook endpoint
-router.post('/test-webhook', async (req, res) => {
-  try {
-    const result = await webhookService.testWebhook();
-    if (result.success) {
-      res.json({ message: 'Webhook test successful', status: result.status });
-    } else {
-      res.status(500).json({ message: 'Webhook test failed', error: result.error });
-    }
-  } catch (error) {
-    res.status(500).json({ message: 'Webhook test failed', error: error.message });
-  }
-});
-
 // Manually trigger webhook for a specific blog (for testing)
 router.post('/:id/trigger-webhook', async (req, res) => {
   try {
@@ -651,13 +606,7 @@ router.post('/:id/trigger-webhook', async (req, res) => {
       return res.status(404).json({ message: 'Blog not found' });
     }
 
-    const result = await webhookService.sendBlogToZapier(blog);
-    console.log(result);
-    if (result.success) {
-      res.json({ message: 'Blog sent to Zapier webhook successfully', status: result.status });
-    } else {
-      res.status(500).json({ message: 'Failed to send blog to Zapier webhook', error: result.error });
-    }
+  
   } catch (error) {
     res.status(500).json({ message: 'Failed to trigger webhook', error: error.message });
   }
