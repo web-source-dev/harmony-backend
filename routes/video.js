@@ -78,15 +78,7 @@ router.post("/", async (req, res) => {
             });
         }
 
-        // Validate that scheduled date is in the future
-        const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
-        const now = new Date();
-        
-        if (scheduledDateTime <= now) {
-            return res.status(400).json({ 
-                message: "Scheduled date and time must be in the future" 
-            });
-        }
+        // Removed future date validation - allow scheduling for any date/time
 
         const video = new Video({
             title: title.trim(),
