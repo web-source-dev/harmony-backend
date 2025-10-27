@@ -578,6 +578,76 @@ router.get("/email/accounts", async (req, res) => {
   }
 });
 
+// Get customers for email suggestions
+router.get("/email/suggestions", async (req, res) => {
+  try {
+    const { search = '', category = '', limit = 50 } = req.query;
+    
+    // Build filter query
+    const filterQuery = {};
+    
+    // Search filter
+    if (search) {
+      const searchRegex = new RegExp(search, 'i');
+      filterQuery.$or = [
+        { firstName: searchRegex },
+        { lastName: searchRegex },
+        { email: searchRegex },
+        { position: searchRegex }
+      ];
+    }
+    
+    // Category filter based on labels
+    if (category) {
+      filterQuery.labels = { $in: [category] };
+    }
+    
+    // Get customers with basic info for suggestions
+    const customers = await Customer.find(filterQuery)
+      .select('firstName lastName email position labels')
+      .sort({ 
+        // Prioritize by labels: government, nonprofit, harmony_team, music_industry
+        labels: {
+          $cond: {
+            if: { $in: ['government', 'nonprofit', 'harmony_team', 'music_industry'] },
+            then: 1,
+            else: 2
+          }
+        },
+        createdAt: -1 
+      })
+      .limit(parseInt(limit));
+
+    // Format suggestions with categories
+    const suggestions = customers.map(customer => ({
+      id: customer._id,
+      name: `${customer.firstName} ${customer.lastName}`.trim(),
+      email: customer.email,
+      position: customer.position || '',
+      category: getCategoryFromLabels(customer.labels),
+      labels: customer.labels || []
+    }));
+
+    res.json(suggestions);
+  } catch (error) {
+    console.error("Error fetching email suggestions:", error);
+    res.status(500).json({ message: "Failed to fetch email suggestions" });
+  }
+});
+
+// Helper function to determine category from labels
+function getCategoryFromLabels(labels) {
+  if (!labels || !Array.isArray(labels)) return 'other';
+  
+  if (labels.includes('government')) return 'government';
+  if (labels.includes('nonprofit')) return 'nonprofit';
+  if (labels.includes('harmony_team')) return 'harmony_team';
+  if (labels.includes('music_industry')) return 'music_industry';
+  if (labels.includes('community')) return 'community';
+  
+  return 'other';
+}
+
 // Send custom email
 router.post("/email/send-custom", async (req, res) => {
   try {

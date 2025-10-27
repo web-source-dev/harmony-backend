@@ -5,7 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "import-contacts": "node scripts/importContacts.js",
+    "import-contacts-clear": "node scripts/importContacts.js --clear"
   },
   "keywords": [],
   "author": "",
