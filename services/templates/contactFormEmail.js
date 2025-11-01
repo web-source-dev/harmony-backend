@@ -129,7 +129,7 @@ class ContactFormEmailTemplate {
             
             <div class="field">
               <div class="field-label">Submitted At:</div>
-              <div class="field-value">${new Date().toLocaleString()}</div>
+              <div class="field-value">${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })}</div>
             </div>
           </div>
         </div>
@@ -150,7 +150,7 @@ ${contactData.subject ? `Subject: ${contactData.subject}` : ''}
 Message:
 ${contactData.message || 'No message provided'}
 
-Submitted At: ${new Date().toLocaleString()}
+Submitted At: ${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })}
 
 ---
 This email was sent from your Harmony 4 All website contact form.

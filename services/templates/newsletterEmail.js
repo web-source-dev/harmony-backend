@@ -114,7 +114,7 @@ class NewsletterEmailTemplate {
               </div>
               <div class="detail-row">
                 <span class="detail-label">Subscribed At:</span>
-                <span class="detail-value">${new Date().toLocaleString()}</span>
+                <span class="detail-value">${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })}</span>
               </div>
             </div>
           </div>
@@ -144,7 +144,7 @@ Someone has subscribed to your newsletter.
 SUBSCRIPTION INFORMATION:
 Email Address: ${newsletterData.email}
 Source: ${getSourceText(newsletterData.source)}
-Subscribed At: ${new Date().toLocaleString()}
+Subscribed At: ${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })}
 
 This notification was sent from your Harmony 4 All newsletter system.
     `;

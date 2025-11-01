@@ -23,7 +23,7 @@ class VolunteerEmailTemplate {
     };
 
     const formatDate = (date) => {
-      return new Date(date).toLocaleDateString();
+      return new Date(date).toLocaleDateString('en-US', { timeZone: 'America/New_York' });
     };
 
     return `
@@ -233,7 +233,7 @@ class VolunteerEmailTemplate {
                 </div>
                 <div class="detail-row">
                   <span class="detail-label">Submitted At:</span>
-                  <span class="detail-value">${new Date().toLocaleString()}</span>
+                  <span class="detail-value">${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })}</span>
                 </div>
               </div>
             </div>
@@ -268,7 +268,7 @@ class VolunteerEmailTemplate {
     };
 
     const formatDate = (date) => {
-      return new Date(date).toLocaleDateString();
+      return new Date(date).toLocaleDateString('en-US', { timeZone: 'America/New_York' });
     };
 
     return `
@@ -308,7 +308,7 @@ Motivation: ${volunteerData.motivation}
 
 APPLICATION DETAILS:
 Status: Pending Review
-Submitted At: ${new Date().toLocaleString()}
+Submitted At: ${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })}
 
 ---
 This notification was sent from your Harmony 4 All volunteer application system.

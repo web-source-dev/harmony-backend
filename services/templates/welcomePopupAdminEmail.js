@@ -112,7 +112,7 @@ class WelcomePopupAdminEmailTemplate {
               </div>
               <div class="detail-row">
                 <span class="detail-label">Submitted At:</span>
-                <span class="detail-value">${new Date().toLocaleString()}</span>
+                <span class="detail-value">${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })}</span>
               </div>
             </div>
           </div>
@@ -132,7 +132,7 @@ SUBMISSION INFORMATION:
 Full Name: ${welcomeData.firstName} ${welcomeData.lastName}
 Email Address: ${welcomeData.email}
 Phone Number: ${welcomeData.cellNumber}
-Submitted At: ${new Date().toLocaleString()}
+Submitted At: ${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })}
 
 A new submission has been made.
     `;
