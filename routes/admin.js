@@ -602,21 +602,41 @@ router.get("/email/suggestions", async (req, res) => {
       filterQuery.labels = { $in: [category] };
     }
     
-    // Get customers with basic info for suggestions
-    const customers = await Customer.find(filterQuery)
-      .select('firstName lastName email position labels')
-      .sort({ 
-        // Prioritize by labels: government, nonprofit, harmony_team, music_industry
-        labels: {
-          $cond: {
-            if: { $in: ['government', 'nonprofit', 'harmony_team', 'music_industry'] },
-            then: 1,
-            else: 2
+    // Build aggregation pipeline to prioritize specific labels before sorting by creation date
+    const priorityLabels = ['government', 'nonprofit', 'harmony_team', 'music_industry', 'community'];
+    const branches = priorityLabels.map((label, index) => ({
+      case: { $in: [label, '$labels'] },
+      then: index
+    }));
+
+    const pipeline = [
+      { $match: filterQuery },
+      {
+        $addFields: {
+          labelPriority: {
+            $switch: {
+              branches,
+              default: priorityLabels.length
+            }
           }
-        },
-        createdAt: -1 
-      })
-      .limit(parseInt(limit));
+        }
+      },
+      {
+        $project: {
+          firstName: 1,
+          lastName: 1,
+          email: 1,
+          position: 1,
+          labels: 1,
+          createdAt: 1,
+          labelPriority: 1
+        }
+      },
+      { $sort: { labelPriority: 1, createdAt: -1 } },
+      { $limit: parseInt(limit, 10) }
+    ];
+
+    const customers = await Customer.aggregate(pipeline);
 
     // Format suggestions with categories
     const suggestions = customers.map(customer => ({
@@ -654,6 +674,8 @@ router.post("/email/send-custom", async (req, res) => {
     const {
       senderAccountIndex,
       recipientEmails,
+      ccEmails = [],
+      bccEmails = [],
       title,
       subject,
       imageUrl,
@@ -688,19 +710,38 @@ router.post("/email/send-custom", async (req, res) => {
       return res.status(400).json({ message: "Title or subject is required" });
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const invalidEmails = recipientEmails.filter(email => !emailRegex.test(email.trim()));
+    const normalizedRecipients = recipientEmails.map(email => email.trim()).filter(Boolean);
+    const normalizedCc = Array.isArray(ccEmails) ? ccEmails.map(email => email.trim()).filter(Boolean) : [];
+    const normalizedBcc = Array.isArray(bccEmails) ? bccEmails.map(email => email.trim()).filter(Boolean) : [];
+
+    const invalidEmails = normalizedRecipients.filter(email => !emailRegex.test(email));
     if (invalidEmails.length > 0) {
       return res.status(400).json({ 
         message: `Invalid email format: ${invalidEmails.join(', ')}` 
       });
     }
 
+    const invalidCcEmails = normalizedCc.filter(email => !emailRegex.test(email));
+    if (invalidCcEmails.length > 0) {
+      return res.status(400).json({ 
+        message: `Invalid CC email format: ${invalidCcEmails.join(', ')}` 
+      });
+    }
+
+    const invalidBccEmails = normalizedBcc.filter(email => !emailRegex.test(email));
+    if (invalidBccEmails.length > 0) {
+      return res.status(400).json({ 
+        message: `Invalid BCC email format: ${invalidBccEmails.join(', ')}` 
+      });
+    }
+
     // Send custom email
     const results = await emailService.sendCustomEmail({
       senderAccountIndex: parseInt(senderAccountIndex),
-      recipientEmails: recipientEmails.map(email => email.trim()),
+      recipientEmails: normalizedRecipients,
+      ccEmails: normalizedCc,
+      bccEmails: normalizedBcc,
       title,
       subject,
       imageUrl,

@@ -15,434 +15,170 @@ const connectDB = async () => {
 
 // Contact data organized by categories
 const contactsData = {
-    government: [
+    hostSiteRegistrationPartnership: [
         {
-            firstName: 'Alicia',
-            lastName: 'L. Hyndman',
-            email: 'Aliciaforassemby@42813393.mailchimpapp.com',
-            position: 'Assemblywoman',
-            labels: ['government', 'assembly', 'political'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Chaveli',
+            lastName: 'De Leon',
+            email: 'chaveli@gurlstalk.com',
+            labels: ['host-site-registration', 'partnership-agreement']
         },
         {
-            firstName: 'Erik',
-            lastName: 'Bottcher',
-            email: 'district3@council.nyc.gov',
-            position: 'Council Member',
-            labels: ['government', 'council', 'nyc'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Ester',
+            lastName: 'Abramovich',
+            email: 'Eabramovich@SIJCC.COM',
+            labels: ['host-site-registration', 'partnership-agreement']
         },
         {
-            firstName: 'Hanif',
-            lastName: 'Council Member',
-            email: 'district39@council.nyc.gov',
-            position: 'Council Member',
-            labels: ['government', 'council', 'nyc'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Mikal',
+            lastName: 'Magori',
+            email: 'mmagori@sijcc.com',
+            labels: ['host-site-registration', 'partnership-agreement']
         },
         {
-            firstName: 'Gregory',
-            lastName: 'Meeks',
-            email: 'repmeeks@mail8.housecommunications.gov',
-            position: 'Representative',
-            labels: ['government', 'congress', 'federal'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Gena',
+            lastName: 'Jefferson',
+            email: 'gena@jaiayouth.org',
+            labels: ['host-site-registration', 'partnership-agreement']
         },
         {
-            firstName: 'Kirsten',
-            lastName: 'Gillibrand',
-            email: 'senator@Gillibrand.senate.gov',
-            position: 'Senator',
-            labels: ['government', 'senate', 'federal'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Valerie',
+            lastName: 'Herman',
+            email: 'vherman@bu.edu',
+            labels: ['host-site-registration', 'partnership-agreement']
         },
         {
-            firstName: 'Susan',
-            lastName: 'Tanenbaum',
-            email: 'stanenbaum@queensbp.nyc.gov',
-            position: 'Queens Borough President',
-            labels: ['government', 'borough_president', 'queens'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        },
-        {
-            firstName: 'Team',
-            lastName: 'Ossé',
-            email: 'chiosse@nyccouncil.ccsend.com',
-            position: 'NYC Council',
-            labels: ['government', 'council', 'team'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        }
-    ],
-    nonprofit: [
-        {
-            firstName: 'Aisha',
-            lastName: 'McGainey',
-            email: 'mcgaineya@gmail.com',
-            labels: ['nonprofit', 'individual'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        },
-        {
-            firstName: 'Amber Melanie',
+            firstName: 'Chris',
             lastName: 'Smith',
-            email: 'amber@ambermsmith.com',
-            labels: ['nonprofit', 'individual'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            email: 'aosmith@cchr.nyc.gov',
+            labels: ['host-site-registration', 'partnership-agreement']
         },
         {
-            firstName: 'Anuj',
-            lastName: 'Garg',
-            email: 'anuj@webincline.com',
-            position: 'Web Developer',
-            labels: ['nonprofit', 'business', 'web_services'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Kailyn',
+            lastName: 'Fox',
+            email: 'kfox8@schools.nyc.gov',
+            labels: ['host-site-registration', 'partnership-agreement']
         },
         {
-            firstName: 'Emily',
-            lastName: 'Kerr',
-            email: 'emily@catalystnonprofitcoaching.com',
-            position: 'Nonprofit Coach',
-            labels: ['nonprofit', 'coaching', 'consulting'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Rodney',
+            lastName: 'Rojas Quiroz',
+            email: 'rrojasquiroz@schools.nyc.gov',
+            labels: ['host-site-registration', 'partnership-agreement']
         },
         {
-            firstName: 'Fabiana',
-            lastName: 'Claure',
-            email: 'fabiana@lc.fabianaclaure.com',
-            labels: ['nonprofit', 'individual'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Hana',
+            lastName: 'Epstein',
+            email: 'HEpstein3@schools.nyc.gov',
+            labels: ['host-site-registration', 'partnership-agreement']
         },
         {
-            firstName: 'Feruze Khadija Ashki',
-            lastName: 'Karim',
-            email: 'feruzefaison@gmail.com',
-            labels: ['nonprofit', 'individual'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Kerisha',
+            lastName: '',
+            email: 'kerisha@streetsquash.org',
+            labels: ['host-site-registration', 'partnership-agreement']
         },
         {
-            firstName: 'Joan',
-            lastName: 'Garry',
-            email: 'joan@joangarry.com',
-            position: 'Nonprofit Leadership Expert',
-            labels: ['nonprofit', 'leadership', 'consulting'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Kylie',
+            lastName: '',
+            email: 'kylie@streetsquash.org',
+            labels: ['host-site-registration', 'partnership-agreement']
         },
         {
-            firstName: 'Joan',
-            lastName: 'Garry',
-            email: 'joangarry@nonprofitleadershiplab.com',
-            position: 'Nonprofit Leadership Lab',
-            labels: ['nonprofit', 'leadership', 'lab'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Stefany',
+            lastName: '',
+            email: 'stefany@streetsquash.org',
+            labels: ['host-site-registration', 'partnership-agreement']
         },
         {
-            firstName: 'Katherine S.',
-            lastName: 'Boswell',
-            email: 'ksboswell@kresge.org',
-            position: 'Kresge Foundation',
-            labels: ['nonprofit', 'foundation', 'funding'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Jen',
+            lastName: '',
+            email: 'jen@streetsquash.org',
+            labels: ['host-site-registration', 'partnership-agreement']
         },
         {
-            firstName: 'Mardi Gras',
-            lastName: 'Productions',
-            email: 'mardigras@nycstreetfairs.com',
-            position: 'Event Production',
-            labels: ['nonprofit', 'events', 'production'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Gmelendez',
+            lastName: '',
+            email: 'gmelendez@eastbronxacademy.org',
+            labels: ['host-site-registration', 'partnership-agreement']
         },
         {
-            firstName: 'NYC Department of Cultural',
-            lastName: 'Affairs',
-            email: 'pr@mail.culture.nyc.gov',
-            position: 'Cultural Affairs Department',
-            labels: ['government', 'cultural_affairs', 'nyc'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Aleeyah',
+            lastName: '',
+            email: 'aleeyah@jaiayouth.org',
+            labels: ['host-site-registration', 'partnership-agreement']
         }
     ],
-    harmony_team: [
+    additionalContacts: [
         {
-            firstName: 'Harmony 4 All',
-            lastName: 'Media',
-            email: 'media@harmony4all.org',
-            position: 'Media Team',
-            labels: ['harmony_team', 'media', 'internal'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Carmen',
+            lastName: 'Merville',
+            email: 'cmerville@venturehouse.org',
+            labels: ['general-contact']
         },
         {
-            firstName: 'Nahaz',
-            lastName: 'Quddus',
-            email: 'nahaz@harmony4all.org',
-            position: 'Team Member',
-            labels: ['harmony_team', 'internal'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        }
-    ],
-    external_individuals: [
-        {
-            firstName: 'ahmed',
-            lastName: 'Benomar',
-            email: 'partitiondz@yahoo.fr',
-            labels: ['individual', 'external'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        }
-    ],
-    recipients: [
-        {
-            firstName: 'Bianca',
-            lastName: 'Quddus',
-            email: 'biancaq@harmony4all.org',
-            position: 'Team Member',
-            labels: ['harmony_team', 'recipient', 'internal'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Director Seniorcenter',
+            lastName: '',
+            email: 'director.seniorcenter@zzalphas.org',
+            labels: ['general-contact']
         },
         {
-            firstName: 'Harmony 4 All',
-            lastName: 'Admin',
-            email: 'info@harmony4all.org',
-            position: 'Administrator',
-            labels: ['harmony_team', 'admin', 'internal'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'HerCare',
+            lastName: '',
+            email: 'hercare@hercareinc.org',
+            labels: ['general-contact']
         },
         {
-            firstName: 'Joshua',
-            lastName: 'Quddus',
-            email: 'joshuaq@harmony4all.org',
-            position: 'Team Member',
-            labels: ['harmony_team', 'recipient', 'internal'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Info',
+            lastName: '',
+            email: 'info@queensjazz.com',
+            labels: ['general-contact']
         },
         {
-            firstName: 'Nahaz',
-            lastName: 'Quddus',
-            email: 'nahaz@harmony4all.org',
-            position: 'Team Member',
-            labels: ['harmony_team', 'recipient', 'internal'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        }
-    ],
-    cc_recipients: [
-        {
-            firstName: 'Diane',
-            lastName: 'Harmony',
-            email: 'diane@harmony4all.org',
-            position: 'Team Member',
-            labels: ['harmony_team', 'cc_recipient', 'internal'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Kim',
+            lastName: '',
+            email: 'kim@theconnectedchef.org',
+            labels: ['general-contact']
         },
         {
-            firstName: 'Brian',
-            lastName: 'Soul Search',
-            email: 'brian@soulsearchrecords.com',
-            position: 'Music Producer',
-            labels: ['music_industry', 'cc_recipient', 'producer'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Maribel',
+            lastName: '',
+            email: 'maribel@zionsmission.org',
+            labels: ['general-contact']
         },
         {
-            firstName: 'Clarizio',
-            lastName: 'Music',
-            email: 'clariziomusic@gmail.com',
-            position: 'Music Studio',
-            labels: ['music_industry', 'cc_recipient', 'studio'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Mariella',
+            lastName: '',
+            email: 'mariella@rifnyc.org',
+            labels: ['general-contact']
         },
         {
-            firstName: 'Dori',
-            lastName: 'Music Studio',
-            email: 'dorimusicstudio@gmail.com',
-            position: 'Music Studio',
-            labels: ['music_industry', 'cc_recipient', 'studio'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Maria',
+            lastName: 'Moraga',
+            email: 'mmoraga@nynice.org',
+            labels: ['general-contact']
         },
         {
-            firstName: 'Eddie',
-            lastName: 'Griggs',
-            email: 'eddiegriggs@comcast.net',
-            position: 'Musician',
-            labels: ['music_industry', 'cc_recipient', 'musician'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'NBO Outreach',
+            lastName: '',
+            email: 'nbo_outreach@aol.com',
+            labels: ['general-contact']
         },
         {
-            firstName: 'Erica',
-            lastName: 'Aldrich',
-            email: 'ericaldrich@mainstreetmusicmh.com',
-            position: 'Music Professional',
-            labels: ['music_industry', 'cc_recipient', 'music_professional'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Networks Master Calendar',
+            lastName: '',
+            email: '',
+            labels: ['general-contact']
         },
         {
-            firstName: 'Fifty Two',
-            lastName: 'Guitars',
-            email: 'fiftytwoguitars@gmail.com',
-            position: 'Music Shop',
-            labels: ['music_industry', 'cc_recipient', 'retail'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Nextkey Foundation',
+            lastName: '',
+            email: 'nextkeyfoundation@gmail.com',
+            labels: ['general-contact']
         },
         {
-            firstName: 'Gus',
-            lastName: 'Sheaman',
-            email: 'gussheaman@aol.com',
-            position: 'Musician',
-            labels: ['music_industry', 'cc_recipient', 'musician'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        },
-        {
-            firstName: 'J.',
-            lastName: 'Pandelios',
-            email: 'jpandelios@aol.com',
-            position: 'Musician',
-            labels: ['music_industry', 'cc_recipient', 'musician'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        },
-        {
-            firstName: 'Mark',
-            lastName: 'D',
-            email: 'markd@mockingbirdweb.com',
-            position: 'Web Developer',
-            labels: ['music_industry', 'cc_recipient', 'web_services'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        },
-        {
-            firstName: 'Marlene U',
-            lastName: 'Music',
-            email: 'marlene.umusic@gmail.com',
-            position: 'Musician',
-            labels: ['music_industry', 'cc_recipient', 'musician'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        },
-        {
-            firstName: 'Matty',
-            lastName: 'Sly',
-            email: 'mattysly@att.net',
-            position: 'Musician',
-            labels: ['music_industry', 'cc_recipient', 'musician'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        },
-        {
-            firstName: 'M',
-            lastName: 'Conrad',
-            email: 'mconrad191@gmail.com',
-            position: 'Musician',
-            labels: ['music_industry', 'cc_recipient', 'musician'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        },
-        {
-            firstName: 'Michael',
-            lastName: 'Snyder',
-            email: 'michaelsnyder7763@gmail.com',
-            position: 'Musician',
-            labels: ['music_industry', 'cc_recipient', 'musician'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        },
-        {
-            firstName: 'Mike',
-            lastName: 'Music Bureau',
-            email: 'mike@themusicbureau.com',
-            position: 'Music Bureau',
-            labels: ['music_industry', 'cc_recipient', 'music_services'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        },
-        {
-            firstName: 'M',
-            lastName: 'Music',
-            email: 'mmmusic1960@aol.com',
-            position: 'Musician',
-            labels: ['music_industry', 'cc_recipient', 'musician'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        },
-        {
-            firstName: 'M',
-            lastName: 'Vacanti',
-            email: 'mvacanti@aol.com',
-            position: 'Musician',
-            labels: ['music_industry', 'cc_recipient', 'musician'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        },
-        {
-            firstName: 'North Jersey',
-            lastName: 'Guitar',
-            email: 'northjerseyguitar@gmail.com',
-            position: 'Music Shop',
-            labels: ['music_industry', 'cc_recipient', 'retail'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        },
-        {
-            firstName: 'Payettes Music',
-            lastName: 'Traders',
-            email: 'payettesmusictraders@gmail.com',
-            position: 'Music Shop',
-            labels: ['music_industry', 'cc_recipient', 'retail'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        },
-        {
-            firstName: 'The Garden by the',
-            lastName: 'Bay',
-            email: 'thegardenbythebay@gmail.com',
-            position: 'Community Organization',
-            labels: ['community', 'cc_recipient', 'organization'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        },
-        {
-            firstName: 'Thomas',
-            lastName: 'Tran',
-            email: 'thomas.tran3219@gmail.com',
-            position: 'Musician',
-            labels: ['music_industry', 'cc_recipient', 'musician'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
-        },
-        {
-            firstName: 'Woodstock Music',
-            lastName: 'Shop',
-            email: 'woodstockmusicshop@gmail.com',
-            position: 'Music Shop',
-            labels: ['music_industry', 'cc_recipient', 'retail'],
-            source: 'email_list',
-            emailSubscriberStatus: 'subscribed'
+            firstName: 'Raveen',
+            lastName: 'Seaton',
+            email: 'raveenseaton@gmail.com',
+            labels: ['general-contact']
         }
     ]
 };

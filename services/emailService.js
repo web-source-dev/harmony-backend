@@ -365,6 +365,8 @@ class EmailService {
       const {
         senderAccountIndex,
         recipientEmails,
+        ccEmails = [],
+        bccEmails = [],
         title,
         subject,
         imageUrl,
@@ -394,6 +396,10 @@ class EmailService {
       if (!title && !subject) {
         throw new Error('Title or subject is required');
       }
+
+      const normalizedRecipients = recipientEmails.map(email => email.trim()).filter(Boolean);
+      const normalizedCcEmails = Array.isArray(ccEmails) ? ccEmails.map(email => email.trim()).filter(Boolean) : [];
+      const normalizedBccEmails = Array.isArray(bccEmails) ? bccEmails.map(email => email.trim()).filter(Boolean) : [];
 
       // Create transporter
       const transporter = this.createGmailTransporter(senderAccountIndex);
@@ -433,7 +439,7 @@ class EmailService {
         failed: []
       };
 
-      for (const recipientEmail of recipientEmails) {
+      for (const recipientEmail of normalizedRecipients) {
         try {
           const mailOptions = {
             from: {
@@ -443,7 +449,9 @@ class EmailService {
             to: recipientEmail.trim(),
             subject: emailSubject,
             html: htmlContent,
-            text: textContent
+            text: textContent,
+            cc: normalizedCcEmails.length ? normalizedCcEmails : undefined,
+            bcc: normalizedBccEmails.length ? normalizedBccEmails : undefined
           };
 
           const result = await transporter.sendMail(mailOptions);
