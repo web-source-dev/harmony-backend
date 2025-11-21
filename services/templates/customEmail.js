@@ -207,9 +207,14 @@ class CustomEmailTemplate {
       height: 40px; 
       background: #9ba5a5; 
     }
+    .blog-image-box {
+      width: 100%;
+      height: auto;
+      margin-bottom: 20px;
+    }
     .blog-image {
       width: 100%;
-      height: 500px;
+      height: auto;
       object-fit: cover;
       border-radius: 8px;
       display: block;
@@ -272,7 +277,7 @@ class CustomEmailTemplate {
         max-height: 60px;
       }
       .blog-image {
-        height: 300px;
+        height: auto;
       }
     }
   </style>
@@ -298,9 +303,11 @@ class CustomEmailTemplate {
               <h1 class="blog-title">${title || 'Harmony 4 All'}</h1>
               <div class="blog-author">By: ${senderName}</div>
               
-              ${imageUrl ? `
-                <img src="${imageUrl}" alt="${title || 'Email Image'}" class="blog-image">
-              ` : ''}
+               ${imageUrl ? `
+        <div class="blog-image-box">
+          <img src="${imageUrl}" alt="${title || 'Email Image'}" class="blog-image">
+        </div>
+      ` : ''}
 
               <div class="blog-content">
                 ${content || '<p>Thank you for your continued support of Harmony 4 All!</p>'}
