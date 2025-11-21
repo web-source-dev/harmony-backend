@@ -85,79 +85,42 @@ class CustomEmailTemplate {
       text-align: right; 
       margin-bottom: 25px; 
     }
-    .blog-content { 
-      color: #4a5568; 
+     .blog-content { 
+      margin: 0; 
+      padding: 0; 
+      line-height: 1.6; 
       font-size: 16px; 
-      line-height: 1.8; 
-      margin-bottom: 30px; 
+    }
+    .blog-content * { 
+      margin-top: 0 !important; 
+      margin-bottom: 0 !important; 
     }
     .blog-content p { 
-      margin-bottom: 15px; 
-      margin-top: 0;
+      margin: 0 !important; 
+      padding: 0 !important; 
+      line-height: 1.6; 
     }
-    .blog-content p:first-child {
-      margin-top: 0;
+    .blog-content p:empty { 
+      display: none; 
+      height: 0; 
     }
-    .blog-content p:last-child {
-      margin-bottom: 0;
+    .blog-content ul, 
+    .blog-content ol { 
+      margin: 0 !important; 
+      padding-left: 1.5em; 
+      padding-top: 0 !important; 
+      padding-bottom: 0 !important; 
     }
-    .blog-content strong { 
-      font-weight: bold; 
-      color: #2d3748;
+    .blog-content li { 
+      margin: 0 !important; 
+      padding: 0; 
     }
-    .blog-content b { 
-      font-weight: bold; 
-      color: #2d3748;
-    }
-    .blog-content em { 
-      font-style: italic; 
-    }
-    .blog-content i { 
-      font-style: italic; 
-    }
-    .blog-content u {
-      text-decoration: underline;
-    }
-    .blog-content a { 
-      color: #2d3748 !important; 
-      text-decoration: underline; 
-    }
-    .blog-content a:hover {
-      color: #1a202c !important;
-    }
-    .blog-content ul {
-      margin: 15px 0;
-      padding-left: 20px;
-    }
-    .blog-content ol {
-      margin: 15px 0;
-      padding-left: 20px;
-    }
-    .blog-content li {
-      margin-bottom: 8px;
-    }
-    .blog-content h1, .blog-content h2, .blog-content h3, .blog-content h4, .blog-content h5, .blog-content h6 {
-      color: #2d3748;
-      margin: 20px 0 10px 0;
-      font-weight: bold;
-    }
-    .blog-content h1 { font-size: 24px; }
-    .blog-content h2 { font-size: 22px; }
-    .blog-content h3 { font-size: 20px; }
-    .blog-content h4 { font-size: 18px; }
-    .blog-content h5 { font-size: 16px; }
-    .blog-content h6 { font-size: 14px; }
-    .blog-content blockquote {
-      border-left: 4px solid #9ba5a5;
-      padding-left: 15px;
-      margin: 15px 0;
-      font-style: italic;
-      color: #666;
-    }
-    .blog-content hr {
-      border: none;
-      border-top: 1px solid #e2e8f0;
-      margin: 20px 0;
+    .blog-content h1, 
+    .blog-content h2, 
+    .blog-content h3 { 
+      margin: 0 !important; 
+      padding: 0 !important; 
+      line-height: 1.3; 
     }
     .footer { 
       background: #ffffff; 

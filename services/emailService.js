@@ -25,22 +25,22 @@ class EmailService {
       {
         email: process.env.GMAIL_ACCOUNT_1_EMAIL,
         password: process.env.GMAIL_ACCOUNT_1_PASSWORD,
-        name: 'Harmony 4 All - Account 1'
+        name: 'Harmony 4 All'
       },
       {
         email: process.env.GMAIL_ACCOUNT_2_EMAIL,
         password: process.env.GMAIL_ACCOUNT_2_PASSWORD,
-        name: 'Harmony 4 All - Account 2'
+        name: 'Harmony 4 All'
       },
       {
         email: process.env.GMAIL_ACCOUNT_3_EMAIL,
         password: process.env.GMAIL_ACCOUNT_3_PASSWORD,
-        name: 'Harmony 4 All - Account 3'
+        name: 'Harmony 4 All'
       },
       {
         email: process.env.GMAIL_ACCOUNT_4_EMAIL,
         password: process.env.GMAIL_ACCOUNT_4_PASSWORD,
-        name: 'Harmony 4 All - Account 4'
+        name: 'Harmony 4 All'
       }
     ].filter(account => account.email && account.password);
     
@@ -385,7 +385,8 @@ class EmailService {
         siteLinkUrl,
         socialMediaLinks,
         socialMediaImages,
-        fundersData
+        fundersData,
+        attachments = []
       } = emailData;
 
       // Validate required fields
@@ -453,6 +454,16 @@ class EmailService {
             cc: normalizedCcEmails.length ? normalizedCcEmails : undefined,
             bcc: normalizedBccEmails.length ? normalizedBccEmails : undefined
           };
+
+          // Add attachments if present
+          if (attachments && attachments.length > 0) {
+            mailOptions.attachments = attachments.map(attachment => ({
+              filename: attachment.filename,
+              content: attachment.content,
+              encoding: 'base64',
+              contentType: attachment.contentType
+            }));
+          }
 
           const result = await transporter.sendMail(mailOptions);
           console.log(`Custom email sent to ${recipientEmail}:`, result.messageId);

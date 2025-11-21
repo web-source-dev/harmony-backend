@@ -694,7 +694,8 @@ router.post("/email/send-custom", async (req, res) => {
       siteLinkUrl,
       socialMediaLinks,
       socialMediaImages,
-      fundersData
+      fundersData,
+      attachments = []
     } = req.body;
 
     // Validate required fields
@@ -760,7 +761,8 @@ router.post("/email/send-custom", async (req, res) => {
       siteLinkUrl,
       socialMediaLinks,
       socialMediaImages,
-      fundersData
+      fundersData,
+      attachments
     });
 
     res.json({

@@ -28,7 +28,7 @@ app.use((req, res, next) => {
 });
 
 const connectDB = async () => {
-    try {
+    try { 
         await mongoose.connect(process.env.MONGO_URI);
         console.log("Connected to MongoDB");
     } catch (error) {
@@ -56,7 +56,12 @@ const initializeSchedulers = async () => {
 };
 
 // Initialize schedulers after a short delay to ensure DB is connected
-setTimeout(initializeSchedulers, 2000);
+// Only initialize schedulers if not in development environment
+if (process.env.NODE_ENV !== 'development') {
+    setTimeout(initializeSchedulers, 2000);
+} else {
+    console.log("Schedulers skipped in development environment");
+}
 
 
 
