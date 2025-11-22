@@ -368,6 +368,7 @@ class EmailService {
         ccEmails = [],
         bccEmails = [],
         title,
+        subheading,
         subject,
         imageUrl,
         content,
@@ -409,6 +410,7 @@ class EmailService {
       // Prepare email data
       const emailTemplateData = {
         title,
+        subheading,
         subject,
         imageUrl,
         content,

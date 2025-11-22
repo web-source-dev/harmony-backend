@@ -3,6 +3,7 @@ class CustomEmailTemplate {
   static generateHTML(emailData) {
     const {
       title,
+      subheading,
       imageUrl,
       content,
       senderName = 'Harmony 4 All',
@@ -76,8 +77,15 @@ class CustomEmailTemplate {
       color: #2d3748; 
       font-size: 28px; 
       font-weight: bold; 
-      margin-bottom: 15px; 
+      margin-bottom: 10px; 
       line-height: 1.3; 
+    }
+    .blog-subheading {
+      color: #666;
+      font-size: 18px;
+      font-weight: normal;
+      margin-bottom: 15px;
+      line-height: 1.4;
     }
     .blog-author { 
       color: #666; 
@@ -265,6 +273,9 @@ class CustomEmailTemplate {
       .blog-title {
         font-size: 24px;
       }
+      .blog-subheading {
+        font-size: 16px;
+      }
       .social-icon {
         width: 35px;
         height: 35px;
@@ -301,8 +312,8 @@ class CustomEmailTemplate {
           <tr>
             <td style="padding: 10px; background: white;">
               <h1 class="blog-title">${title || 'Harmony 4 All'}</h1>
-              <div class="blog-author">By: ${senderName}</div>
-              
+              ${subheading ? `<div class="blog-subheading">${subheading}</div>` : ''}
+              <div class="blog-author">By: ${senderName}</div>              
                ${imageUrl ? `
         <div class="blog-image-box">
           <img src="${imageUrl}" alt="${title || 'Email Image'}" class="blog-image">
@@ -473,6 +484,7 @@ class CustomEmailTemplate {
   static generateText(emailData) {
     const {
       title,
+      subheading,
       content,
       senderName = 'Harmony 4 All',
       senderEmail = 'info@harmony4all.org',
@@ -491,7 +503,7 @@ class CustomEmailTemplate {
 Harmony 4 All - Making Music Accessible
 
 ${title || 'Custom Email'}
-By: ${senderName}
+${subheading ? subheading + '\n' : ''}By: ${senderName}
 
 ${content || 'Thank you for your continued support of Harmony 4 All!'}
 
