@@ -17,11 +17,11 @@ class BlogSchedulerService {
     try {
       console.log('Initializing blog scheduler service...');
       
-      // Schedule job for Monday, Wednesday, Friday, Sunday at 12:00 PM (noon) New York time
+      // Schedule job for Monday, Wednesday, Friday, Sunday at 11:58 AM New York time (2 min before video scheduler)
       // Cron format: minute hour day-of-month month day-of-week
       // Day of week: 0 = Sunday, 1 = Monday, 3 = Wednesday, 5 = Friday
-      this.scheduleJob = cron.schedule('0 12 * * 0,1,3,5', async () => {
-        console.log('Running scheduled blog check at 12:00 PM (noon) New York time...');
+      this.scheduleJob = cron.schedule('58 11 * * 0,1,3,5', async () => {
+        console.log('Running scheduled blog check at 11:58 AM New York time...');
         await this.checkAndPublishScheduledBlogs();
       }, {
         scheduled: false,
@@ -34,7 +34,7 @@ class BlogSchedulerService {
       
       console.log('✅ Blog scheduler service initialized successfully');
       console.log('📅 Scheduled days: Monday, Wednesday, Friday, Sunday');
-      console.log('🕐 Scheduled time: 12:00 PM (noon) New York time');
+      console.log('🕐 Scheduled time: 11:58 AM New York time (2 min before video scheduler)');
       console.log('🕐 Timezone: America/New_York');
       
       // Check for any blogs that should have been published but weren't
@@ -272,9 +272,9 @@ class BlogSchedulerService {
       timezone: 'America/New_York',
       currentNYTime: now.format('YYYY-MM-DD HH:mm:ss'),
       scheduledDays: ['Monday', 'Wednesday', 'Friday', 'Sunday'],
-      scheduledTime: '12:00 PM (noon)',
-      cronExpression: '0 12 * * 0,1,3,5',
-      description: 'Runs at 12:00 PM NY time on Monday, Wednesday, Friday, and Sunday'
+      scheduledTime: '11:58 AM (2 min before video scheduler)',
+      cronExpression: '58 11 * * 0,1,3,5',
+      description: 'Runs at 11:58 AM NY time on Monday, Wednesday, Friday, and Sunday (2 min before video scheduler)'
     };
   }
 }
