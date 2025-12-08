@@ -2,6 +2,7 @@ const Brevo = require('@getbrevo/brevo');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
+const pdf = require('html-pdf');
 const {
   WelcomeEmailTemplate,
   WelcomePopupAdminEmailTemplate,
@@ -19,6 +20,7 @@ class EmailService {
   constructor() {
     this.apiInstance = new Brevo.TransactionalEmailsApi();
     this.apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+    this.donationReceiptTemplate = this.loadDonationReceiptTemplate();
     
     // Gmail account configurations
     this.gmailAccounts = [
@@ -232,6 +234,21 @@ class EmailService {
         email: donationData.email,
         name: donationData.isAnonymous ? 'Anonymous Donor' : donationData.donorName
       }];
+
+      // Attach PDF receipt
+      const attachments = [];
+      try {
+        const receiptAttachment = await this.buildDonationReceiptAttachment(donationData);
+        if (receiptAttachment) {
+          attachments.push(receiptAttachment);
+        }
+      } catch (receiptError) {
+        console.error('Failed to generate donation receipt attachment:', receiptError);
+      }
+
+      if (attachments.length > 0) {
+        sendSmtpEmail.attachment = attachments;
+      }
 
       const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`Donation confirmation sent to ${donationData.email}:`, result.messageId);
@@ -491,6 +508,111 @@ class EmailService {
       email: account.email,
       name: account.name
     }));
+  }
+
+  loadDonationReceiptTemplate() {
+    try {
+      const templatePath = path.join(__dirname, '..', 'pdf', 'donation_receipt.html');
+      return fs.readFileSync(templatePath, 'utf8');
+    } catch (error) {
+      console.error('Failed to load donation receipt template:', error);
+      return null;
+    }
+  }
+
+  escapeHtml(value = '') {
+    return String(value).replace(/[&<>"']/g, (match) => {
+      const escapeMap = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      };
+      return escapeMap[match] || match;
+    });
+  }
+
+  formatCurrency(amount) {
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      }).format(Number(amount) || 0);
+    } catch (error) {
+      return `$${Number(amount).toFixed(2)}`;
+    }
+  }
+
+  formatDate(dateValue) {
+    const date = dateValue ? new Date(dateValue) : new Date();
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+  buildDonationReceiptPayload(donationData) {
+    if (!this.donationReceiptTemplate) {
+      return { html: null, receiptNumber: null };
+    }
+
+    const donorName = donationData.isAnonymous ? 'Anonymous Donor' : (donationData.donorName || 'Valued Donor');
+    const receiptNumber = donationData.receiptNumber
+      || donationData.transactionId
+      || donationData.paymentIntentId
+      || donationData.subscription
+      || (donationData._id ? donationData._id.toString() : 'N/A');
+
+    const replacements = {
+      donorName: this.escapeHtml(donorName),
+      receiptNumber: this.escapeHtml(receiptNumber),
+      donationAmount: this.formatCurrency(donationData.amount || 0),
+      dateOfContribution: this.formatDate(donationData.submittedAt || new Date()),
+      designation: this.escapeHtml(donationData.designation || 'General Support'),
+      donationType: this.escapeHtml((donationData.donationType || 'Donation').replace(/-/g, ' ')),
+      paymentMethod: this.escapeHtml((donationData.paymentMethod || 'Card').replace(/-/g, ' ')),
+      transactionId: this.escapeHtml(donationData.transactionId || donationData.paymentIntentId || donationData.subscription || 'Not provided'),
+      donorMessage: donationData.message
+        ? `<strong>Message from donor:</strong> ${this.escapeHtml(donationData.message)}`
+        : ''
+    };
+
+    let html = this.donationReceiptTemplate;
+    Object.entries(replacements).forEach(([key, value]) => {
+      html = html.replace(new RegExp(`{{${key}}}`, 'g'), value);
+    });
+
+    return { html, receiptNumber };
+  }
+
+  async buildDonationReceiptAttachment(donationData) {
+    const { html, receiptNumber } = this.buildDonationReceiptPayload(donationData);
+    if (!html) {
+      return null;
+    }
+
+    return new Promise((resolve, reject) => {
+      pdf.create(html, {
+        format: 'B4',
+        orientation: 'portrait',
+        border: '0',
+        margin: '0',
+        type: 'pdf',
+        quality: 'high',
+        zoomFactor: 1,
+      }).toBuffer((error, buffer) => {
+        if (error) {
+          return reject(error);
+        }
+
+        resolve({
+          name: `Donation_Receipt_${receiptNumber || 'receipt'}.pdf`,
+          content: buffer.toString('base64')
+        });
+      });
+    });
   }
 }
 

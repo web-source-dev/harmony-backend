@@ -7,7 +7,8 @@
     "start": "nodemon index.js",
     "dev": "nodemon index.js",
     "import-contacts": "node scripts/importContacts.js",
-    "import-contacts-clear": "node scripts/importContacts.js --clear"
+    "import-contacts-clear": "node scripts/importContacts.js --clear",
+    "send-donation-email": "node scripts/sendDonationEmail.js"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +24,7 @@
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "googleapis": "^144.0.0",
+    "html-pdf": "^3.0.1",
     "moment-timezone": "^0.5.48",
     "mongoose": "^8.17.0",
     "multer": "^2.0.2",

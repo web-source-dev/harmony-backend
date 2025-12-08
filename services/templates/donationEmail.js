@@ -83,7 +83,6 @@ class DonationEmailTemplate {
             color: #000000;
             text-align: center;
             line-height: 1;
-            margin: 80px 0 0 55px;
             padding: 0;
           }
           .thank-you-message {

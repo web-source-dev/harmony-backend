@@ -266,7 +266,14 @@ async function handleCheckoutSessionCompleted(session) {
           designation: donation.designation,
           isAnonymous: donation.isAnonymous,
           message: donation.message,
-          transactionId: donation.transactionId
+          transactionId: donation.transactionId,
+          paymentIntentId: donation.paymentIntentId,
+          subscription: donation.subscription,
+          receiptNumber: donation.transactionId || donation.paymentIntentId || donation._id?.toString(),
+          submittedAt: donation.submittedAt,
+          paymentMethod: donation.paymentMethod,
+          phone: donation.phone,
+          _id: donation._id
         });
       } catch (emailError) {
         console.error("Failed to send donation confirmation:", emailError);

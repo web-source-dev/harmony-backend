@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Donation Receipt</title>
+
+<style>
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    color: #000;
+  }
+
+  .wrapper {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 10px;
+    position: relative;
+    overflow: visible;
+    min-height: 100vh;
+  }
+
+  /* Watermark */
+  .wrapper::before {
+    content: '';
+    background: url('https://static.wixstatic.com/media/ef9da7_a76d26d2cef849b9a1f593c02dd8c9f5~mv2.png') 
+                no-repeat;
+    background-position: center center;
+    background-size: 950px 950px;
+    opacity: 0.04;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 950px;
+    height: 950px;
+    margin-top: -475px;
+    margin-left: -475px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header - use table layout for PDF consistency */
+  .header {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+  }
+
+  .header-logo,
+  .org-info {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  .header-logo {
+    width: 180px;
+  }
+
+  .header img {
+    width: 150px;
+    height: auto;
+    display: block;
+  }
+
+  .org-info {
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: bold;
+    text-align: right;
+    padding-left: 15px;
+  }
+
+  /* Section spacing */
+  .section {
+    margin: 25px 0;
+  }
+
+  .title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px;
+    margin: 20px 0;
+  }
+
+  /* Table */
+  .donation-details table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .donation-details th,
+  .donation-details td {
+    text-align: left;
+    padding: 8px 5px;
+  }
+
+  .donation-details th {
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  /* Signature */
+  .signature {
+    margin-top: 20px;
+  }
+
+  .signature img {
+    width: 200px;
+    height: auto;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .signature .name {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 3px;
+  }
+
+  a {
+    font-weight: bold;
+    text-decoration: none;
+  }
+</style>
+</head>
+
+<body>
+<div class="wrapper">
+  <div class="content">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-logo">
+        <img src="https://res.cloudinary.com/dcrieatns/image/upload/v1764191169/harmony4all/assets/harmony4all/assets/harmony-4-all-logo.png" alt="Logo">
+      </div>
+      <div class="org-info">
+        Harmony 4 All, Inc.<br>
+        Richmond Hill, NY 11419<br>
+        EIN: <strong>93-2460195</strong><br>
+        A federally recognized <strong>501(c)(3)</strong> nonprofit organization
+      </div>
+    </div>
+    
+    <hr>
+
+    <!-- Title -->
+    <div class="title">DONATION RECEIPT</div>
+
+    <!-- Donation Details -->
+    <div class="section donation-details">
+      <table>
+        <tr><th>Donor Name:</th><td><strong>{{donorName}}</strong></td></tr>
+        <tr><th>Receipt Number:</th><td><strong>{{receiptNumber}}</strong></td></tr>
+        <tr><th>Donation Amount:</th><td><strong>{{donationAmount}}</strong></td></tr>
+        <tr><th>Date:</th><td><strong>{{dateOfContribution}}</strong></td></tr>
+      </table>
+    </div>
+<hr>
+    <!-- Greeting -->
+      <p>Dear <strong>{{donorName}}</strong>,</p>
+
+    <!-- Message -->
+    <div class="section">
+      <p>
+        On behalf of everyone at <strong>Harmony 4 All</strong>, thank you sincerely 
+        for your generous contribution.
+      </p>
+
+      <p>
+        Your support directly advances our mission of 
+        <strong>Making Music Accessible</strong> by helping us provide free, high-quality 
+        music education, instruments, and community performances for underserved 
+        K–12 students across New York City.
+      </p>
+
+      <p>
+        This letter serves as your official tax receipt.
+      </p>
+
+      <p>
+        <strong>
+          No goods or services were provided in exchange for this donation; therefore, 
+          the full amount is tax-deductible to the extent permitted by law.
+        </strong>
+      </p>
+      <p>{{donorMessage}}</p>
+    </div>
+<hr>
+    <!-- Impact -->
+    <div class="section">
+      <p><strong>How Your Support Creates Impact:</strong></p>
+
+      <ul>
+        <li>Free musical instrument rentals and repairs</li>
+        <li>Access to digital music curriculums</li>
+        <li>Community-based workshops, concerts, and intergenerational events</li>
+      </ul>
+    </div>
+<hr>
+    <!-- Contact -->
+    <div class="section">
+      <p>If you need any additional documentation for your records, please contact us at:</p>
+
+      <p>
+        📧 <a href="mailto:info@harmony4all.org">info@harmony4all.org</a><br>
+        📞 <a href="tel:+17374276669">(737) 427-6669</a>
+      </p>
+    </div>
+
+    <div>
+      <strong>With Love and Gratitude,</strong>
+    </div>
+
+    <!-- Signature -->
+    <div class="signature">
+      <img src="https://static.wixstatic.com/media/ef9da7_e9f0524c9a834fdab11dd097697a0f7e~mv2.png" alt="Signature">
+
+      <div class="name">Diane Bacchus</div>
+      <div class="name">Board President</div>
+      <div class="name">Harmony 4 All, Inc.</div>
+
+      <div class="name">
+        <a href="mailto:info@harmony4all.org">info@harmony4all.org</a>
+      </div>
+
+      <div class="name">
+        <a href="https://www.harmony4all.org" target="_blank">www.harmony4all.org</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
