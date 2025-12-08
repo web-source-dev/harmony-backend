@@ -38,11 +38,28 @@ function parseArgs() {
   return parsed;
 }
 
+// Generate receipt number in same format as donation route
+// For testing: uses timestamp-based sequential number starting from 44210
+function generateReceiptNumber() {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const datePrefix = `${year}${month}${day}`;
+  
+  // For testing: use last 2 digits of timestamp to create sequential-like number
+  // This ensures uniqueness for test runs
+  const timestamp = Date.now();
+  const sequence = 44210 + (timestamp % 90); // Will give numbers from 44210 to 44299
+  
+  return `H4A-${datePrefix}-${sequence}`;
+}
+
 // Generate default test data
 function getDefaultTestData() {
   const timestamp = Date.now();
   return {
-    email: 'muhammadnouman72321@gmail.com',
+    email: 'info@harmony4all.org',
     donorName: 'Test Donor',
     amount: 50.00,
     donationType: 'one-time',
@@ -51,7 +68,7 @@ function getDefaultTestData() {
     isAnonymous: false,
     message: 'This is a test donation email with receipt attachment.',
     transactionId: `test_txn_${timestamp}`,
-    receiptNumber: `TEST-${timestamp}`,
+    receiptNumber: generateReceiptNumber(),
     submittedAt: new Date(),
     _id: { toString: () => `test_${timestamp}` }
   };
@@ -83,7 +100,7 @@ function buildDonationData(args) {
 
   const timestamp = Date.now();
   const transactionId = args.transactionId || `txn_${timestamp}`;
-  const receiptNumber = args.receiptNumber || transactionId;
+  const receiptNumber = args.receiptNumber || generateReceiptNumber();
 
   return {
     email: args.email.trim(),

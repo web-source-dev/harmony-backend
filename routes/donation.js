@@ -8,6 +8,45 @@ const stripe = require('../config/stripe');
 // Middleware to handle raw body for webhook
 const handleWebhook = express.raw({ type: 'application/json' });
 
+// Generate unique receipt number with sequential numbering starting from 44210
+async function generateReceiptNumber() {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const datePrefix = `${year}${month}${day}`;
+  
+  // Find the last receipt number (any date, to continue sequence)
+  const lastDonation = await Donation.findOne({
+    receiptNumber: { $exists: true, $ne: null }
+  }).sort({ receiptNumber: -1 });
+  
+  let sequenceNumber = 44210; // Start from 44210
+  
+  if (lastDonation && lastDonation.receiptNumber) {
+    // Extract the sequence number from the last receipt
+    // Format: H4A-YYYYMMDD-XXXXX
+    const match = lastDonation.receiptNumber.match(/H4A-\d{8}-(\d+)$/);
+    if (match) {
+      const lastSequence = parseInt(match[1], 10);
+      sequenceNumber = lastSequence + 1;
+    }
+  }
+  
+  // Format: H4A-YYYYMMDD-XXXXX
+  const receiptNumber = `H4A-${datePrefix}-${sequenceNumber}`;
+  
+  // Double-check uniqueness (safety check)
+  const exists = await Donation.findOne({ receiptNumber });
+  if (exists) {
+    // If somehow it exists, increment and try again
+    sequenceNumber++;
+    return `H4A-${datePrefix}-${sequenceNumber}`;
+  }
+  
+  return receiptNumber;
+}
+
 // Create Stripe Checkout session
 router.post('/create-checkout-session', async (req, res) => {
   try {
@@ -39,6 +78,9 @@ router.post('/create-checkout-session', async (req, res) => {
       });
     }
 
+    // Generate unique receipt number
+    const receiptNumber = await generateReceiptNumber();
+
     // Create donation record with pending status
     const donation = new Donation({
       donorName,
@@ -50,7 +92,8 @@ router.post('/create-checkout-session', async (req, res) => {
       designation: designation || 'general',
       isAnonymous: isAnonymous || false,
       message,
-      status: 'pending'
+      status: 'pending',
+      receiptNumber: receiptNumber
     });
 
     await donation.save();
@@ -269,7 +312,7 @@ async function handleCheckoutSessionCompleted(session) {
           transactionId: donation.transactionId,
           paymentIntentId: donation.paymentIntentId,
           subscription: donation.subscription,
-          receiptNumber: donation.transactionId || donation.paymentIntentId || donation._id?.toString(),
+          receiptNumber: donation.receiptNumber,
           submittedAt: donation.submittedAt,
           paymentMethod: donation.paymentMethod,
           phone: donation.phone,
@@ -287,12 +330,15 @@ async function handleCheckoutSessionCompleted(session) {
           phone: donation.phone,
           amount: donation.amount,
           donationType: donation.donationType,
-          designation: donation.designation,
           paymentMethod: donation.paymentMethod,
           isAnonymous: donation.isAnonymous,
           message: donation.message,
           status: donation.status,
-          transactionId: donation.transactionId
+          transactionId: donation.transactionId,
+          paymentIntentId: donation.paymentIntentId,
+          subscription: donation.subscription,
+          receiptNumber: donation.receiptNumber,
+          _id: donation._id
         });
       } catch (emailError) {
         console.error("Failed to send donation notification to admin:", emailError);

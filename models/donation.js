@@ -61,6 +61,12 @@ const donationSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  receiptNumber: {
+    type: String,
+    trim: true,
+    unique: true,
+    sparse: true
+  },
   submittedAt: {
     type: Date,
     default: Date.now

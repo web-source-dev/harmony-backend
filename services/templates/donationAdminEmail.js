@@ -159,22 +159,16 @@ class DonationAdminEmailTemplate {
                   <span class="info-value">${donationData.donationType === 'monthly' ? 'Monthly Recurring' : donationData.donationType === 'quarterly' ? 'Quarterly' : donationData.donationType === 'yearly' ? 'Yearly' : 'One-time'}</span>
                 </div>
                 ` : ''}
-                ${donationData.designation ? `
-                <div class="info-row">
-                  <span class="info-label">Designation:</span>
-                  <span class="info-value">${donationData.designation.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
-                </div>
-                ` : ''}
                 ${donationData.paymentMethod ? `
                 <div class="info-row">
                   <span class="info-label">Payment Method:</span>
                   <span class="info-value">${donationData.paymentMethod.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
                 </div>
                 ` : ''}
-                ${donationData.transactionId ? `
+                ${donationData.receiptNumber ? `
                 <div class="info-row">
-                  <span class="info-label">Transaction ID:</span>
-                  <span class="info-value">${donationData.transactionId}</span>
+                  <span class="info-label">Receipt Number:</span>
+                  <span class="info-value">${donationData.receiptNumber}</span>
                 </div>
                 ` : ''}
                 ${donationData.status ? `

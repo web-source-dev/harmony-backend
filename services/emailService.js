@@ -559,6 +559,8 @@ class EmailService {
     }
 
     const donorName = donationData.isAnonymous ? 'Anonymous Donor' : (donationData.donorName || 'Valued Donor');
+    // Use receiptNumber from database (should always be present for new donations)
+    // Fallback only for legacy donations that might not have receiptNumber
     const receiptNumber = donationData.receiptNumber
       || donationData.transactionId
       || donationData.paymentIntentId
