@@ -123,13 +123,11 @@ async function main() {
 
     // Send the donation confirmation email
     const result = await emailService.sendDonationConfirmation(donationData);
-
+    const resultAdmin = await emailService.sendDonationNotificationToAdmin(donationData);
+    console.log('Donation notification sent to admin:', resultAdmin.messageId);
     console.log('✅ Success! Donation email sent successfully.');
-    console.log('Message ID:', result.messageId);
-    console.log('\nEmail includes:');
-    console.log('  - Donation confirmation message');
-    console.log('  - PDF receipt attachment');
-    console.log(`  - Receipt number: ${donationData.receiptNumber}`);
+    console.log('Donation confirmation sent to donor:', result.messageId);
+    console.log('Donation notification sent to admin:', resultAdmin.messageId);
 
   } catch (error) {
     console.error('\n❌ Error sending donation email:');
