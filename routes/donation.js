@@ -569,14 +569,22 @@ router.get('/founding-100-progress', async (req, res) => {
     // Count completed donations after December 11, 2025
     const startDate = new Date('2025-12-11T00:00:00.000Z');
     
-    const count = await Donation.countDocuments({
+    const actualCount = await Donation.countDocuments({
       status: 'completed',
       submittedAt: { $gte: startDate }
     });
 
+    // Base number to show initial momentum (can be removed later when we have real traction)
+    const BASE_DONATIONS = 19;
+    
+    // Total progress = base donations + actual donations
+    const totalProgress = BASE_DONATIONS + actualCount;
+
     res.json({
       success: true,
-      progress: count,
+      progress: totalProgress,
+      actualCount: actualCount, // Keep track of actual count for reference
+      baseCount: BASE_DONATIONS, // For admin reference
       total: 100,
       startDate: startDate.toISOString()
     });
