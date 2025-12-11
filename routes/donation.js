@@ -563,6 +563,32 @@ router.get('/status/:donationId', async (req, res) => {
   }
 });
 
+// Get Founding 100 Circle progress
+router.get('/founding-100-progress', async (req, res) => {
+  try {
+    // Count completed donations after December 11, 2025
+    const startDate = new Date('2025-12-11T00:00:00.000Z');
+    
+    const count = await Donation.countDocuments({
+      status: 'completed',
+      submittedAt: { $gte: startDate }
+    });
+
+    res.json({
+      success: true,
+      progress: count,
+      total: 100,
+      startDate: startDate.toISOString()
+    });
+  } catch (error) {
+    console.error('Error fetching founding 100 progress:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch founding 100 progress'
+    });
+  }
+});
+
 // Test endpoint to verify webhook route is accessible
 router.get('/webhook-test', (req, res) => {
   res.json({ message: 'Webhook route is accessible', timestamp: new Date().toISOString() });
