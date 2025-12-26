@@ -1,0 +1,847 @@
+{
+  "about": {
+    "heroBackground": {
+      "name": "About Hero Background",
+      "url": "/assets/about-hero-background-min.jpg",
+      "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970049/harmony4all/assets/about-hero-background.jpg"
+    },
+    "mainImage": {
+      "name": "Young Musicians Playing Clarinet and Saxophone",
+      "url": "/assets/young-musicians-playing-clarinet-and-saxophone-min.jpg",
+      "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970170/harmony4all/assets/young-musicians-playing-clarinet-and-saxophone.jpg"
+    },
+    "secondaryImage": {
+      "name": "Young Musicians Smiling Together",
+      "url": "/assets/young-musicians-smiling-together-min.jpg",
+      "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970171/harmony4all/assets/young-musicians-smiling-together.jpg"
+    },
+    "missionBackground": {
+      "name": "Mission Section Background",
+      "url": "/assets/mission-section-background-min.jpg",
+      "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970144/harmony4all/assets/mission-section-background.jpg"
+    },
+    "valuesImage": {
+      "name": "Orchestra Performance",
+      "url": "/assets/orchestra-performance-min.jpg",
+      "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970156/harmony4all/assets/orchestra-performance.jpg"
+    },
+    "teamMembers": [
+      {
+        "name": "Bianca Quddus",
+        "url": "/assets/bianca-quddus-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970071/harmony4all/assets/bianca-quddus.png"
+      },
+      {
+        "name": "Joshua Quddus",
+        "url": "/assets/joshua-quddus-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970135/harmony4all/assets/joshua-quddus.png"
+      }
+    ],
+    "storyMilestones": [
+      {
+        "name": "Elementary School - With Teacher",
+        "url": "/assets/elementary-school-with-teacher-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970091/harmony4all/assets/elementary-school-with-teacher.jpg"
+      },
+      {
+        "name": "Carnegie Hall Performance",
+        "url": "/assets/carnegie-hall-performance-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970080/harmony4all/assets/carnegie-hall-performance.png"
+      },
+      {
+        "name": "Bianca Chambers Performance at Juilliard",
+        "url": "/assets/bianca-chambers-performance-at-juilliard-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970067/harmony4all/assets/bianca-chambers-performance-at-juilliard.jpg"
+      },
+      {
+        "name": "Awarded Artist as Citizen from Juilliard",
+        "url": "/assets/awarded-artist-as-citizen-from-juilliard-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970057/harmony4all/assets/awarded-artist-as-citizen-from-juilliard.jpg"
+      },
+      {
+        "name": "Instrument Donation Drive",
+        "url": "/assets/instrument-donation-drive-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970123/harmony4all/assets/instrument-donation-drive.png"
+      }
+    ]
+  },
+  "coFounders": {
+    "bianca": {
+      "heroBackground": {
+        "name": "Bianca Hero Background",
+        "url": "/assets/mission-section-background-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970144/harmony4all/assets/mission-section-background.jpg"
+      },
+      "profileImage": {
+        "name": "Bianca Quddus Profile",
+        "url": "/assets/bianca-quddus-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970071/harmony4all/assets/bianca-quddus.png"
+      }
+    },
+    "joshua": {
+      "heroBackground": {
+        "name": "Joshua Hero Background",
+        "url": "/assets/mission-section-background-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970144/harmony4all/assets/mission-section-background.jpg"
+      },
+      "profileImage": {
+        "name": "Joshua Quddus Profile",
+        "url": "/assets/joshua-quddus-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970135/harmony4all/assets/joshua-quddus.png"
+      }
+    }
+  },
+  "getInvolved": {
+    "heroBackground": {
+      "name": "Get Involved Hero Background",
+      "url": "/assets/get-involved-hero-background-min.jpg",
+      "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970096/harmony4all/assets/get-involved-hero-background.jpg"
+    },
+    "volunteerOpportunities": [
+      {
+        "name": "Music Education Assistant",
+        "url": "/assets/music-education-assistant-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970145/harmony4all/assets/music-education-assistant.jpg"
+      },
+      {
+        "name": "Event Coordinator",
+        "url": "/assets/event-coordinator-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970093/harmony4all/assets/event-coordinator.jpg"
+      },
+      {
+        "name": "Administrative Support",
+        "url": "/assets/administrative-support-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970050/harmony4all/assets/administrative-support.jpg"
+      },
+      {
+        "name": "Instrument Pickup Helper",
+        "url": "/assets/instrument-pickup-helper-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970125/harmony4all/assets/instrument-pickup-helper.jpg"
+      }
+    ],
+    "donationLevels": [
+      {
+        "name": "$50 - Music Supplies",
+        "url": "/assets/50-music-supplies-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970045/harmony4all/assets/50-music-supplies.jpg"
+      },
+      {
+        "name": "$100 - Instrument Rental",
+        "url": "/assets/100-instrument-rental-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970043/harmony4all/assets/100-instrument-rental.jpg"
+      },
+      {
+        "name": "$200 - Full Music Education",
+        "url": "/assets/200-full-music-education-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970044/harmony4all/assets/200-full-music-education.jpg"
+      },
+      {
+        "name": "$500 - Classroom Support",
+        "url": "/assets/500-classroom-support-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970048/harmony4all/assets/500-classroom-support.jpg"
+      },
+      {
+        "name": "$750 - School Band Support",
+        "url": "/assets/music-education-assistant-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970145/harmony4all/assets/music-education-assistant.jpg"
+      },
+      {
+        "name": "$1000 - Community Impact",
+        "url": "/assets/500-classroom-support-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970048/harmony4all/assets/500-classroom-support.jpg"
+      }
+    ]
+  },
+  "donate": {
+    "donationLevels": [
+      {
+        "name": "$50 - Music Supplies",
+        "url": "/assets/50-music-supplies-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970045/harmony4all/assets/50-music-supplies.jpg"
+      },
+      {
+        "name": "$100 - Instrument Rental",
+        "url": "/assets/100-instrument-rental-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970043/harmony4all/assets/100-instrument-rental.jpg"
+      },
+      {
+        "name": "$200 - Full Music Education",
+        "url": "/assets/200-full-music-education-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970044/harmony4all/assets/200-full-music-education.jpg"
+      },
+      {
+        "name": "$500 - Classroom Support",
+        "url": "/assets/500-classroom-support-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970048/harmony4all/assets/500-classroom-support.jpg"
+      },
+      {
+        "name": "$750 - School Band Support",
+        "url": "/assets/music-education-assistant-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970145/harmony4all/assets/music-education-assistant.jpg"
+      },
+      {
+        "name": "$1000 - Community Impact",
+        "url": "/assets/100-instrument-rental-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970043/harmony4all/assets/100-instrument-rental.jpg"
+      }
+    ]
+  },
+  "contact": {
+    "heroBackground": {
+      "name": "Contact Hero Background",
+      "url": "/assets/200-full-music-education-min.jpg",
+      "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970044/harmony4all/assets/200-full-music-education.jpg"
+    },
+    "faqImages": [
+      {
+        "name": "What is Harmony 4 All FAQ",
+        "url": "/assets/200-full-music-education-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970044/harmony4all/assets/200-full-music-education.jpg"
+      },
+      {
+        "name": "How can I donate musical instruments FAQ",
+        "url": "/assets/donate-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970086/harmony4all/assets/donate.jpg"
+      },
+      {
+        "name": "How does the musical instrument rental process work FAQ",
+        "url": "/assets/50-music-supplies-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970045/harmony4all/assets/50-music-supplies.jpg"
+      },
+      {
+        "name": "How can I volunteer or get involved FAQ",
+        "url": "/assets/instrument-pickup-helper-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970125/harmony4all/assets/instrument-pickup-helper.jpg"
+      }
+    ]
+  },
+  "media": {
+    "placeholder": {
+      "name": "Media Placeholder Image",
+      "url": "/assets/media-placeholder-image-min.jpg",
+      "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970143/harmony4all/assets/media-placeholder-image.jpg"
+    },
+    "mobileHeroBackground": {
+      "name": "Media Mobile Hero Background",
+      "url": "/assets/media-mobile-hero-background-min.png",
+      "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970142/harmony4all/assets/media-mobile-hero-background.png"
+    },
+    "galleryImages": [
+      {
+        "name": "Senator Addabbo Supports Harmony 4 All Collecting Musical Instruments to Donate to Schools",
+        "url": "/assets/senator-addabbo-supports-harmony-4-all-collecting-musical-instruments-to-donate-to-schools-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970159/harmony4all/assets/senator-addabbo-supports-harmony-4-all-collecting-musical-instruments-to-donate-to-schools.jpg"
+      },
+      {
+        "name": "Harmony 4 All's First Instrument Donation Drive",
+        "url": "/assets/harmony-4-all-s-first-instrument-donation-drive-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970112/harmony4all/assets/harmony-4-all-s-first-instrument-donation-drive.jpg"
+      },
+      {
+        "name": "Harmony 4 All Concert with Juilliard Faculty Willie Morris",
+        "url": "/assets/harmony-4-all-concert-with-juilliard-faculty-willie-morris-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970106/harmony4all/assets/harmony-4-all-concert-with-juilliard-faculty-willie-morris.jpg"
+      },
+      {
+        "name": "Bianca Performing at Harmony 4 All Community Concert",
+        "url": "/assets/bianca-performing-at-harmony-4-all-community-concert-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970069/harmony4all/assets/bianca-performing-at-harmony-4-all-community-concert.jpg"
+      },
+      {
+        "name": "Bianca and Joshua with Juilliard Faculty Supporting Harmony 4 All Concerts",
+        "url": "/assets/bianca-and-joshua-with-juilliard-faculty-supporting-harmony-4-all-concerts-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970062/harmony4all/assets/bianca-and-joshua-with-juilliard-faculty-supporting-harmony-4-all-concerts.jpg"
+      },
+      {
+        "name": "Harmony 4 All Mother's Day Concert",
+        "url": "/assets/harmony-4-all-mother-s-day-concert-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970111/harmony4all/assets/harmony-4-all-mother-s-day-concert.jpg"
+      },
+      {
+        "name": "Volunteer Musicians at Harmony 4 All Concert",
+        "url": "/assets/volunteer-musicians-at-harmony-4-all-concert-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970167/harmony4all/assets/volunteer-musicians-at-harmony-4-all-concert.jpg"
+      },
+      {
+        "name": "Harmony 4 All Concert with Department of Youth & Community Development Director Louisa Romero",
+        "url": "/assets/harmony-4-all-concert-with-department-of-youth-community-development-director-louisa-romero-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970105/harmony4all/assets/harmony-4-all-concert-with-department-of-youth-community-development-director-louisa-romero.jpg"
+      },
+      {
+        "name": "Bianca and Joshua Receiving Commencement Award from the Juilliard Preparatory Division",
+        "url": "/assets/bianca-and-joshua-receiving-commencement-award-from-the-juilliard-preparatory-division-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970061/harmony4all/assets/bianca-and-joshua-receiving-commencement-award-from-the-juilliard-preparatory-division.jpg"
+      },
+      {
+        "name": "Bianca's Wind Quintet performance at Juilliard",
+        "url": "/assets/bianca-s-wind-quintet-performance-at-juilliard-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970073/harmony4all/assets/bianca-s-wind-quintet-performance-at-juilliard.jpg"
+      },
+      {
+        "name": "After a Performance with the NY Philharmonic Youth Orchestra with Gustavo Dudamel",
+        "url": "/assets/after-a-performance-with-the-ny-philharmonic-youth-orchestra-with-gustavo-dudamel-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970053/harmony4all/assets/after-a-performance-with-the-ny-philharmonic-youth-orchestra-with-gustavo-dudamel.jpg"
+      },
+      {
+        "name": "NY Philharmonic Youth Orchestra Debut with Juilliard Faculty Dr. Shelley Monroe",
+        "url": "/assets/ny-philharmonic-youth-orchestra-debut-with-juilliard-faculty-dr-shelley-monroe-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970154/harmony4all/assets/ny-philharmonic-youth-orchestra-debut-with-juilliard-faculty-dr-shelley-monroe.jpg"
+      },
+      {
+        "name": "Bianca and Joshua's performing at the NY Phil Youth Orchestra Debut - Conducted by Gustavo Dudamel",
+        "url": "/assets/bianca-and-joshua-s-performing-at-the-ny-phil-youth-orchestra-debut-conducted-by-gustavo-dudamel-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970062/harmony4all/assets/bianca-and-joshua-s-performing-at-the-ny-phil-youth-orchestra-debut-conducted-by-gustavo-dudamel.jpg"
+      },
+      {
+        "name": "Joshua's Recital at Juilliard",
+        "url": "/assets/joshua-s-recital-at-juilliard-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970136/harmony4all/assets/joshua-s-recital-at-juilliard.jpg"
+      },
+      {
+        "name": "Bianca's Clarinet Studio Recital at Juilliard",
+        "url": "/assets/bianca-s-clarinet-studio-recital-at-juilliard-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970072/harmony4all/assets/bianca-s-clarinet-studio-recital-at-juilliard.jpg"
+      },
+      {
+        "name": "Joshua Performing with The Jazz at Lincoln Center Youth Orchestra",
+        "url": "/assets/joshua-performing-with-the-jazz-at-lincoln-center-youth-orchestra-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970133/harmony4all/assets/joshua-performing-with-the-jazz-at-lincoln-center-youth-orchestra.jpg"
+      },
+      {
+        "name": "Joshua with Jazz at Lincoln Center Youth Orchestra at The Charles Mingus Competition",
+        "url": "/assets/joshua-with-jazz-at-lincoln-center-youth-orchestra-at-the-charles-mingus-competition-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970137/harmony4all/assets/joshua-with-jazz-at-lincoln-center-youth-orchestra-at-the-charlesgus-competition-min.jpg"
+      },
+      {
+        "name": "Joshua performing at Juilliard with the Jazz Studio for Holiday Concert",
+        "url": "/assets/joshua-performing-at-juilliard-with-the-jazz-studio-for-holiday-concert-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970129/harmony4all/assets/joshua-performing-at-juilliard-with-the-jazz-studio-for-holiday-concert.jpg"
+      },
+      {
+        "name": "Harmony 4 All Valentines Day Concert",
+        "url": "/assets/harmony-4-all-valentines-day-concert-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970114/harmony4all/assets/harmony-4-all-valentines-day-concert.jpg"
+      },
+      {
+        "name": "Bianca and Joshua with Senator Addabbo",
+        "url": "/assets/bianca-and-joshua-with-senator-addabbo-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970063/harmony4all/assets/bianca-and-joshua-with-senator-addabbo.jpg"
+      },
+      {
+        "name": "Community Leader Frances Kweller Supporting Harmony 4 All Concerts",
+        "url": "/assets/community-leader-frances-kweller-supporting-harmony-4-all-concerts-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970084/harmony4all/assets/community-leader-frances-kweller-supporting-harmony-4-all-concerts.jpg"
+      },
+      {
+        "name": "With Elementary School Music teacher April Rachmuth",
+        "url": "/assets/with-elementary-school-music-teacher-april-rachmuth-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970168/harmony4all/assets/with-elementary-school-music-teacher-april-rachmuth.jpg"
+      },
+      {
+        "name": "Leaders of the Community attending Harmony 4 All concert",
+        "url": "/assets/leaders-of-the-community-attending-harmony-4-all-concert-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970138/harmony4all/assets/leaders-of-the-community-attending-harmony-4-all-concert.jpg"
+      },
+      {
+        "name": "Harmony 4 All Community Concert",
+        "url": "/assets/harmony-4-all-community-concert-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970104/harmony4all/assets/harmony-4-all-community-concert.jpg"
+      },
+      {
+        "name": "Council Member Joann Ariola Speaking Supporting Harmony 4 All",
+        "url": "/assets/council-member-joann-ariola-speaking-supporting-harmony-4-all-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970085/harmony4all/assets/council-member-joann-ariola-speaking-supporting-harmony-4-all.jpg"
+      },
+      {
+        "name": "Harmony 4 All Community Concert",
+        "url": "/assets/harmony-4-all-community-concert-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970104/harmony4all/assets/harmony-4-all-community-concert.jpg"
+      },
+      {
+        "name": "Harmony 4 All Concert with NYS Senator Joseph Addabbo Jr.",
+        "url": "/assets/harmony-4-all-concert-with-nys-senator-joseph-addabbo-jr-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970107/harmony4all/assets/harmony-4-all-concert-with-nys-senator-joseph-addabbo-jr.jpg"
+      },
+      {
+        "name": "Bianca & Joshua Performing at a Community Concert",
+        "url": "/assets/bianca-joshua-performing-at-a-community-concert-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970068/harmony4all/assets/bianca-joshua-performing-at-a-community-concert.jpg"
+      },
+      {
+        "name": "Harmony 4 All Holiday Concert",
+        "url": "/assets/harmony-4-all-holiday-concert-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970109/harmony4all/assets/harmony-4-all-holiday-concert.jpg"
+      },
+      {
+        "name": "Joshua performing with his teachers from Juilliard",
+        "url": "/assets/joshua-performing-with-his-teachers-from-juilliard-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970132/harmony4all/assets/joshua-performing-with-his-teachers-from-juilliard.jpg"
+      },
+      {
+        "name": "Bianca and Joshua at Princeton Club promoting Harmony 4 All",
+        "url": "/assets/bianca-and-joshua-at-princeton-club-promoting-harmony-4-all-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970058/harmony4all/assets/bianca-and-joshua-at-princeton-club-promoting-harmony-4-all.jpg"
+      },
+      {
+        "name": "Bianca and Joshua performing at Princeton Club",
+        "url": "/assets/bianca-and-joshua-performing-at-princeton-club-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970059/harmony4all/assets/bianca-and-joshua-performing-at-princeton-club.jpg"
+      },
+      {
+        "name": "With Janet Salazar and Carol Carter at Princeton Club NYC",
+        "url": "/assets/with-janet-salazar-and-carol-carter-at-princeton-club-nyc-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970169/harmony4all/assets/with-janet-salazar-and-carol-carter-at-princeton-club-nyc.jpg"
+      },
+      {
+        "name": "Joshua performing at Jazz at Lincoln Center with HSJA",
+        "url": "/assets/joshua-performing-at-jazz-at-lincoln-center-with-hsja-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970128/harmony4all/assets/joshua-performing-at-jazz-at-lincoln-center-with-hsja.jpg"
+      },
+      {
+        "name": "Joshua performing at Shapeshifters with NYYS Jazz Band",
+        "url": "/assets/joshua-performing-at-shapeshifters-with-nyys-jazz-band-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970130/harmony4all/assets/joshua-performing-at-shapeshifters-with-nyys-jazz-band.jpg"
+      },
+      {
+        "name": "After a performance at Peter Jay Sharp Theatre",
+        "url": "/assets/after-a-performance-at-peter-jay-sharp-theatre-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970052/harmony4all/assets/after-a-performance-at-peter-jay-sharp-theatre.jpg"
+      },
+      {
+        "name": "After Concert at Juilliard",
+        "url": "/assets/after-concert-at-juilliard-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970054/harmony4all/assets/after-concert-at-juilliard.jpg"
+      },
+      {
+        "name": "At the United Nations",
+        "url": "/assets/at-the-united-nations-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970055/harmony4all/assets/at-the-united-nations.jpg"
+      },
+      {
+        "name": "Harmony 4 All with Dean Weston Sprott and Janet Salazar at The United Nations",
+        "url": "/assets/harmony-4-all-with-dean-weston-sprott-and-janet-salazar-at-the-united-nations-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970116/harmony4all/assets/harmony-4-all-with-dean-weston-sprott-and-janet-salazar-at-the-united-nations.jpg"
+      },
+      {
+        "name": "Harmony 4 All at The United Nations",
+        "url": "/assets/harmony-4-all-at-the-united-nations-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970100/harmony4all/assets/harmony-4-all-at-the-united-nations.jpg"
+      },
+      {
+        "name": "Harmony 4 All at The United Nations",
+        "url": "/assets/harmony-4-all-at-the-united-nations-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970100/harmony4all/assets/harmony-4-all-at-the-united-nations.jpg"
+      },
+      {
+        "name": "Harmony 4 All at The United Nations",
+        "url": "/assets/harmony-4-all-at-the-united-nations-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970100/harmony4all/assets/harmony-4-all-at-the-united-nations.jpg"
+      },
+      {
+        "name": "Harmony 4 All at The United Nations Nations about Harmony 4 All",
+        "url": "/assets/harmony-4-all-at-the-united-nations-nations-about-harmony-4-all-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970101/harmony4all/assets/harmony-4-all-at-the-united-nations-nations-about-harmony-4-all.jpg"
+      },
+      {
+        "name": "Harmony 4 All at The United Nations with Dean Weston Sprott",
+        "url": "/assets/harmony-4-all-at-the-united-nations-with-dean-weston-sprott-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970102/harmony4all/assets/harmony-4-all-at-the-united-nations-with-dean-weston-sprott.jpg"
+      },
+      {
+        "name": "Joshua at The United Nations",
+        "url": "/assets/joshua-at-the-united-nations-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970127/harmony4all/assets/joshua-at-the-united-nations.jpg"
+      },
+      {
+        "name": "Harmony 4 All's First Meeting with Senator Joseph Addabbo",
+        "url": "/assets/harmony-4-all-s-first-meeting-with-senator-joseph-addabbo-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970113/harmony4all/assets/harmony-4-all-s-first-meeting-with-senator-joseph-addabbo.jpg"
+      },
+      {
+        "name": "Harmony 4 All at the Award Ceremony for the GlobalMindED conference in Denver",
+        "url": "/assets/harmony-4-all-at-the-award-ceremony-for-the-globalminded-conference-in-denver-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970097/harmony4all/assets/harmony-4-all-at-the-award-ceremony-for-the-globalminded-conference-in-denver.jpg"
+      },
+      {
+        "name": "Bianca Speaking at the GlobalMindED Conference",
+        "url": "/assets/bianca-speaking-at-the-globalminded-conference-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970074/harmony4all/assets/bianca-speaking-at-the-globalminded-conference.jpg"
+      },
+      {
+        "name": "Joshua Performing at the GlobalMindEd Conference in Denver Colorado.",
+        "url": "/assets/joshua-performing-at-the-globalminded-conference-in-denver-colorado-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970131/harmony4all/assets/joshua-performing-at-the-globalminded-conference-in-denver-colorado.jpg"
+      },
+      {
+        "name": "Bianca Being Interviewed by WPIX 11 News Channel About Performance with the New York Philharmonic",
+        "url": "/assets/bianca-being-interviewed-by-wpix-11-news-channel-about-performance-with-the-new-york-philharmonic-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970064/harmony4all/assets/bianca-being-interviewed-by-wpix-11-news-channel-about-performance-with-the-new-york-philharmonic.jpg"
+      }
+    ]
+  },
+  "partners": {
+    "heroBackground": {
+      "name": "Partners Hero Background",
+      "url": "/assets/200-full-music-education-min.jpg",
+      "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970044/harmony4all/assets/200-full-music-education.jpg"
+    },
+    "whoWeAreImages": [
+      {
+        "name": "Students with instruments",
+        "url": "/assets/100-instrument-rental-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970043/harmony4all/assets/100-instrument-rental.jpg"
+      },
+      {
+        "name": "Music education",
+        "url": "/assets/200-full-music-education-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970044/harmony4all/assets/200-full-music-education.jpg"
+      },
+      {
+        "name": "Community music",
+        "url": "/assets/200-full-music-education-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970044/harmony4all/assets/200-full-music-education.jpg"
+      },
+      {
+        "name": "Youth music program",
+        "url": "/assets/instrument-pickup-helper-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970125/harmony4all/assets/instrument-pickup-helper.jpg"
+      }
+    ],
+    "partnerLogos": [
+      {
+        "name": "Education Through Music",
+        "url": "/assets/education-through-music-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970087/harmony4all/assets/education-through-music.png"
+      },
+      {
+        "name": "The NewYork Injury Law Firm",
+        "url": "/assets/the-newyork-injury-law-firm.webp",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970163/harmony4all/assets/the-newyork-injury-law-firm.webp"
+      },
+      {
+        "name": "Friends of Maple Grove Cemetery",
+        "url": "/assets/friends-of-maple-grove-cemetery-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970095/harmony4all/assets/friends-of-maple-grove-cemetery.png"
+      },
+      {
+        "name": "Maspeth Elementary School",
+        "url": "/assets/maspeth-elementary-school-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970139/harmony4all/assets/maspeth-elementary-school.png"
+      },
+      {
+        "name": "The Assembly State of New York Albany",
+        "url": "/assets/the-assembly-state-of-new-york-albany-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970162/harmony4all/assets/the-assembly-state-of-new-york-albany.png"
+      }
+    ]
+  },
+  "programs": {
+    "programImages": [
+      {
+        "name": "Music Therapy Programs",
+        "url": "/assets/music-education-assistant-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970145/harmony4all/assets/music-education-assistant.jpg"
+      },
+      {
+        "name": "Music Education Programs",
+        "url": "/assets/music-education-programs-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970146/harmony4all/assets/music-education-programs.jpg"
+      },
+      {
+        "name": "Community Music Events",
+        "url": "/assets/music-education-programs-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970146/harmony4all/assets/music-education-programs.jpg"
+      },
+      {
+        "name": "Music Empowerment Programs",
+        "url": "/assets/music-education-assistant-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970145/harmony4all/assets/music-education-assistant.jpg"
+      }
+    ]
+  },
+  "socialPage": {
+    "logo": {
+      "name": "Harmony 4 All Logo",
+      "url": "/assets/harmony-4-all-logo-min.png",
+      "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970110/harmony4all/assets/harmony-4-all-logo.png"
+    }
+  },
+  "services": {
+    "heroBackground": {
+      "name": "Services Hero Background",
+      "url": "/assets/services-hero-background-min.jpg",
+      "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970161/harmony4all/assets/services-hero-background.jpg"
+    },
+    "serviceImages": [
+      {
+        "name": "Free Instrument Rentals",
+        "url": "/assets/100-instrument-rental-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970043/harmony4all/assets/100-instrument-rental.jpg"
+      },
+      {
+        "name": "Free Instrument Repairs",
+        "url": "/assets/music-education-assistant-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970145/harmony4all/assets/music-education-assistant.jpg"
+      },
+      {
+        "name": "Free Musical Curriculum",
+        "url": "/assets/50-music-supplies-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970045/harmony4all/assets/50-music-supplies.jpg"
+      },
+      {
+        "name": "Instrument Donation",
+        "url": "/assets/harmony-4-all-s-first-instrument-donation-drive-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970112/harmony4all/assets/harmony-4-all-s-first-instrument-donation-drive.jpg"
+      }
+    ],
+    "additionalServices": [
+      {
+        "name": "Community Concerts",
+        "url": "/assets/community-concerts-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970083/harmony4all/assets/community-concerts.jpg"
+      },
+      {
+        "name": "Performance Pathways",
+        "url": "/assets/performance-pathways-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970158/harmony4all/assets/performance-pathways.jpg"
+      },
+      {
+        "name": "Educational Workshops",
+        "url": "/assets/elementary-school-with-teacher-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970091/harmony4all/assets/elementary-school-with-teacher.jpg"
+      },
+      {
+        "name": "Advocacy & Speaking",
+        "url": "/assets/advocacy-speaking-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970051/harmony4all/assets/advocacy-speaking.jpg"
+      }
+    ],
+    "processSteps": [
+      {
+        "name": "Initial Consultation",
+        "url": "/assets/initial-consultation-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970118/harmony4all/assets/initial-consultation.jpg"
+      },
+      {
+        "name": "Service Selection",
+        "url": "/assets/service-selection-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970160/harmony4all/assets/service-selection.jpg"
+      },
+      {
+        "name": "Service Setup",
+        "url": "/assets/event-coordinator-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970093/harmony4all/assets/event-coordinator.jpg"
+      },
+      {
+        "name": "Ongoing Support",
+        "url": "/assets/administrative-support-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970050/harmony4all/assets/administrative-support.jpg"
+      }
+    ]
+  },
+  "resources": {
+    "note": "No images found in resources page"
+  },
+  "sponsors": {
+    "heroBackground": {
+      "name": "Sponsors Hero Background",
+      "url": "/assets/200-full-music-education-min.jpg",
+      "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970044/harmony4all/assets/200-full-music-education.jpg"
+    },
+    "sponsorLogos": [
+      {
+        "name": "THE NEWYORK INJURY LAW FIRM",
+        "url": "/assets/the-newyork-injury-law-firm.webp",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970163/harmony4all/assets/the-newyork-injury-law-firm.webp"
+      },
+      {
+        "name": "New York State Senator Joseph P. Addabbo, Jr.",
+        "url": "/assets/joseph-p-addabbo-jr-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970126/harmony4all/assets/joseph-p-addabbo-jr.jpg"
+      },
+      {
+        "name": "New York State Office of the Governor",
+        "url": "/assets/new-york-state-office-of-the-governor-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970152/harmony4all/assets/new-york-state-office-of-the-governor.png"
+      },
+      {
+        "name": "New York State Legislature",
+        "url": "/assets/new-york-state-legislature-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970151/harmony4all/assets/new-york-state-legislature.png"
+      },
+      {
+        "name": "New York State Council on the Arts",
+        "url": "/assets/new-york-state-council-on-the-arts-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970149/harmony4all/assets/new-york-state-council-on-the-arts.png"
+      },
+      {
+        "name": "New York City Department of Cultural Affairs",
+        "url": "/assets/new-york-city-department-of-cultural-affairs-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970148/harmony4all/assets/new-york-city-department-of-cultural-affairs.png"
+      },
+      {
+        "name": "New York Foundation for the Arts",
+        "url": "/assets/new-york-foundation-for-the-arts-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970149/harmony4all/assets/new-york-foundation-for-the-arts.png"
+      },
+      {
+        "name": "Citizens Committee for New York City",
+        "url": "/assets/citizens-committee-for-new-york-city-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970081/harmony4all/assets/citizens-committee-for-new-york-city.png"
+      },
+      {
+        "name": "Villa Russo",
+        "url": "/assets/villa-russo-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970164/harmony4all/assets/villa-russo.png"
+      }
+    ]
+  },
+  "volunteer": {
+    "heroBackground": {
+      "name": "Volunteer Hero Background",
+      "url": "/assets/volunteer-hero-background-min.jpg",
+      "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970166/harmony4all/assets/volunteer-hero-background.jpg"
+    }
+  },
+  "home": {
+    "heroCarousel": [
+      {
+        "name": "Hero Video",
+        "url": "https://cdn.harmony4all.org/video-home_ghyjfm.mp4",
+        "type": "video"
+      },
+      {
+        "name": "Building a World of Harmony Through Music",
+        "url": "/assets/building-a-world-of-harmony-through-music-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970074/harmony4all/assets/building-a-world-of-harmony-through-music.jpg"
+      },
+      {
+        "name": "Did you Know?",
+        "url": "/assets/did-you-know-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970086/harmony4all/assets/did-you-know.jpg"
+      },
+      {
+        "name": "Building Communities Through Music",
+        "url": "/assets/building-communities-through-music-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970075/harmony4all/assets/building-communities-through-music.jpg"
+      },
+      {
+        "name": "Educational Excellence Through Music",
+        "url": "/assets/educational-excellence-through-music.avif",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970089/harmony4all/assets/educational-excellence-through-music.avif"
+      }
+    ],
+    "missionValuesImage": {
+      "name": "Orchestra Performance",
+      "url": "/assets/orchestra-performance-min.jpg",
+      "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970156/harmony4all/assets/orchestra-performance.jpg"
+    },
+    "programsImages": [
+      {
+        "name": "Free Instrument Rentals",
+        "url": "/assets/100-instrument-rental-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970043/harmony4all/assets/100-instrument-rental.jpg"
+      },
+      {
+        "name": "Free Instrument Repairs",
+        "url": "/assets/music-education-assistant-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970145/harmony4all/assets/music-education-assistant.jpg"
+      },
+      {
+        "name": "Free Musical Curriculum",
+        "url": "/assets/50-music-supplies-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970045/harmony4all/assets/50-music-supplies.jpg"
+      },
+      {
+        "name": "Instrument Donation",
+        "url": "/assets/harmony-4-all-s-first-instrument-donation-drive-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970112/harmony4all/assets/harmony-4-all-s-first-instrument-donation-drive.jpg"
+      }
+    ],
+    "getInvolvedImages": [
+      {
+        "name": "Donate",
+        "url": "/assets/donate-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970086/harmony4all/assets/donate.jpg"
+      },
+      {
+        "name": "Sponsor",
+        "url": "/assets/500-classroom-support-1-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970046/harmony4all/assets/500-classroom-support-1.jpg"
+      },
+      {
+        "name": "Volunteer",
+        "url": "/assets/volunteer-hero-background-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970166/harmony4all/assets/volunteer-hero-background.jpg"
+      }
+    ],
+    "blogImages": {
+      "note": "Blog images are dynamically loaded from the API"
+    }
+  },
+  "components": {
+    "header": {
+      "logo": {
+        "name": "Harmony 4 All Logo",
+        "url": "/assets/harmony-4-all-logo-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970110/harmony4all/assets/harmony-4-all-logo.png"
+      },
+      "candidBadge": {
+        "name": "Candid Platinum Transparency 2025",
+        "url": "/assets/candid-platinum-transparency-2025-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970076/harmony4all/assets/candid-platinum-transparency-2025.png"
+      }
+    },
+    "footer": {
+      "logo": {
+        "name": "Harmony 4 All Footer Logo",
+        "url": "/assets/harmony-4-all-footer-logo-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970109/harmony4all/assets/harmony-4-all-footer-logo.png"
+      },
+      "candidBadge": {
+        "name": "Candid Platinum Transparency 2025",
+        "url": "/assets/candid-platinum-transparency-2025-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970076/harmony4all/assets/candid-platinum-transparency-2025.png"
+      }
+    },
+    "testimonials": [
+      {
+        "name": "Joseph P. Addabbo, Jr.",
+        "url": "/assets/joseph-p-addabbo-jr-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970126/harmony4all/assets/joseph-p-addabbo-jr.jpg"
+      },
+      {
+        "name": "Harvey Epstein",
+        "url": "/assets/harvey-epstein-min.jpg",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970117/harmony4all/assets/harvey-epstein.jpg"
+      },
+      {
+        "name": "Education Through Music",
+        "url": "/assets/education-through-music-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970087/harmony4all/assets/education-through-music.png"
+      },
+      {
+        "name": "Friends of Maple Grove Cemetery",
+        "url": "/assets/friends-of-maple-grove-cemetery-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970095/harmony4all/assets/friends-of-maple-grove-cemetery.png"
+      },
+      {
+        "name": "Public School 154, Queens",
+        "url": "/assets/maspeth-elementary-school-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970139/harmony4all/assets/maspeth-elementary-school.png"
+      },
+      {
+        "name": "The New York Injury Law Firm",
+        "url": "/assets/the-newyork-injury-law-firm.webp",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970163/harmony4all/assets/the-newyork-injury-law-firm.webp"
+      }
+    ],
+    "welcomePopup": {
+      "logo": {
+        "name": "Harmony 4 All Welcome Popup Logo",
+        "url": "/assets/harmony-4-all-welcome-popup-logo-min.png",
+        "cloudinaryUrl": "https://res.cloudinary.com/deocrj0jn/image/upload/v1765970115/harmony4all/assets/harmony-4-all-welcome-popup-logo.png"
+      }
+    }
+  }
+}

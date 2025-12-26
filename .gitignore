@@ -7,3 +7,11 @@
 .env.production.local
 
 node_modules
+
+.DS_Store
+
+assets/
+
+assets
+
+/assets/

@@ -18,18 +18,27 @@ const donationSchema = new mongoose.Schema({
   },
   amount: {
     type: Number,
-    required: true,
-    min: 1
+    required: function() {
+      return this.donationType !== 'instrument';
+    },
+    min: 0
   },
   donationType: {
     type: String,
     required: true,
-    enum: ['one-time', 'monthly', 'quarterly', 'yearly']
+    enum: ['one-time', 'monthly', 'quarterly', 'yearly', 'instrument']
+  },
+  instrumentName: {
+    type: String,
+    trim: true,
+    required: function() {
+      return this.donationType === 'instrument';
+    }
   },
   paymentMethod: {
     type: String,
     required: true,
-    enum: ['credit-card', 'paypal', 'bank-transfer', 'check']
+    enum: ['credit-card', 'paypal', 'bank-transfer', 'check', 'cash']
   },
   designation: {
     type: String,

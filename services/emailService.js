@@ -225,7 +225,7 @@ class EmailService {
   async sendDonationConfirmation(donationData) {
     try {
       const sendSmtpEmail = new Brevo.SendSmtpEmail();
-      
+
       sendSmtpEmail.subject = `Thank You for Your Donation - Harmony 4 All`;
       sendSmtpEmail.htmlContent = DonationEmailTemplate.generateHTML(donationData);
       sendSmtpEmail.textContent = DonationEmailTemplate.generateText(donationData);
@@ -234,6 +234,22 @@ class EmailService {
         email: donationData.email,
         name: donationData.isAnonymous ? 'Anonymous Donor' : donationData.donorName
       }];
+
+      // Add CC recipients if provided
+      if (donationData.ccEmails && donationData.ccEmails.length > 0) {
+        sendSmtpEmail.cc = donationData.ccEmails.map(email => ({
+          email: email.trim(),
+          name: donationData.isAnonymous ? 'Anonymous Donor' : donationData.donorName
+        }));
+      }
+
+      // Add BCC recipients if provided
+      if (donationData.bccEmails && donationData.bccEmails.length > 0) {
+        sendSmtpEmail.bcc = donationData.bccEmails.map(email => ({
+          email: email.trim(),
+          name: donationData.isAnonymous ? 'Anonymous Donor' : donationData.donorName
+        }));
+      }
 
       // Attach PDF receipt
       const attachments = [];
@@ -567,6 +583,10 @@ class EmailService {
       || donationData.subscription
       || (donationData._id ? donationData._id.toString() : 'N/A');
 
+    const isInstrumentDonation = donationData.donationType === 'instrument';
+    const donationTypeDisplay = isInstrumentDonation ? 'Instrument Donation' : (donationData.donationType || 'Donation').replace(/-/g, ' ');
+    const amountLabel = isInstrumentDonation ? 'Estimated Value:' : 'Donation Amount:';
+
     const replacements = {
       donorName: this.escapeHtml(donorName),
       receiptNumber: this.escapeHtml(receiptNumber),
@@ -574,8 +594,13 @@ class EmailService {
       dateOfContribution: this.formatDate(donationData.submittedAt || new Date()),
       designation: this.escapeHtml(donationData.designation || 'General Support'),
       donationType: this.escapeHtml((donationData.donationType || 'Donation').replace(/-/g, ' ')),
+      donationTypeDisplay: this.escapeHtml(donationTypeDisplay),
+      amountLabel: this.escapeHtml(amountLabel),
+      amountRow: isInstrumentDonation ? '' : `<tr><th>${this.escapeHtml(amountLabel)}</th><td><strong>${this.formatCurrency(donationData.amount || 0)}</strong></td></tr>`,
       paymentMethod: this.escapeHtml((donationData.paymentMethod || 'Card').replace(/-/g, ' ')),
       transactionId: this.escapeHtml(donationData.transactionId || donationData.paymentIntentId || donationData.subscription || 'Not provided'),
+      instrumentName: donationData.instrumentName ? this.escapeHtml(donationData.instrumentName) : '',
+      instrumentRow: donationData.instrumentName ? `<tr><th>Instrument:</th><td><strong>${this.escapeHtml(donationData.instrumentName)}</strong></td></tr>` : '',
       donorMessage: donationData.message
         ? `<strong>Message from donor:</strong> ${this.escapeHtml(donationData.message)}`
         : ''

@@ -164,12 +164,12 @@ class DonationEmailTemplate {
               <p class="greeting">Dear ${donationData.donorName},</p>
               
               <div class="donation-card">
-                <div class="donation-label">Your Donation</div>
-                <div class="donation-amount">${formatAmount(donationData.amount)}</div>
+                <div class="donation-label">${donationData.donationType === 'instrument' ? 'Your Instrument Donation' : 'Your Donation'}</div>
+                <div class="donation-amount">${donationData.donationType === 'instrument' ? donationData.instrumentName || 'Instrument' : formatAmount(donationData.amount)}</div>
               </div>
               
               <div class="thank-you-message">
-                <p>On behalf of everyone at <strong>Harmony 4 All</strong>, we extend our heartfelt gratitude for your generous contribution.</p>
+                <p>On behalf of everyone at <strong>Harmony 4 All</strong>, we extend our heartfelt gratitude for your generous ${donationData.donationType === 'instrument' ? 'instrument donation' : 'contribution'}.</p>
                 <p>Your support directly advances our mission of <strong>Making Music Accessible</strong> by helping us provide free, high-quality music education, instruments, and community performances for underserved K–12 students across New York City.</p>
               </div>
               
@@ -183,7 +183,7 @@ class DonationEmailTemplate {
               </div>
               
               <div class="thank-you-message">
-                <p>Your contribution helps us create harmony in our community. A donation receipt has been attached to this email for your records.</p>
+                <p>Your ${donationData.donationType === 'instrument' ? 'instrument donation' : 'contribution'} helps us create harmony in our community. A donation receipt has been attached to this email for your records.</p>
               </div>
             </div>
           </div>
@@ -201,12 +201,16 @@ class DonationEmailTemplate {
       }).format(amount);
     };
 
+    const donationDescription = donationData.donationType === 'instrument'
+      ? `Thank you for your generous instrument donation (${donationData.instrumentName || 'instrument'}) to Harmony 4 All.`
+      : `Thank you for your generous donation of ${formatAmount(donationData.amount)} to Harmony 4 All.`;
+
     return `
 Thank You!
 
 Dear ${donationData.donorName},
 
-Thank you for your generous donation of ${formatAmount(donationData.amount)} to Harmony 4 All.
+${donationDescription}
 
 Your generosity makes a difference in our community.
 

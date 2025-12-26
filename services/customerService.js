@@ -9,11 +9,13 @@ const Customer = require('../models/customer');
  * @param {string} [customerData.phone] - Customer phone number
  * @param {string} [customerData.address] - Customer address
  * @param {boolean} [customerData.isSubscribed=true] - Whether customer is subscribed
+ * @param {boolean} [customerData.smsConsent] - Whether customer consented to SMS updates
+ * @param {string} [customerData.source] - Source of the customer (e.g., 'website', 'text-updates')
  * @returns {Promise<Object|null>} - Returns the created customer or null if already exists
  */
 async function createCustomerIfNotExists(customerData) {
     try {
-        const { email, firstName, lastName, phone, address, isSubscribed = true } = customerData;
+        const { email, firstName, lastName, phone, address, isSubscribed = true, smsConsent, source = 'website' } = customerData;
         
         // Validate email
         if (!email) {
@@ -36,7 +38,10 @@ async function createCustomerIfNotExists(customerData) {
             phone: phone ? phone.trim() : '',
             address: address ? address.trim() : '',
             isSubscribed: isSubscribed,
-            subscribedAt: new Date()
+            emailSubscriberStatus: 'subscribed',
+            smsSubscriberStatus: 'subscribed',
+            subscribedAt: new Date(),
+            source: source
         });
 
         await customer.save();
