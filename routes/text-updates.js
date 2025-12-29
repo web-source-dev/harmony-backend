@@ -8,7 +8,9 @@ const smsService = require("../services/smsService");
 // Subscribe to text updates
 router.post("/subscribe", async (req, res) => {
     try {
-        const { firstName, lastName, email, phone, smsConsent } = req.body;
+        const { firstName, lastName, email, phone } = req.body;
+
+        const smsConsent = true;
 
         // Validate required fields
         if (!firstName || !lastName || !email || !phone) {
