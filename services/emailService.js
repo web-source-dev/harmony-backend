@@ -12,6 +12,7 @@ const {
   DonationAdminEmailTemplate,
   NewsletterEmailTemplate,
   VolunteerEmailTemplate,
+  TextUpdatesEmailTemplate,
 } = require('./templates');
 const CustomEmailTemplate = require('./templates/customEmail');
 require('dotenv').config();
@@ -367,6 +368,29 @@ class EmailService {
       return result;
     } catch (error) {
       console.error(`Failed to send welcome popup notification to admin:`, error);
+      throw error;
+    }
+  }
+
+  // Send text updates subscription notification to admin
+  async sendTextUpdatesNotification(subscriptionData) {
+    try {
+      const sendSmtpEmail = new Brevo.SendSmtpEmail();
+      
+      sendSmtpEmail.subject = `New Text Updates Subscription - ${subscriptionData.firstName} ${subscriptionData.lastName}`;
+      sendSmtpEmail.htmlContent = TextUpdatesEmailTemplate.generateHTML(subscriptionData);
+      sendSmtpEmail.textContent = TextUpdatesEmailTemplate.generateText(subscriptionData);
+      sendSmtpEmail.sender = this.getSenderConfig();
+      sendSmtpEmail.to = [{
+        email: 'info@harmony4all.org',
+        name: "Harmony 4 All Admin"
+      }];
+
+      const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
+      console.log(`Text updates notification sent to admin:`, result.messageId);
+      return result;
+    } catch (error) {
+      console.error(`Failed to send text updates notification to admin:`, error);
       throw error;
     }
   }

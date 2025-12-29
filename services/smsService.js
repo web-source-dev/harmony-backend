@@ -111,6 +111,33 @@ class SMSService {
       throw error;
     }
   }
+
+  // Send SMS for text updates subscription confirmation
+  async sendTextUpdatesConfirmationSMS(userData) {
+    try {
+      const message = `Hi ${userData.firstName}! Thank you for subscribing to Harmony 4 All text updates. You'll receive occasional messages about our events and impact. 🎵`;
+
+      await this.sendSMS(userData.phone, message);
+      return { success: true, message: 'Text updates confirmation SMS sent' };
+    } catch (error) {
+      console.error('Failed to send text updates SMS:', error);
+      throw error;
+    }
+  }
+
+  // Send admin notification SMS for text updates subscription
+  async sendTextUpdatesAdminNotificationSMS(subscriptionData) {
+    try {
+      const adminPhone = '+17374276669';
+      const message = `New text updates subscription from ${subscriptionData.firstName} ${subscriptionData.lastName} (${subscriptionData.email}). Phone: ${subscriptionData.phone}. SMS Consent: ${subscriptionData.smsConsent ? 'Yes' : 'No'}`;
+
+      await this.sendSMS(adminPhone, message);
+      return { success: true, message: 'Text updates admin notification SMS sent' };
+    } catch (error) {
+      console.error('Failed to send text updates admin notification SMS:', error);
+      throw error;
+    }
+  }
 }
 
 module.exports = new SMSService();
