@@ -575,7 +575,7 @@ router.get('/founding-100-progress', async (req, res) => {
     });
 
     // Base number to show initial momentum (can be removed later when we have real traction)
-    const BASE_DONATIONS = 77;
+    const BASE_DONATIONS = 82;
     
     // Total progress = base donations + actual donations
     const totalProgress = BASE_DONATIONS + actualCount;
