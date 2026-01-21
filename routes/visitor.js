@@ -14,7 +14,7 @@ router.post("/find-or-create", async (req, res) => {
     const { name, email, source = 'public-form', referrer, userAgent } = req.body;
     
     if (!name || !email) {
-      return res.status(400).json({ 
+      return res.status(400).json({  
         message: "Name and email are required",
         error: "MISSING_REQUIRED_FIELDS"
       });
