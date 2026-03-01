@@ -37,8 +37,8 @@ router.get("/stats", async (req, res) => {
         $project: {
           totalContacts: {
             $add: [
-              { $size: '$contactsCreated' },
-              { $size: '$offlineContactsCreated' }
+              { $size: { $ifNull: ['$contactsCreated', []] } },
+              { $size: { $ifNull: ['$offlineContactsCreated', []] } }
             ]
           }
         }
@@ -780,6 +780,84 @@ router.post("/email/send-custom", async (req, res) => {
     console.error("Error sending custom email:", error);
     res.status(500).json({ 
       message: error.message || "Failed to send custom email" 
+    });
+  }
+});
+
+// Download Audited Financial Statement
+router.get("/audited-financial-statement", async (req, res) => {
+  try {
+    const path = require('path');
+    const fs = require('fs');
+
+    // Path to the Audited Financial Statement PDF file
+    const filePath = path.join(__dirname, '..', 'Audited H4A Financial Statement (2024).pdf');
+
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({
+        message: "Audited Financial Statement document not found"
+      });
+    }
+
+    // Set headers for file download
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="Harmony_4All_Audited_Financial_Statement_2024.pdf"');
+
+    // Stream the file
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+
+    fileStream.on('error', (error) => {
+      console.error('Error streaming Audited Financial Statement:', error);
+      res.status(500).json({
+        message: "Error downloading Audited Financial Statement"
+      });
+    });
+
+  } catch (error) {
+    console.error('Error serving Audited Financial Statement:', error);
+    res.status(500).json({
+      message: "Failed to download Audited Financial Statement"
+    });
+  }
+});
+
+// Download IRS Form 990
+router.get("/irs-form-990", async (req, res) => {
+  try {
+    const path = require('path');
+    const fs = require('fs');
+
+    // Path to the IRS Form 990 PDF file
+    const filePath = path.join(__dirname, '..', 'HARMONY 4ALL INC_Form990 (1).pdf');
+
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({
+        message: "IRS Form 990 document not found"
+      });
+    }
+
+    // Set headers for file download
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="Harmony_4All_IRS_Form_990_FY_2024.pdf"');
+
+    // Stream the file
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+
+    fileStream.on('error', (error) => {
+      console.error('Error streaming IRS Form 990:', error);
+      res.status(500).json({
+        message: "Error downloading IRS Form 990"
+      });
+    });
+
+  } catch (error) {
+    console.error('Error serving IRS Form 990:', error);
+    res.status(500).json({
+      message: "Failed to download IRS Form 990"
     });
   }
 });
