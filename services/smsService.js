@@ -57,11 +57,7 @@ class SMSService {
   // Send admin notification SMS for new submission
   async sendAdminNotificationSMS(submissionData) {
     try {
-      const adminPhone = process.env.ADMIN_PHONE_NUMBER;
-      if (!adminPhone) {
-        console.warn('ADMIN_PHONE_NUMBER not set, skipping admin SMS notification');
-        return { success: false, message: 'Admin phone number not configured' };
-      }
+      const adminPhone = '+18883168742';
 
       const message = `New Harmony 4 All submission from ${submissionData.firstName} ${submissionData.lastName} (${submissionData.email}). Please check your email for details.`;
 
@@ -128,7 +124,7 @@ class SMSService {
   // Send admin notification SMS for text updates subscription
   async sendTextUpdatesAdminNotificationSMS(subscriptionData) {
     try {
-      const adminPhone = '+17374276669';
+      const adminPhone = '+18883168742';
       const message = `New text updates subscription from ${subscriptionData.firstName} ${subscriptionData.lastName} (${subscriptionData.email}). Phone: ${subscriptionData.phone}. SMS Consent: ${subscriptionData.smsConsent ? 'Yes' : 'No'}`;
 
       await this.sendSMS(adminPhone, message);
