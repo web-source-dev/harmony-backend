@@ -791,7 +791,7 @@ router.get("/audited-financial-statement", async (req, res) => {
     const fs = require('fs');
 
     // Path to the Audited Financial Statement PDF file
-    const filePath = path.join(__dirname, '..', 'Audited H4A Financial Statement (2024).pdf');
+    const filePath = path.join(__dirname, '..', 'Audited Financial Statement (Ending December 31, 2025).pdf');
 
     // Check if file exists
     if (!fs.existsSync(filePath)) {

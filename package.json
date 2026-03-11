@@ -9,7 +9,8 @@
     "import-contacts": "node scripts/importContacts.js",
     "import-contacts-clear": "node scripts/importContacts.js --clear",
     "send-donation-email": "node scripts/sendDonationEmail.js",
-    "upload-images": "node scripts/upload-images-to-cloudinary.js"
+    "upload-images": "node scripts/upload-images-to-cloudinary.js",
+    "test-sms": "node scripts/test-sms.js"
   },
   "keywords": [],
   "author": "",
