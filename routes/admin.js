@@ -791,7 +791,7 @@ router.get("/audited-financial-statement", async (req, res) => {
     const fs = require('fs');
 
     // Path to the Audited Financial Statement PDF file
-    const filePath = path.join(__dirname, '..', 'Audited Financial Statement (Ending December 31, 2025).pdf');
+    const filePath = path.join(__dirname, '..', 'Audited-Financial-Statement-(Ending-December-31,2025).pdf');
 
     // Check if file exists
     if (!fs.existsSync(filePath)) {
@@ -802,7 +802,7 @@ router.get("/audited-financial-statement", async (req, res) => {
 
     // Set headers for file download
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename="Harmony_4All_Audited_Financial_Statement_2024.pdf"');
+    res.setHeader('Content-Disposition', 'attachment; filename="Harmony_4All_Audited_Financial_Statement_2025.pdf"');
 
     // Stream the file
     const fileStream = fs.createReadStream(filePath);
@@ -830,7 +830,7 @@ router.get("/irs-form-990", async (req, res) => {
     const fs = require('fs');
 
     // Path to the IRS Form 990 PDF file
-    const filePath = path.join(__dirname, '..', 'HARMONY 4ALL INC_Form990 (1).pdf');
+    const filePath = path.join(__dirname, '..', 'Form-990-(2026).pdf');
 
     // Check if file exists
     if (!fs.existsSync(filePath)) {
@@ -841,7 +841,7 @@ router.get("/irs-form-990", async (req, res) => {
 
     // Set headers for file download
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename="Harmony_4All_IRS_Form_990_FY_2024.pdf"');
+    res.setHeader('Content-Disposition', 'attachment; filename="Form-990-(2026).pdf"');
 
     // Stream the file
     const fileStream = fs.createReadStream(filePath);
