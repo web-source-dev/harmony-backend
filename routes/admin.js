@@ -784,6 +784,48 @@ router.post("/email/send-custom", async (req, res) => {
   }
 });
 
+// Download Annual Report
+router.get("/annual-report", async (req, res) => {
+  console.log('Annual Report download request received');
+  try {
+    const path = require('path');
+    const fs = require('fs');
+
+    // Path to the Annual Report PDF file
+    const filePath = path.join(__dirname, '..', 'reports', '2025', 'Harmony4All_Annual_Report.pdf');
+    console.log('Annual Report file path:', filePath);
+
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      console.log('Annual Report file does not exist at path:', filePath);
+      return res.status(404).json({
+        message: "Annual Report document not found"
+      });
+    }
+
+    console.log('Annual Report file exists, preparing to send...');
+
+    // Read file as buffer instead of streaming
+    const buffer = fs.readFileSync(filePath);
+    console.log('Annual Report file read successfully, size:', buffer.length);
+
+    // Set headers for file download
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="Harmony4All_Annual_Report_2025.pdf"');
+    res.setHeader('Content-Length', buffer.length);
+
+    // Send the file
+    res.send(buffer);
+    console.log('Annual Report sent successfully');
+
+  } catch (error) {
+    console.error('Error serving Annual Report:', error);
+    res.status(500).json({
+      message: "Failed to download Annual Report"
+    });
+  }
+});
+
 // Download Audited Financial Statement
 router.get("/audited-financial-statement", async (req, res) => {
   try {
@@ -791,7 +833,7 @@ router.get("/audited-financial-statement", async (req, res) => {
     const fs = require('fs');
 
     // Path to the Audited Financial Statement PDF file
-    const filePath = path.join(__dirname, '..', 'Audited-Financial-Statement-(Ending-December-31,2025).pdf');
+    const filePath = path.join(__dirname, '..', 'reports', '2025', 'Audited Financial_Statement.pdf');
 
     // Check if file exists
     if (!fs.existsSync(filePath)) {
@@ -825,34 +867,37 @@ router.get("/audited-financial-statement", async (req, res) => {
 
 // Download IRS Form 990
 router.get("/irs-form-990", async (req, res) => {
+  console.log('IRS Form 990 download request received');
   try {
     const path = require('path');
     const fs = require('fs');
 
     // Path to the IRS Form 990 PDF file
-    const filePath = path.join(__dirname, '..', 'Form-990-(2026).pdf');
+    const filePath = path.join(__dirname, '..', 'reports', '2025', 'Form_990.pdf');
+    console.log('IRS Form 990 file path:', filePath);
 
     // Check if file exists
     if (!fs.existsSync(filePath)) {
+      console.log('IRS Form 990 file does not exist at path:', filePath);
       return res.status(404).json({
         message: "IRS Form 990 document not found"
       });
     }
 
+    console.log('IRS Form 990 file exists, preparing to send...');
+
+    // Read file as buffer instead of streaming
+    const buffer = fs.readFileSync(filePath);
+    console.log('IRS Form 990 file read successfully, size:', buffer.length);
+
     // Set headers for file download
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename="Form-990-(2026).pdf"');
+    res.setHeader('Content-Disposition', 'attachment; filename="Harmony_4All_Form_990_2025.pdf"');
+    res.setHeader('Content-Length', buffer.length);
 
-    // Stream the file
-    const fileStream = fs.createReadStream(filePath);
-    fileStream.pipe(res);
-
-    fileStream.on('error', (error) => {
-      console.error('Error streaming IRS Form 990:', error);
-      res.status(500).json({
-        message: "Error downloading IRS Form 990"
-      });
-    });
+    // Send the file
+    res.send(buffer);
+    console.log('IRS Form 990 sent successfully');
 
   } catch (error) {
     console.error('Error serving IRS Form 990:', error);
