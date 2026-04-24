@@ -77,6 +77,7 @@ const mediaRoute = require("./routes/media");
 const videoRoute = require("./routes/video");
 const visitorRoute = require("./routes/visitor");
 const textUpdatesRoute = require("./routes/text-updates");
+const rsvpRoute = require("./routes/rsvp");
 
 // Initialize scheduler services
 const blogSchedulerService = require("./services/blogSchedulerService");
@@ -98,6 +99,7 @@ app.use("/api/media", mediaRoute);
 app.use("/api/video", videoRoute);
 app.use("/api/visitor", visitorRoute);
 app.use("/api/text-updates", textUpdatesRoute);
+app.use("/api/rsvp", rsvpRoute);
 
 // Error handling middleware - must be after all routes
 app.use((error, req, res, next) => {

@@ -10,7 +10,8 @@
     "import-contacts-clear": "node scripts/importContacts.js --clear",
     "send-donation-email": "node scripts/sendDonationEmail.js",
     "upload-images": "node scripts/upload-images-to-cloudinary.js",
-    "test-sms": "node scripts/test-sms.js"
+    "test-sms": "node scripts/test-sms.js",
+    "send-batch-sms": "node scripts/send-batch-sms.js"
   },
   "keywords": [],
   "author": "",

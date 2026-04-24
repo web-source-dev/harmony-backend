@@ -1,0 +1,102 @@
+const express = require("express");
+const router = express.Router();
+const Customer = require("../models/customer");
+
+const RSVP_LABEL = "rsvp-page";
+
+// Submit RSVP form
+router.post("/submit", async (req, res) => {
+  try {
+    const {
+      firstName,
+      lastName,
+      email,
+      cellNumber,
+      promotionalUpdates = true,
+      agreeToTerms,
+    } = req.body;
+
+    if (!firstName || !lastName || !email || !cellNumber || !agreeToTerms) {
+      return res.status(400).json({
+        success: false,
+        message: "Please fill in all required fields and agree to terms",
+      });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid email address",
+      });
+    }
+
+    const phoneDigits = cellNumber.replace(/\D/g, "");
+    if (phoneDigits.length < 10) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid phone number",
+      });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+    const normalizedFirstName = firstName.trim();
+    const normalizedLastName = lastName.trim();
+    const normalizedCell = cellNumber.trim();
+
+    const existingCustomer = await Customer.findOne({ email: normalizedEmail });
+    let isExisting = false;
+
+    if (existingCustomer) {
+      existingCustomer.firstName = normalizedFirstName;
+      existingCustomer.lastName = normalizedLastName;
+      existingCustomer.phone = normalizedCell;
+      existingCustomer.isSubscribed = Boolean(promotionalUpdates);
+      existingCustomer.emailSubscriberStatus = promotionalUpdates ? "subscribed" : "unsubscribed";
+      existingCustomer.lastActivity = new Date();
+      existingCustomer.lastActivityDate = new Date();
+      existingCustomer.source = "rsvp-page";
+
+      if (!existingCustomer.labels.includes(RSVP_LABEL)) {
+        existingCustomer.labels.push(RSVP_LABEL);
+      }
+
+      await existingCustomer.save();
+      isExisting = true;
+    } else {
+      const customer = new Customer({
+        firstName: normalizedFirstName,
+        lastName: normalizedLastName,
+        email: normalizedEmail,
+        phone: normalizedCell,
+        labels: [RSVP_LABEL],
+        isSubscribed: Boolean(promotionalUpdates),
+        emailSubscriberStatus: promotionalUpdates ? "subscribed" : "unsubscribed",
+        smsSubscriberStatus: "subscribed",
+        subscribedAt: new Date(),
+        lastActivity: new Date(),
+        lastActivityDate: new Date(),
+        source: "rsvp-page",
+      });
+
+      await customer.save();
+    }
+
+    return res.status(isExisting ? 200 : 201).json({
+      success: true,
+      message: isExisting
+        ? "Thanks! Your RSVP details have been updated."
+        : "Thanks for your RSVP! We have received your details.",
+      isExisting,
+      label: RSVP_LABEL,
+    });
+  } catch (error) {
+    console.error("RSVP submission error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
+module.exports = router;
