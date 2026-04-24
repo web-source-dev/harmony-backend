@@ -1,8 +1,61 @@
 const express = require("express");
 const router = express.Router();
 const Customer = require("../models/customer");
+const emailService = require("../services/emailService");
+const smsService = require("../services/smsService");
 
 const RSVP_LABEL = "rsvp-page";
+
+// Send notifications for RSVP submissions (user + H4A admin)
+async function sendRSVPCommunications(submissionData) {
+  const { firstName, lastName, email, cellNumber, promotionalUpdates, agreeToTerms } = submissionData;
+
+  try {
+    await emailService.sendWelcomeEmail({
+      firstName,
+      lastName,
+      email,
+      cellNumber,
+    });
+  } catch (emailError) {
+    console.error("Failed to send RSVP email to user:", emailError);
+  }
+
+  try {
+    await emailService.sendWelcomePopupNotification({
+      firstName,
+      lastName,
+      email,
+      cellNumber,
+      promotionalUpdates,
+      agreeToTerms,
+    });
+  } catch (emailError) {
+    console.error("Failed to send RSVP email notification to admin:", emailError);
+  }
+
+  try {
+    await smsService.sendWelcomeSMS({
+      firstName,
+      lastName,
+      email,
+      cellNumber,
+    });
+  } catch (smsError) {
+    console.error("Failed to send RSVP SMS to user:", smsError);
+  }
+
+  try {
+    await smsService.sendAdminNotificationSMS({
+      firstName,
+      lastName,
+      email,
+      cellNumber,
+    });
+  } catch (smsError) {
+    console.error("Failed to send RSVP admin notification SMS:", smsError);
+  }
+}
 
 // Submit RSVP form
 router.post("/submit", async (req, res) => {
@@ -81,6 +134,15 @@ router.post("/submit", async (req, res) => {
 
       await customer.save();
     }
+
+    await sendRSVPCommunications({
+      firstName: normalizedFirstName,
+      lastName: normalizedLastName,
+      email: normalizedEmail,
+      cellNumber: normalizedCell,
+      promotionalUpdates: Boolean(promotionalUpdates),
+      agreeToTerms: Boolean(agreeToTerms),
+    });
 
     return res.status(isExisting ? 200 : 201).json({
       success: true,
