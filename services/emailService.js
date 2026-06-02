@@ -22,6 +22,7 @@ class EmailService {
     this.apiInstance = new Brevo.TransactionalEmailsApi();
     this.apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
     this.donationReceiptTemplate = this.loadDonationReceiptTemplate();
+    this.inKindAcknowledgmentTemplate = this.loadInKindAcknowledgmentTemplate();
     
     // Gmail account configurations
     this.gmailAccounts = [
@@ -560,6 +561,16 @@ class EmailService {
     }
   }
 
+  loadInKindAcknowledgmentTemplate() {
+    try {
+      const templatePath = path.join(__dirname, '..', 'pdf', 'in_kind_donation_acknowledgment.html');
+      return fs.readFileSync(templatePath, 'utf8');
+    } catch (error) {
+      console.error('Failed to load in-kind acknowledgment template:', error);
+      return null;
+    }
+  }
+
   escapeHtml(value = '') {
     return String(value).replace(/[&<>"']/g, (match) => {
       const escapeMap = {
@@ -610,6 +621,16 @@ class EmailService {
     const isInstrumentDonation = donationData.donationType === 'instrument';
     const donationTypeDisplay = isInstrumentDonation ? 'Instrument Donation' : (donationData.donationType || 'Donation').replace(/-/g, ' ');
     const amountLabel = isInstrumentDonation ? 'Estimated Value:' : 'Donation Amount:';
+    const escapedInstrumentName = donationData.instrumentName
+      ? this.escapeHtml(donationData.instrumentName).replace(/\r?\n/g, '<br>')
+      : '';
+
+    const escapedDonorAddress = donationData.donorAddress
+      ? this.escapeHtml(donationData.donorAddress).replace(/\r?\n/g, '<br>')
+      : '';
+    const amountWritten = donationData.amountWritten
+      ? this.escapeHtml(donationData.amountWritten)
+      : '';
 
     const replacements = {
       donorName: this.escapeHtml(donorName),
@@ -621,10 +642,16 @@ class EmailService {
       donationTypeDisplay: this.escapeHtml(donationTypeDisplay),
       amountLabel: this.escapeHtml(amountLabel),
       amountRow: isInstrumentDonation ? '' : `<tr><th>${this.escapeHtml(amountLabel)}</th><td><strong>${this.formatCurrency(donationData.amount || 0)}</strong></td></tr>`,
+      amountWrittenRow: !isInstrumentDonation && amountWritten
+        ? `<tr><th>Amount (Written):</th><td><strong>${amountWritten}</strong></td></tr>`
+        : '',
+      donorAddressRow: escapedDonorAddress
+        ? `<tr><th>Address:</th><td><strong>${escapedDonorAddress}</strong></td></tr>`
+        : '',
       paymentMethod: this.escapeHtml((donationData.paymentMethod || 'Card').replace(/-/g, ' ')),
       transactionId: this.escapeHtml(donationData.transactionId || donationData.paymentIntentId || donationData.subscription || 'Not provided'),
-      instrumentName: donationData.instrumentName ? this.escapeHtml(donationData.instrumentName) : '',
-      instrumentRow: donationData.instrumentName ? `<tr><th>Instrument:</th><td><strong>${this.escapeHtml(donationData.instrumentName)}</strong></td></tr>` : '',
+      instrumentName: escapedInstrumentName,
+      instrumentRow: escapedInstrumentName ? `<tr><th>Instrument:</th><td><strong>${escapedInstrumentName}</strong></td></tr>` : '',
       donorMessage: donationData.message
         ? `<strong>Message from donor:</strong> ${this.escapeHtml(donationData.message)}`
         : ''
@@ -644,6 +671,52 @@ class EmailService {
       return null;
     }
 
+    return this.renderPdfAttachment(html, `Donation_Receipt_${receiptNumber || 'receipt'}.pdf`);
+  }
+
+  buildInKindAcknowledgmentPayload(donationData) {
+    if (!this.inKindAcknowledgmentTemplate) {
+      return { html: null, receiptNumber: null };
+    }
+
+    const receiptNumber = donationData.receiptNumber
+      || donationData.transactionId
+      || 'N/A';
+
+    const replacements = {
+      receiptDate: this.escapeHtml(this.formatDate(donationData.receiptDate || donationData.submittedAt || new Date())),
+      receiptNumber: this.escapeHtml(receiptNumber),
+      donorName: this.escapeHtml(donationData.donorName || 'Valued Donor'),
+      donorAddress: donationData.donorAddress
+        ? this.escapeHtml(donationData.donorAddress).replace(/\r?\n/g, '<br>')
+        : '',
+      greetingName: this.escapeHtml(donationData.greetingName || donationData.donorName || 'Valued Donor'),
+      inKindDescription: donationData.inKindDescription
+        ? this.escapeHtml(donationData.inKindDescription).replace(/\r?\n/g, '<br>')
+        : '',
+      dateReceived: this.escapeHtml(this.formatDate(donationData.dateReceived || donationData.submittedAt || new Date())),
+      purpose: this.escapeHtml(donationData.purpose || donationData.designation || 'General Support'),
+      ein: this.escapeHtml(donationData.ein || '93-2460195'),
+    };
+
+    let html = this.inKindAcknowledgmentTemplate;
+    Object.entries(replacements).forEach(([key, value]) => {
+      html = html.replace(new RegExp(`{{${key}}}`, 'g'), value);
+    });
+
+    return { html, receiptNumber };
+  }
+
+  async buildInKindAcknowledgmentAttachment(donationData) {
+    const { html, receiptNumber } = this.buildInKindAcknowledgmentPayload(donationData);
+    if (!html) {
+      return null;
+    }
+
+    return this.renderPdfAttachment(html, `In_Kind_Acknowledgment_${receiptNumber || 'receipt'}.pdf`);
+  }
+
+  renderPdfAttachment(html, fileName) {
     return new Promise((resolve, reject) => {
       pdf.create(html, {
         format: 'B4',
@@ -659,7 +732,7 @@ class EmailService {
         }
 
         resolve({
-          name: `Donation_Receipt_${receiptNumber || 'receipt'}.pdf`,
+          name: fileName,
           content: buffer.toString('base64')
         });
       });

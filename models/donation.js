@@ -38,12 +38,12 @@ const donationSchema = new mongoose.Schema({
   paymentMethod: {
     type: String,
     required: true,
-    enum: ['credit-card', 'paypal', 'bank-transfer', 'check', 'cash']
+    enum: ['credit-card', 'paypal', 'bank-transfer', 'check', 'cash', 'in-kind']
   },
   designation: {
     type: String,
     default: 'general',
-    enum: ['general', 'music-education', 'instrument-repairs', 'donation-program', 'events', 'other']
+    enum: ['general', 'music-education', 'instrument-repairs', 'donation-program', 'events', 'other', 'instrument donation']
   },
   isAnonymous: {
     type: Boolean,

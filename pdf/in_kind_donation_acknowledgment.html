@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>In-Kind Donation Acknowledgment</title>
+
+<style>
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    color: #000;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .wrapper {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 10px;
+    position: relative;
+    overflow: visible;
+    min-height: 100vh;
+  }
+
+  .wrapper::before {
+    content: '';
+    background: url('https://static.wixstatic.com/media/ef9da7_a76d26d2cef849b9a1f593c02dd8c9f5~mv2.png')
+                no-repeat;
+    background-position: center center;
+    background-size: 950px 950px;
+    opacity: 0.04;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 950px;
+    height: 950px;
+    margin-top: -475px;
+    margin-left: -475px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .header {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+  }
+
+  .header-logo,
+  .org-info {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  .header-logo {
+    width: 180px;
+  }
+
+  .header img {
+    width: 150px;
+    height: auto;
+    display: block;
+  }
+
+  .org-info {
+    font-size: 13px;
+    line-height: 1.6;
+    text-align: right;
+    padding-left: 15px;
+  }
+
+  .title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    margin: 18px 0 22px;
+  }
+
+  .meta {
+    margin: 16px 0;
+  }
+
+  .meta strong {
+    display: inline-block;
+  }
+
+  .section {
+    margin: 18px 0;
+  }
+
+  .donor-block {
+    margin: 14px 0 20px;
+  }
+
+  .description-box {
+    margin: 12px 0 18px;
+    padding: 0;
+  }
+
+  .description-box p {
+    margin: 8px 0;
+  }
+
+  .label {
+    font-weight: bold;
+    margin-top: 14px;
+  }
+
+  .signature {
+    margin-top: 24px;
+  }
+
+  .signature img {
+    width: 200px;
+    height: auto;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .signature .name {
+    font-weight: bold;
+    font-size: 15px;
+    margin-bottom: 3px;
+  }
+
+  a {
+    font-weight: bold;
+    text-decoration: none;
+    color: #000;
+  }
+</style>
+</head>
+
+<body>
+<div class="wrapper">
+  <div class="content">
+
+    <div class="header">
+      <div class="header-logo">
+        <img src="https://res.cloudinary.com/da5qsxtri/image/upload/v1779000604/harmony4all/assets/harmony-4-all-logo.png" alt="Logo">
+      </div>
+      <div class="org-info">
+        <strong>Harmony 4 All, Inc.</strong><br>
+        104-44 116th Street<br>
+        Richmond Hill, NY 11419<br>
+        <a href="https://www.harmony4all.org">www.harmony4all.org</a>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="title">In-Kind Donation Acknowledgment / Charitable Receipt</div>
+
+    <div class="meta">
+      <div><strong>Date:</strong> {{receiptDate}}</div>
+      <div><strong>Receipt No:</strong> {{receiptNumber}}</div>
+    </div>
+
+    <div class="section donor-block">
+      <div class="label">Donor:</div>
+      <div><strong>{{donorName}}</strong></div>
+      <div>{{donorAddress}}</div>
+    </div>
+
+    <div class="section">
+      <p>Dear <strong>{{greetingName}}</strong>,</p>
+
+      <p>
+        On behalf of Harmony 4 All, Inc., please accept our deepest gratitude for Blinkist&rsquo;s
+        generous in-kind contribution in support of our learning-access pilot program.
+      </p>
+
+      <p>
+        Harmony 4 All gratefully acknowledges receipt of the following in-kind contribution:
+      </p>
+
+      <div class="label">Description of In-Kind Donation:</div>
+      <div class="description-box">
+        <p>{{inKindDescription}}</p>
+      </div>
+
+      <p><strong>Date Received:</strong> {{dateReceived}}</p>
+      <p><strong>Purpose:</strong> {{purpose}}</p>
+
+      <p>
+        Harmony 4 All, Inc. is a nonprofit organization recognized as tax-exempt under
+        Section 501(c)(3) of the Internal Revenue Code.
+      </p>
+
+      <p><strong>EIN:</strong> {{ein}}</p>
+
+      <p>
+        <strong>No goods or services were provided by Harmony 4 All, Inc. in exchange for this contribution.</strong>
+      </p>
+
+      <p>
+        This acknowledgment is provided for the donor&rsquo;s records. Harmony 4 All does not assign a fair market
+        value to non-cash contributions; the donor is responsible for determining the value of the donated goods
+        or services for its own tax and accounting purposes.
+      </p>
+
+      <p>
+        We are sincerely grateful for Blinkist&rsquo;s generosity, trust, and partnership. Your support will help
+        Harmony 4 All provide accessible, guided learning opportunities to communities that often lack access to
+        high-quality personal growth and lifelong learning resources.
+      </p>
+    </div>
+
+    <div class="section">
+      <p><strong>With Love and Gratitude,</strong></p>
+    </div>
+
+    <div class="signature">
+      <img src="https://static.wixstatic.com/media/ef9da7_e9f0524c9a834fdab11dd097697a0f7e~mv2.png" alt="Signature">
+      <div class="name">Diane Bacchus</div>
+      <div>President</div>
+      <div>Harmony 4 All, Inc.</div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
