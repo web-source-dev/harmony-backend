@@ -85,7 +85,7 @@ const videoSchedulerService = require("./services/videoSchedulerService");
 
 app.get("/status", (req, res) => {
     res.send("Server is running");
-});
+}); 
 
 app.use("/api/contact", contactRoute);
 app.use("/api/newsletter", newsletterRoute);
