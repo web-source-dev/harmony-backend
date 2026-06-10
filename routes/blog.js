@@ -95,6 +95,7 @@ router.post('/', blogImageUpload.fields([
       imageAlt: req.body.imageAlt || '',
       blogVideo: req.files?.blogVideo ? req.files.blogVideo[0].path : null,
       url: req.body.url || '',
+      videoUrl: req.body.videoUrl || '',
       
       // Status & Visibility
       isActive: req.body.isActive === 'true',
@@ -421,6 +422,7 @@ router.patch('/:id', blogImageUpload.fields([
     if (req.body.isFeatured !== undefined) updates.isFeatured = req.body.isFeatured;
     if (req.body.imageAlt !== undefined) updates.imageAlt = req.body.imageAlt;
     if (req.body.url !== undefined) updates.url = req.body.url;
+    if (req.body.videoUrl !== undefined) updates.videoUrl = req.body.videoUrl;
     if (req.body.slug !== undefined && req.body.slug.trim() !== '') {
       updates.slug = req.body.slug.trim();
     }
