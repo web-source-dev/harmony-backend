@@ -180,7 +180,24 @@ router.post('/upload/image', (req, res, next) => {
 });
 
 // Upload video
-router.post('/upload/video', mediaVideoUpload.single('video'), async (req, res) => {
+router.post('/upload/video', (req, res, next) => {
+  mediaVideoUpload.single('video')(req, res, (err) => {
+    if (err) {
+      console.error('Multer error in video upload:', {
+        message: err.message,
+        code: err.code,
+      });
+      const isTooLarge = err.code === 'LIMIT_FILE_SIZE';
+      return res.status(isTooLarge ? 413 : 400).json({
+        message: isTooLarge
+          ? 'Video is too large. Maximum upload size is 100MB.'
+          : (err.message || 'File upload failed'),
+        code: err.code,
+      });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No video file provided' });

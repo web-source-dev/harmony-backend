@@ -46,6 +46,7 @@ const mediaImageStorage = createCloudinaryStorage('harmony4all/media');
 const mediaVideoStorage = createVideoStorage('harmony4all/media');
 
 const IMAGE_UPLOAD_LIMIT = 10 * 1024 * 1024; // 10MB
+const VIDEO_UPLOAD_LIMIT = 100 * 1024 * 1024; // 100MB
 
 // Multer upload configurations
 const blogImageUpload = multer({
@@ -121,7 +122,7 @@ const mediaImageUpload = multer({
 const mediaVideoUpload = multer({
   storage: mediaVideoStorage,
   limits: {
-    fileSize: 100 * 1024 * 1024, // 100MB limit for videos
+    fileSize: VIDEO_UPLOAD_LIMIT,
   },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('video/')) {
@@ -218,6 +219,7 @@ const getOptimizedImageUrl = (originalUrl, options = {}) => {
 module.exports = {
   cloudinary,
   IMAGE_UPLOAD_LIMIT,
+  VIDEO_UPLOAD_LIMIT,
   blogImageUpload,
   writerImageUpload,
   contentImageUpload,

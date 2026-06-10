@@ -1,63 +1,45 @@
 # =============================================================================
-# NGINX FIX for image upload 413 + CORS errors on api.harmony4all.org
+# NGINX config for api.harmony4all.org
 # =============================================================================
 #
-# WHY NO BACKEND LOGS?
-# nginx rejects the upload BEFORE the request reaches Node/Express.
-# Browser shows CORS error because nginx's 413 response has no CORS headers.
+# IMPORTANT: Do NOT add CORS headers here.
+# Express already handles CORS in index.js.
+# Adding CORS in both nginx AND Express causes duplicate headers and breaks the
+# admin app with: "Access-Control-Allow-Origin header contains multiple values"
 #
-# HOW TO FIND YOUR NGINX CONFIG (run on server as root):
-#
-#   sudo nginx -T 2>/dev/null | grep -E "server_name|client_max_body_size|harmony"
-#   sudo grep -r "harmony4all\|api\." /etc/nginx/
-#   ls /etc/nginx/sites-enabled/
-#
-# Common paths:
-#   /etc/nginx/sites-available/api.harmony4all.org
-#   /etc/nginx/sites-enabled/default
-#   /etc/nginx/conf.d/api.conf
-#
-# CHECK CURRENT LIMIT:
-#   sudo nginx -T 2>/dev/null | grep client_max_body_size
-#   (default is 1m if not set — that causes 413 on most blog images)
+# HOW TO FIND CONFIG:
+#   sudo nano /etc/nginx/sites-available/api.harmony4all.org
 #
 # AFTER EDITING:
-#   sudo nginx -t
-#   sudo systemctl reload nginx
+#   sudo nginx -t && sudo systemctl reload nginx
 #
 # =============================================================================
 
 server {
-    listen 80;
-    listen 443 ssl;
     server_name api.harmony4all.org;
 
-    # REQUIRED — allow uploads up to 50MB
-    client_max_body_size 50M;
-    client_body_timeout 300s;
+    # Must be >= backend video limit (100MB). Use 150M for headroom.
+    client_max_body_size 150M;
+    client_body_timeout 600s;
 
     location / {
-        proxy_pass http://127.0.0.1:5000;
+        proxy_pass http://localhost:5000;
         proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_read_timeout 300s;
-        proxy_send_timeout 300s;
-
-        # CORS on ALL responses (including nginx errors) for admin app
-        add_header Access-Control-Allow-Origin $http_origin always;
-        add_header Access-Control-Allow-Credentials true always;
-        add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
-        add_header Access-Control-Allow-Headers "Content-Type, Authorization" always;
-
-        if ($request_method = OPTIONS) {
-            add_header Access-Control-Allow-Origin $http_origin;
-            add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS";
-            add_header Access-Control-Allow-Headers "Content-Type, Authorization";
-            add_header Content-Length 0;
-            return 204;
-        }
+        proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 600s;
+        proxy_send_timeout 600s;
+        proxy_request_buffering off;
     }
+
+    listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/api.harmony4all.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api.harmony4all.org/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 }
