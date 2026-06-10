@@ -34,8 +34,6 @@ app.use(cors({
   maxAge: 86400,
 }));
 
-app.options('*', cors());
-
 // Parse JSON bodies for all routes except webhook
 app.use((req, res, next) => {
   if (req.originalUrl === '/api/donation/webhook') {
