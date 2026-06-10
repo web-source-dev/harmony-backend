@@ -92,8 +92,11 @@ router.post('/upload/image', (req, res, next) => {
         field: err.field,
         storageErrors: err.storageErrors
       });
-      return res.status(400).json({ 
-        message: err.message || 'File upload failed',
+      const isTooLarge = err.code === 'LIMIT_FILE_SIZE';
+      return res.status(isTooLarge ? 413 : 400).json({
+        message: isTooLarge
+          ? 'Image is too large. Maximum upload size is 10MB.'
+          : (err.message || 'File upload failed'),
         code: err.code
       });
     }

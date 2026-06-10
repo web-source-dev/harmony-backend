@@ -8,14 +8,40 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+  'https://admin.harmony4all.org',
+  'https://harmony4all.org',
+  'https://www.harmony4all.org',
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:3002',
+  process.env.ADMIN_URL,
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+    callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Length'],
+  maxAge: 86400,
+}));
+
+app.options('*', cors());
 
 // Parse JSON bodies for all routes except webhook
 app.use((req, res, next) => {
   if (req.originalUrl === '/api/donation/webhook') {
     next();
   } else {
-    bodyParser.json({ limit: '25mb' })(req, res, next);
+    bodyParser.json({ limit: '50mb' })(req, res, next);
   }
 });
 
@@ -23,7 +49,7 @@ app.use((req, res, next) => {
   if (req.originalUrl === '/api/donation/webhook') {
     next();
   } else {
-    bodyParser.urlencoded({ limit: '25mb', extended: true })(req, res, next);
+    bodyParser.urlencoded({ limit: '50mb', extended: true })(req, res, next);
   }
 });
 

@@ -1,0 +1,17 @@
+# Add inside the server block for api.harmony4all.org
+# Required so large image uploads are not rejected with HTTP 413 before Express runs.
+
+client_max_body_size 50M;
+client_body_timeout 300s;
+proxy_read_timeout 300s;
+proxy_send_timeout 300s;
+
+# Ensure API error responses still include CORS headers for the admin app.
+add_header Access-Control-Allow-Origin $http_origin always;
+add_header Access-Control-Allow-Credentials true always;
+add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+add_header Access-Control-Allow-Headers "Content-Type, Authorization" always;
+
+if ($request_method = OPTIONS) {
+  return 204;
+}

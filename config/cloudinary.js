@@ -45,11 +45,13 @@ const socialImageStorage = createCloudinaryStorage('harmony4all/social');
 const mediaImageStorage = createCloudinaryStorage('harmony4all/media');
 const mediaVideoStorage = createVideoStorage('harmony4all/media');
 
+const IMAGE_UPLOAD_LIMIT = 10 * 1024 * 1024; // 10MB
+
 // Multer upload configurations
 const blogImageUpload = multer({
   storage: blogImageStorage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+    fileSize: IMAGE_UPLOAD_LIMIT,
   },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
@@ -63,7 +65,7 @@ const blogImageUpload = multer({
 const writerImageUpload = multer({
   storage: writerImageStorage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+    fileSize: IMAGE_UPLOAD_LIMIT,
   },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
@@ -77,7 +79,7 @@ const writerImageUpload = multer({
 const contentImageUpload = multer({
   storage: contentImageStorage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+    fileSize: IMAGE_UPLOAD_LIMIT,
   },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
@@ -91,7 +93,7 @@ const contentImageUpload = multer({
 const socialImageUpload = multer({
   storage: socialImageStorage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+    fileSize: IMAGE_UPLOAD_LIMIT,
   },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
@@ -105,7 +107,7 @@ const socialImageUpload = multer({
 const mediaImageUpload = multer({
   storage: mediaImageStorage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+    fileSize: IMAGE_UPLOAD_LIMIT,
   },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
@@ -215,6 +217,7 @@ const getOptimizedImageUrl = (originalUrl, options = {}) => {
 
 module.exports = {
   cloudinary,
+  IMAGE_UPLOAD_LIMIT,
   blogImageUpload,
   writerImageUpload,
   contentImageUpload,
