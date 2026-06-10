@@ -1,17 +1,63 @@
-# Add inside the server block for api.harmony4all.org
-# Required so large image uploads are not rejected with HTTP 413 before Express runs.
+# =============================================================================
+# NGINX FIX for image upload 413 + CORS errors on api.harmony4all.org
+# =============================================================================
+#
+# WHY NO BACKEND LOGS?
+# nginx rejects the upload BEFORE the request reaches Node/Express.
+# Browser shows CORS error because nginx's 413 response has no CORS headers.
+#
+# HOW TO FIND YOUR NGINX CONFIG (run on server as root):
+#
+#   sudo nginx -T 2>/dev/null | grep -E "server_name|client_max_body_size|harmony"
+#   sudo grep -r "harmony4all\|api\." /etc/nginx/
+#   ls /etc/nginx/sites-enabled/
+#
+# Common paths:
+#   /etc/nginx/sites-available/api.harmony4all.org
+#   /etc/nginx/sites-enabled/default
+#   /etc/nginx/conf.d/api.conf
+#
+# CHECK CURRENT LIMIT:
+#   sudo nginx -T 2>/dev/null | grep client_max_body_size
+#   (default is 1m if not set — that causes 413 on most blog images)
+#
+# AFTER EDITING:
+#   sudo nginx -t
+#   sudo systemctl reload nginx
+#
+# =============================================================================
 
-client_max_body_size 50M;
-client_body_timeout 300s;
-proxy_read_timeout 300s;
-proxy_send_timeout 300s;
+server {
+    listen 80;
+    listen 443 ssl;
+    server_name api.harmony4all.org;
 
-# Ensure API error responses still include CORS headers for the admin app.
-add_header Access-Control-Allow-Origin $http_origin always;
-add_header Access-Control-Allow-Credentials true always;
-add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
-add_header Access-Control-Allow-Headers "Content-Type, Authorization" always;
+    # REQUIRED — allow uploads up to 50MB
+    client_max_body_size 50M;
+    client_body_timeout 300s;
 
-if ($request_method = OPTIONS) {
-  return 204;
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
+
+        # CORS on ALL responses (including nginx errors) for admin app
+        add_header Access-Control-Allow-Origin $http_origin always;
+        add_header Access-Control-Allow-Credentials true always;
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+        add_header Access-Control-Allow-Headers "Content-Type, Authorization" always;
+
+        if ($request_method = OPTIONS) {
+            add_header Access-Control-Allow-Origin $http_origin;
+            add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS";
+            add_header Access-Control-Allow-Headers "Content-Type, Authorization";
+            add_header Content-Length 0;
+            return 204;
+        }
+    }
 }
