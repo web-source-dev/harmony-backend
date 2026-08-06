@@ -14,6 +14,29 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Download partnership agreement PDF (for admin use)
+router.get('/:id/pdf', async (req, res) => {
+  try {
+    const agreement = await PartnershipAgreement.findById(req.params.id);
+    if (!agreement) {
+      return res.status(404).json({ message: 'Partnership agreement not found' });
+    }
+
+    const attachment = await emailService.buildPartnershipAgreementAttachment(agreement.toObject());
+    if (!attachment) {
+      return res.status(500).json({ message: 'Failed to generate PDF' });
+    }
+
+    const buffer = Buffer.from(attachment.content, 'base64');
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${attachment.name}"`);
+    res.send(buffer);
+  } catch (error) {
+    console.error('Error generating partnership agreement PDF:', error);
+    res.status(500).json({ message: 'Failed to generate PDF' });
+  }
+});
+
 // Get a single partnership agreement by id (for admin use)
 router.get('/:id', async (req, res) => {
   try {
