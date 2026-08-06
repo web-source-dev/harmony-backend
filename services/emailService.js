@@ -13,6 +13,8 @@ const {
   NewsletterEmailTemplate,
   VolunteerEmailTemplate,
   TextUpdatesEmailTemplate,
+  PartnershipAgreementEmailTemplate,
+  PartnershipAgreementConfirmationEmailTemplate,
 } = require('./templates');
 const CustomEmailTemplate = require('./templates/customEmail');
 require('dotenv').config();
@@ -23,6 +25,7 @@ class EmailService {
     this.apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
     this.donationReceiptTemplate = this.loadDonationReceiptTemplate();
     this.inKindAcknowledgmentTemplate = this.loadInKindAcknowledgmentTemplate();
+    this.partnershipAgreementTemplate = this.loadPartnershipAgreementTemplate();
     
     // Gmail account configurations
     this.gmailAccounts = [
@@ -571,6 +574,16 @@ class EmailService {
     }
   }
 
+  loadPartnershipAgreementTemplate() {
+    try {
+      const templatePath = path.join(__dirname, '..', 'pdf', 'community_performance_partnership.html');
+      return fs.readFileSync(templatePath, 'utf8');
+    } catch (error) {
+      console.error('Failed to load partnership agreement template:', error);
+      return null;
+    }
+  }
+
   escapeHtml(value = '') {
     return String(value).replace(/[&<>"']/g, (match) => {
       const escapeMap = {
@@ -714,6 +727,445 @@ class EmailService {
     }
 
     return this.renderPdfAttachment(html, `In_Kind_Acknowledgment_${receiptNumber || 'receipt'}.pdf`);
+  }
+
+  // ---- Community Performance Partnership agreement PDF/email ----
+  // These option lists intentionally mirror the exact wording/order used by the frontend
+  // (frontend/app/partnership-agreement/page.tsx) and the original printed PDF, so a
+  // submitted value always matches an option below and renders as a checked box.
+
+  static SERVICE_OPTIONS = [
+    'Background music',
+    'Featured live performance',
+    'Youth musician performance',
+    'Community music activation',
+    'Tabling with live music',
+    'Opening / closing or ceremonial music',
+    'Outreach table with live music',
+  ];
+
+  static AUDIENCE_OPTIONS = [
+    'Children / elementary students',
+    'Middle school students',
+    'Teens / high school students',
+    'College students / young adults',
+    'Families',
+    'Parents / caregivers',
+    'Senior citizens / older adults',
+    'Veterans',
+    'People with disabilities',
+    'Immigrant communities',
+    'Low-income / under-resourced neighbors',
+    'Faith-based community',
+    'Cultural community group',
+    'Local residents / general public',
+    'Elected officials / government reps',
+    'Community leaders / nonprofit partners',
+    'Private / invited guests only',
+  ];
+
+  static PREVIEW_OPTIONS = [
+    'Photo(s) of the performance area',
+    'Photo(s) of where the outreach table would go',
+    'Photo(s) of possible camera spots',
+    'A simple floor plan or layout',
+    'A quick walkthrough by phone or video',
+    'An in-person walkthrough, if helpful',
+    'Written confirmation of the exact spots once known',
+  ];
+
+  static SETTING_NOTE_OPTIONS = [
+    'Alcohol will be served',
+    'Smoking or vaping may be present',
+    'Food / drinks near the performance area',
+    'Food / drinks near our outreach table',
+    'Food / drinks near camera or media gear',
+    'Loud amplified sound from others',
+    'Dancing may happen near musicians',
+    'The space may get crowded',
+    'Ceremonial or speaking program',
+    'Security concerns are possible',
+    'None of the above',
+  ];
+
+  static COMPENSATION_OPTIONS = [
+    { value: 'paid', label: 'Paid engagement' },
+    { value: 'honorarium', label: 'Honorarium (a thank-you amount)' },
+    { value: 'donation-based', label: 'Donation-based' },
+    { value: 'in-kind', label: "In-kind community service — our gift to your event" },
+    { value: 'reimbursement', label: 'Reimbursement of costs only (e.g., travel)' },
+    { value: 'other', label: 'Other' },
+  ];
+
+  // Renders a single checkbox glyph. Filled black square = checked, outline = unchecked.
+  chk(isOn) {
+    return `<span class="chk${isOn ? ' on' : ''}"></span>`;
+  }
+
+  // One option per line, each with its own checkbox (e.g. "What We'll Do Together").
+  stackedChecklist(options, selectedLabels) {
+    const selected = new Set(Array.isArray(selectedLabels) ? selectedLabels : []);
+    return options
+      .map((opt) => `<div class="chk-row">${this.chk(selected.has(opt))}${this.escapeHtml(opt)}</div>`)
+      .join('');
+  }
+
+  // All options on one line, checkboxes inline (e.g. "Setting: Indoor / Outdoor / Both").
+  inlineChecklist(options, selectedLabels) {
+    const selected = new Set(Array.isArray(selectedLabels) ? selectedLabels : []);
+    return options
+      .map((opt) => `<span class="chk-item">${this.chk(selected.has(opt))}${this.escapeHtml(opt)}</span>`)
+      .join(' ');
+  }
+
+  // Single-select radio-style group rendered as inline checkboxes; `options` is [{value,label}].
+  inlineChoice(options, selectedValue) {
+    return options
+      .map((o) => `<span class="chk-item">${this.chk(o.value === selectedValue)}${this.escapeHtml(o.label)}</span>`)
+      .join(' ');
+  }
+
+  YOU_US_NOT_NEEDED_INLINE(selectedValue) {
+    return this.inlineChoice(
+      [
+        { value: 'you', label: 'You' },
+        { value: 'us', label: 'Us' },
+        { value: 'not-needed', label: 'Not needed' },
+      ],
+      selectedValue
+    );
+  }
+
+  buildPartnershipAgreementPayload(data) {
+    if (!this.partnershipAgreementTemplate) {
+      return { html: null };
+    }
+
+    const esc = (v, fallback = '') => this.escapeHtml(v || fallback);
+    const dateChoice = (choice) => ({
+      date: esc(choice?.date),
+      runs: (choice?.eventRunsFrom || choice?.eventRunsTo)
+        ? `${this.escapeHtml(choice?.eventRunsFrom || '?')} to ${this.escapeHtml(choice?.eventRunsTo || '?')}`
+        : '',
+      play: esc(choice?.playAround),
+    });
+
+    const first = dateChoice(data.firstChoice);
+    const second = dateChoice(data.secondChoice);
+    const third = dateChoice(data.thirdChoice);
+
+    // "At a Glance" reuses the Section 4 / Section 5 answers for its date & play-time summary.
+    const glanceDateTime = [first.date, first.runs].filter(Boolean).join(', ') || '';
+
+    // Section 6 audience checklist, split into the same two columns as the printed form.
+    const audienceColA = EmailService.AUDIENCE_OPTIONS.slice(0, 9);
+    const audienceColB = EmailService.AUDIENCE_OPTIONS.slice(9);
+    const audienceSelected = Array.isArray(data.audienceTypes) ? data.audienceTypes : [];
+    let audienceChecklistColB = this.stackedChecklist(audienceColB, audienceSelected);
+    audienceChecklistColB += `<div class="chk-row">${this.chk(!!data.otherAudienceType)}Other: <span class="field-blank">${esc(data.otherAudienceType)}</span></div>`;
+
+    // Section 25 setting-notes checklist, split into the same two columns as the printed form.
+    const settingColA = EmailService.SETTING_NOTE_OPTIONS.slice(0, 6);
+    const settingColB = EmailService.SETTING_NOTE_OPTIONS.slice(6);
+    const settingSelected = Array.isArray(data.settingNotes) ? data.settingNotes : [];
+    let settingNotesColB = this.stackedChecklist(settingColB, settingSelected);
+    settingNotesColB += `<div class="chk-row">${this.chk(!!data.otherSettingNote)}Other: <span class="field-blank">${esc(data.otherSettingNote)}</span></div>`;
+
+    // Section 9 outreach-table-location row, with an inline blank for "Other".
+    const outreachLocationOptions = [
+      { value: 'near-performance', label: 'Near our performance' },
+      { value: 'near-entrance', label: 'Near the entrance' },
+      { value: 'by-other-tables', label: 'By the other resource tables' },
+      { value: 'other', label: 'Other' },
+    ];
+    let outreachTableLocationInline = this.inlineChoice(outreachLocationOptions, data.outreachTableLocation);
+    if (data.outreachTableLocation === 'other') {
+      outreachTableLocationInline += ` <span class="field-blank">${esc(data.outreachTableLocationOther)}</span>`;
+    }
+
+    const replacements = {
+      submittedAt: this.formatDate(data.submittedAt || new Date()),
+      eventName: esc(data.eventName),
+      location: esc(data.location),
+      expectedAttendance: esc(data.expectedAttendance),
+      estimatedAttendees: esc(data.expectedAttendance),
+      audiencePhrase: esc(data.audiencePhrase),
+      backupDate2: esc(data.backupDate2),
+      backupDate3: esc(data.backupDate3),
+      glanceDateTime,
+      glancePlayFrom: esc(data.wePlay),
+      glancePlayTo: esc(data.weFinish),
+      settingChecklistInline: this.inlineChoice(
+        [
+          { value: 'indoor', label: 'Indoor' },
+          { value: 'outdoor', label: 'Outdoor' },
+          { value: 'both', label: 'Both' },
+        ],
+        data.setting
+      ),
+
+      organizerIsVenueYesChk: this.chk(data.organizerIsVenue === 'yes'),
+      organizerIsVenueNoChk: this.chk(data.organizerIsVenue === 'no'),
+      organizerName: esc(data.organizer?.name),
+      organizerTitle: esc(data.organizer?.title),
+      organizerPhone: esc(data.organizer?.phone),
+      organizerEmail: esc(data.organizer?.email),
+      venueHostName: esc(data.venueHost?.name),
+      venueHostTitle: esc(data.venueHost?.title),
+      venueHostPhone: esc(data.venueHost?.phone),
+      venueHostEmail: esc(data.venueHost?.email),
+
+      servicesChecklistHTML: this.stackedChecklist(EmailService.SERVICE_OPTIONS, data.servicesRequested),
+      otherServiceChk: this.chk(!!data.otherService),
+      otherService: esc(data.otherService),
+      purposeOfEvent: esc(data.purposeOfEvent),
+
+      firstChoiceDate: first.date,
+      firstChoiceRuns: first.runs,
+      firstChoicePlay: first.play,
+      secondChoiceDate: second.date,
+      secondChoiceRuns: second.runs,
+      secondChoicePlay: second.play,
+      thirdChoiceDate: third.date,
+      thirdChoiceRuns: third.runs,
+      thirdChoicePlay: third.play,
+
+      arriveSetupBy: esc(data.arriveSetupBy),
+      wePlay: esc(data.wePlay),
+      weFinish: esc(data.weFinish),
+      packedOutBy: esc(data.packedOutBy),
+
+      audienceChecklistColA: this.stackedChecklist(audienceColA, audienceSelected),
+      audienceChecklistColB,
+      ageRange: esc(data.ageRange),
+      audienceFlowChecklistInline: this.inlineChoice(
+        [
+          { value: 'mostly-seated', label: 'Mostly seated' },
+          { value: 'mostly-standing', label: 'Mostly standing' },
+          { value: 'walking-around', label: 'Walking around / tabling-style' },
+          { value: 'mixed', label: 'Mixed' },
+          { value: 'not-sure-yet', label: 'Not sure yet' },
+        ],
+        data.audienceFlow
+      ),
+      communityNotes: esc(data.communityNotes),
+
+      previewChecklistHTML: this.stackedChecklist(EmailService.PREVIEW_OPTIONS, data.previewItems),
+
+      chairsForMusiciansInline: this.YOU_US_NOT_NEEDED_INLINE(data.chairsForMusicians),
+      chairsForMusiciansCount: esc(data.chairsForMusiciansCount),
+      chairsForVolunteersInline: this.YOU_US_NOT_NEEDED_INLINE(data.chairsForVolunteers),
+      chairsForVolunteersCount: esc(data.chairsForVolunteersCount),
+      outreachTableProviderInline: this.YOU_US_NOT_NEEDED_INLINE(data.outreachTableProvider),
+      powerOutletInline: this.inlineChoice(
+        [
+          { value: 'available', label: 'Available' },
+          { value: 'not-available', label: 'Not available' },
+          { value: 'not-needed', label: 'Not needed' },
+        ],
+        data.powerOutlet
+      ),
+      powerOutletLocation: esc(data.powerOutletLocation),
+      amplifiedSoundInline: this.inlineChoice(
+        [
+          { value: 'fine', label: 'Fine' },
+          { value: 'keep-acoustic', label: 'Please keep acoustic' },
+          { value: 'lets-discuss', label: "Let's discuss" },
+        ],
+        data.amplifiedSound
+      ),
+      bannerFloorSpaceInline: this.inlineChoice(
+        [
+          { value: 'fine', label: 'Fine' },
+          { value: 'limited', label: 'Limited' },
+          { value: 'lets-discuss', label: "Let's discuss" },
+        ],
+        data.bannerFloorSpace
+      ),
+      backdropRoomInline: this.inlineChoice(
+        [
+          { value: 'yes', label: 'Yes' },
+          { value: 'limited', label: 'Limited' },
+          { value: 'not-possible', label: 'Not possible this time' },
+        ],
+        data.backdropRoom
+      ),
+      outreachTableLocationInline,
+
+      parkingLoadingNotes: esc(data.parkingLoadingNotes),
+      entryInstructions: esc(data.entryInstructions),
+      dayOfContactName: esc(data.dayOfContactName),
+      dayOfContactPhone: esc(data.dayOfContactPhone),
+
+      breakNotesFood: esc(data.breakNotesFood),
+
+      // The "Other" option is rendered separately below (with its inline blank), so it's
+      // excluded here to avoid showing two "Other" rows.
+      compensationChecklistHTML: this.stackedChecklist(
+        EmailService.COMPENSATION_OPTIONS.filter((o) => o.value !== 'other').map((o) => o.label),
+        [EmailService.COMPENSATION_OPTIONS.find((o) => o.value === data.eventCompensationType)?.label].filter(Boolean)
+      ),
+      otherCompensationChk: this.chk(data.eventCompensationType === 'other'),
+      otherCompensationType: esc(data.otherCompensationType),
+      compensationAmount: esc(data.compensationAmount),
+      compensationDueBy: esc(data.compensationDueBy),
+      compensationHowPaid: esc(data.compensationHowPaid),
+
+      photoVideoSensitivities: esc(data.photoVideoSensitivities),
+
+      goNoGoTime: esc(data.goNoGoTime),
+      weatherBackupPlan: esc(data.weatherBackupPlan),
+
+      settingNotesColA: this.stackedChecklist(settingColA, settingSelected),
+      settingNotesColB,
+
+      accessibilityNotes: esc(data.accessibilityNotes),
+
+      organizerSignatureName: esc(data.organizerSignature?.name),
+      organizerSignatureTitleSuffix: data.organizerSignature?.title ? ` · ${this.escapeHtml(data.organizerSignature.title)}` : '',
+      organizerSignatureDate: esc(data.organizerSignature?.date),
+      venueHostSignatureName: esc(data.venueHostSignature?.name),
+      venueHostSignatureTitleSuffix: data.venueHostSignature?.title ? ` · ${this.escapeHtml(data.venueHostSignature.title)}` : '',
+      venueHostSignatureDate: esc(data.venueHostSignature?.date),
+    };
+
+    let html = this.partnershipAgreementTemplate;
+    Object.entries(replacements).forEach(([key, value]) => {
+      html = html.replace(new RegExp(`{{${key}}}`, 'g'), value);
+    });
+
+    return { html };
+  }
+
+  async buildPartnershipAgreementAttachment(data) {
+    const { html } = this.buildPartnershipAgreementPayload(data);
+    if (!html) {
+      return null;
+    }
+
+    const safeEventName = (data.eventName || 'event').replace(/[^a-z0-9]+/gi, '_').slice(0, 60);
+    return this.renderPartnershipPdfAttachment(html, `Harmony4All_Partnership_Agreement_${safeEventName}.pdf`);
+  }
+
+  // Renders the partnership agreement PDF at US Letter size (matching the original printed form)
+  // with a repeating page footer, instead of the shared renderPdfAttachment used by receipts.
+  renderPartnershipPdfAttachment(html, fileName) {
+    return new Promise((resolve, reject) => {
+      pdf.create(html, {
+        format: 'Letter',
+        orientation: 'portrait',
+        border: {
+          top: '0.55in',
+          right: '0.7in',
+          bottom: '0.75in',
+          left: '0.7in',
+        },
+        footer: {
+          height: '0.45in',
+          contents: {
+            default:
+              '<div style="font-family: Arial, sans-serif; font-size: 9px; color: #666; text-align: center; width: 100%; letter-spacing: 0.25px;">' +
+              '&copy; Harmony 4 All &nbsp;&middot;&nbsp; Making Music Accessible &nbsp;&middot;&nbsp; www.harmony4all.org ' +
+              '&nbsp;&middot;&nbsp; Page {{page}} of {{pages}}</div>',
+          },
+        },
+        type: 'pdf',
+        quality: 'high',
+        zoomFactor: 1,
+      }).toBuffer((error, buffer) => {
+        if (error) {
+          return reject(error);
+        }
+
+        resolve({
+          name: fileName,
+          content: buffer.toString('base64'),
+        });
+      });
+    });
+  }
+
+  // Send partnership agreement notification to admin (info@)
+  // Pass a precomputed `attachment` (from buildPartnershipAgreementAttachment) to avoid re-rendering the PDF.
+  async sendPartnershipAgreementNotification(data, attachment = null) {
+    try {
+      const sendSmtpEmail = new Brevo.SendSmtpEmail();
+
+      sendSmtpEmail.subject = `New Community Performance Partnership - ${data.eventName || 'Untitled Event'}`;
+      sendSmtpEmail.htmlContent = PartnershipAgreementEmailTemplate.generateHTML(data);
+      sendSmtpEmail.textContent = PartnershipAgreementEmailTemplate.generateText(data);
+      sendSmtpEmail.sender = this.getSenderConfig();
+      sendSmtpEmail.to = [{
+        email: process.env.ADMIN_EMAIL || process.env.BREVO_SENDER_EMAIL || 'info@harmony4all.org',
+        name: "Harmony 4 All Admin"
+      }];
+
+      if (data.organizer?.email) {
+        sendSmtpEmail.replyTo = { email: data.organizer.email, name: data.organizer.name || '' };
+      }
+
+      let pdfAttachment = attachment;
+      if (!pdfAttachment) {
+        try {
+          pdfAttachment = await this.buildPartnershipAgreementAttachment(data);
+        } catch (pdfError) {
+          console.error('Failed to generate partnership agreement PDF attachment:', pdfError);
+        }
+      }
+
+      if (pdfAttachment) {
+        sendSmtpEmail.attachment = [pdfAttachment];
+      }
+
+      const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
+      console.log('Partnership agreement notification sent to admin:', result.messageId);
+      return result;
+    } catch (error) {
+      console.error('Failed to send partnership agreement notification to admin:', error);
+      throw error;
+    }
+  }
+
+  // Send a confirmation copy to the person who submitted the form.
+  // Pass a precomputed `attachment` (from buildPartnershipAgreementAttachment) to avoid re-rendering the PDF.
+  async sendPartnershipAgreementConfirmation(data, attachment = null) {
+    try {
+      const recipientEmail = data.organizer?.email;
+      if (!recipientEmail) {
+        return null;
+      }
+
+      const sendSmtpEmail = new Brevo.SendSmtpEmail();
+
+      sendSmtpEmail.subject = `We received your Community Performance Partnership form - ${data.eventName || 'Harmony 4 All'}`;
+      sendSmtpEmail.htmlContent = PartnershipAgreementConfirmationEmailTemplate.generateHTML(data);
+      sendSmtpEmail.textContent = PartnershipAgreementConfirmationEmailTemplate.generateText(data);
+      sendSmtpEmail.sender = this.getSenderConfig();
+      sendSmtpEmail.to = [{
+        email: recipientEmail,
+        name: data.organizer?.name || ''
+      }];
+
+      let pdfAttachment = attachment;
+      if (!pdfAttachment) {
+        try {
+          pdfAttachment = await this.buildPartnershipAgreementAttachment(data);
+        } catch (pdfError) {
+          console.error('Failed to generate partnership agreement PDF attachment for confirmation:', pdfError);
+        }
+      }
+
+      if (pdfAttachment) {
+        sendSmtpEmail.attachment = [pdfAttachment];
+      }
+
+      const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
+      console.log(`Partnership agreement confirmation sent to ${recipientEmail}:`, result.messageId);
+      return result;
+    } catch (error) {
+      console.error('Failed to send partnership agreement confirmation:', error);
+      throw error;
+    }
   }
 
   renderPdfAttachment(html, fileName) {

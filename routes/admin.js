@@ -279,6 +279,16 @@ router.post("/customers", async (req, res) => {
       position, labels, isSubscribed, emailSubscriberStatus, smsSubscriberStatus, source,
       visitorEmail, visitorName, isOffline = false, localId = null
     } = req.body;
+
+    const validationErrors = customerService.validateRequiredCustomerFields({
+      firstName,
+      lastName,
+      email,
+      phone
+    });
+    if (validationErrors.length > 0) {
+      return res.status(400).json({ message: validationErrors.join('. ') });
+    }
     
     // Check if customer already exists
     const existingCustomer = await Customer.findOne({ email: email.toLowerCase().trim() });
@@ -446,6 +456,16 @@ router.put("/customers/:id", async (req, res) => {
       address3Street, address3StreetLine2, address3City, address3Country,
       position, labels, isSubscribed, emailSubscriberStatus, smsSubscriberStatus, source
     } = req.body;
+
+    const validationErrors = customerService.validateRequiredCustomerFields({
+      firstName,
+      lastName,
+      email,
+      phone
+    });
+    if (validationErrors.length > 0) {
+      return res.status(400).json({ message: validationErrors.join('. ') });
+    }
     
     // Check if email is being changed and if it already exists
     const customer = await Customer.findById(req.params.id);

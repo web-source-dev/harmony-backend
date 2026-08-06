@@ -1,5 +1,28 @@
 const Customer = require('../models/customer');
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function validateRequiredCustomerFields({ firstName, lastName, email, phone }) {
+    const errors = [];
+
+    if (!firstName?.trim()) {
+        errors.push('First name is required');
+    }
+    if (!lastName?.trim()) {
+        errors.push('Last name is required');
+    }
+    if (!email?.trim()) {
+        errors.push('Email is required');
+    } else if (!EMAIL_REGEX.test(email.trim())) {
+        errors.push('Email is invalid');
+    }
+    if (!phone?.trim()) {
+        errors.push('Phone number is required');
+    }
+
+    return errors;
+}
+
 /**
  * Automatically create a customer if the email doesn't already exist
  * @param {Object} customerData - Customer data object
@@ -55,5 +78,6 @@ async function createCustomerIfNotExists(customerData) {
 }
 
 module.exports = {
-    createCustomerIfNotExists
+    createCustomerIfNotExists,
+    validateRequiredCustomerFields
 };

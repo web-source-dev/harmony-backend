@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Community Performance Partnership</title>
+<style>
+  /* The original PDF was exported from LibreOffice using Liberation Sans/Serif —
+     the open-source metric- and shape-compatible clones of Arial and Times New
+     Roman. Those exact fonts aren't installed here, so we use the fonts they were
+     built to match, which renders effectively identically. */
+  body {
+    font-family: Arial, 'Liberation Sans', Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    color: #1a1a1a;
+    font-size: 12px;
+    line-height: 1.55;
+    /* Works around a kerning bug in the PDF rendering engine that collapses or
+       inserts extra space next to certain letter pairs (e.g. "y " -> "y", "what" -> "w hat"). */
+    letter-spacing: 0.25px;
+  }
+
+  .muted-note, .callout, .box-desc, .sig-caption {
+    letter-spacing: 0.25px;
+  }
+
+  .serif { font-family: 'Times New Roman', 'Liberation Serif', Times, Georgia, serif; }
+
+  /* Bold Times New Roman has a rendering-engine bug here that inserts stray spaces
+     inside words (e.g. "Getting" -> "Ge tting"). Georgia's bold face doesn't have
+     that bug and is visually very close, so bold serif headings use it instead;
+     regular/italic serif text above still uses the exact-match Times New Roman. */
+  .doc-title, .section-title, .glance-heading, .promise-heading {
+    font-family: Georgia, 'Cambria', 'Times New Roman', serif;
+  }
+
+  /* ---------- Header (page 1 only) ---------- */
+  .doc-header { border-top: 3px solid #1a1a1a; padding-top: 10px; margin-bottom: 4px; }
+  .brand { font-weight: bold; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; }
+  .brand sup { font-size: 9px; }
+  .tagline { font-style: italic; font-size: 12px; color: #333; margin: 2px 0 18px; }
+  .doc-title { font-weight: bold; font-size: 27px; margin: 4px 0 4px; }
+  .doc-subtitle { font-style: italic; font-size: 13px; color: #444; margin-bottom: 16px; }
+
+  .intro-box {
+    background: #f6f6f4;
+    border: 1px solid #e5e5e0;
+    border-left: 4px solid #b9b9ae;
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-size: 12px;
+    margin-bottom: 20px;
+    page-break-inside: avoid;
+  }
+
+  /* ---------- At a Glance ---------- */
+  .glance-box {
+    background: #f6f6f4;
+    border: 1px solid #e5e5e0;
+    border-radius: 8px;
+    padding: 16px 18px 8px;
+    margin-bottom: 22px;
+    page-break-inside: avoid;
+  }
+  .glance-heading { font-weight: bold; font-size: 16px; margin-bottom: 12px; }
+  .glance-box table { width: 100%; border-collapse: collapse; }
+  .glance-box td { width: 50%; vertical-align: top; padding: 0 14px 12px 0; }
+
+  /* ---------- Circular numbered/icon badges ---------- */
+  .badge {
+    display: inline-block; width: 22px; height: 22px; background: #1a1a1a; color: #fff;
+    border-radius: 50%; text-align: center; line-height: 22px; font-size: 12px; font-weight: bold;
+    margin-right: 8px; vertical-align: middle;
+  }
+
+  /* ---------- Field labels / fill-in lines ---------- */
+  .field-label { font-weight: bold; font-size: 12px; }
+  .field-line {
+    border-bottom: 1px solid #999; display: block; min-height: 15px; padding: 1px 0 3px;
+    font-size: 12px; margin-top: 1px;
+  }
+  .field-blank { display: inline-block; border-bottom: 1px solid #999; min-width: 90px; padding: 0 3px; }
+
+  /* ---------- Numbered sections ---------- */
+  .section { margin: 20px 0 6px; page-break-inside: avoid; }
+  .section-title { font-weight: bold; font-size: 15px; vertical-align: middle; }
+  .section-rule { border: none; border-top: 1px solid #ccc; margin: 6px 0 12px; }
+  .muted-note { color: #767676; font-size: 11px; margin-bottom: 8px; }
+
+  /* ---------- Checkboxes ---------- */
+  .chk-row { font-size: 12px; margin-bottom: 6px; }
+  .chk {
+    display: inline-block; width: 11px; height: 11px; border: 1.4px solid #333; border-radius: 2px;
+    margin-right: 7px; vertical-align: -1px; position: relative; top: 0;
+  }
+  .chk.on { background: #1a1a1a; }
+  .chk-item { display: inline-block; margin-right: 18px; white-space: nowrap; }
+
+  /* ---------- Bordered contact/info boxes ---------- */
+  .box { border: 1px solid #ddd; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; page-break-inside: avoid; }
+  .box-title { font-weight: bold; font-size: 13px; margin-bottom: 1px; }
+  .box-desc { font-style: italic; color: #666; font-size: 11px; margin-bottom: 8px; }
+  .box table { width: 100%; border-collapse: collapse; }
+  .box td { width: 50%; vertical-align: top; padding: 4px 10px 8px 0; }
+
+  /* ---------- Callouts ---------- */
+  .callout { background: #f6f6f4; border: 1px solid #e5e5e0; border-radius: 8px; padding: 12px 14px; font-size: 11.5px; color: #333; margin: 8px 0 16px; page-break-inside: avoid; }
+
+  .promise-box { background: #1a1a1a; color: #fff; border-radius: 8px; padding: 16px 18px; margin: 18px 0; page-break-inside: avoid; }
+  .promise-heading { font-weight: bold; font-size: 14px; margin-bottom: 8px; }
+  .promise-heading .badge { background: #fff; color: #1a1a1a; }
+
+  /* ---------- Signature boxes ---------- */
+  .sig-box { border: 1px solid #ddd; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; background: #fafaf9; page-break-inside: avoid; }
+  .sig-box table { width: 100%; border-collapse: collapse; }
+  .sig-name-cell { width: 68%; vertical-align: bottom; padding-right: 14px; }
+  .sig-date-cell { width: 32%; vertical-align: bottom; }
+  .sig-value { border-bottom: 1px solid #999; font-size: 14px; padding-bottom: 4px; min-height: 18px; font-style: italic; }
+  .sig-caption { font-size: 10.5px; color: #777; margin-top: 3px; }
+
+  .closing { text-align: center; font-style: italic; color: #333; font-size: 12px; margin-top: 22px; }
+  .closing-brand { text-align: center; font-size: 11px; color: #555; margin-top: 4px; }
+
+  ul.plain { margin: 6px 0 6px 20px; padding: 0; font-size: 12px; }
+  ul.plain li { margin-bottom: 4px; }
+  p { margin: 8px 0; }
+  strong { font-weight: bold; }
+</style>
+</head>
+<body>
+
+  <div class="doc-header">
+    <div class="brand">HARMONY 4 ALL<sup>&copy;</sup></div>
+    <div class="tagline">Making Music Accessible</div>
+  </div>
+
+  <div class="doc-title serif">Community Performance Partnership</div>
+  <div class="doc-subtitle serif">A friendly, complete agreement so we can create something wonderful together</div>
+
+  <div class="intro-box">
+    We're so glad you've invited Harmony 4 All to be part of your event. Live music has a way of bringing a
+    community together, and we'd love to help yours do exactly that. This agreement walks through everything
+    we'll want to settle before the day &mdash; who's doing what, when we'll arrive, what we'll need, and how we'll
+    handle anything unexpected &mdash; so everyone can relax and enjoy the music. It's written in the spirit of
+    partnership and care. Think of it less as a contract and more as a shared plan between friends.
+    <br><br><em>Submitted online on {{submittedAt}}.</em>
+  </div>
+
+  <div class="glance-box">
+    <div class="glance-heading serif"><span class="badge">&#9733;</span>At a Glance</div>
+    <table>
+      <tr>
+        <td>
+          <span class="field-label">Event name:</span>
+          <span class="field-line">{{eventName}}</span>
+        </td>
+        <td>
+          <span class="field-label">Date &amp; time:</span>
+          <span class="field-line">{{glanceDateTime}}</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="field-label">Location / address:</span>
+          <span class="field-line">{{location}}</span>
+        </td>
+        <td>
+          <span class="field-label">Expected attendance:</span>
+          <span class="field-line">{{expectedAttendance}}</span>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <span class="field-label">When we play:</span> from <span class="field-blank">{{glancePlayFrom}}</span> to <span class="field-blank">{{glancePlayTo}}</span>
+          &nbsp;&nbsp;&nbsp; <span class="field-label">Setting:</span> {{settingChecklistInline}}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <span class="field-label">Who's coming (audience in a phrase):</span>
+          <span class="field-line">{{audiencePhrase}}</span>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <span class="field-label">Backup dates, if the first doesn't work &mdash;</span>
+          2nd: <span class="field-blank">{{backupDate2}}</span> &nbsp;&nbsp; 3rd: <span class="field-blank">{{backupDate3}}</span>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <span class="badge">1</span><span class="section-title serif">Who's Part of This</span>
+    <hr class="section-rule">
+    <p>Is the Event Organizer also the venue?</p>
+    <div class="chk-row">{{organizerIsVenueYesChk}} <strong>Yes</strong> &mdash; hosting in their own space, so the Venue Host section doesn't apply <em>(skip it)</em></div>
+    <div class="chk-row">{{organizerIsVenueNoChk}} <strong>No</strong> &mdash; a separate Venue Host runs the space <em>(please complete it)</em></div>
+    <p>Together, the three of us below are simply &ldquo;the partners&rdquo; in this plan. Each of us names one main contact so messages never get lost.</p>
+  </div>
+
+  <div class="box">
+    <div class="box-title">Harmony 4 All &mdash; your music partners</div>
+    <table>
+      <tr>
+        <td><span class="field-label">Event lead:</span><span class="field-line">&nbsp;</span></td>
+        <td><span class="field-label">Title:</span><span class="field-line">&nbsp;</span></td>
+      </tr>
+      <tr>
+        <td><span class="field-label">Phone:</span><span class="field-line">&nbsp;</span></td>
+        <td><span class="field-label">Email:</span><span class="field-line">&nbsp;</span></td>
+      </tr>
+    </table>
+    <div class="muted-note" style="margin-top:6px;">To be completed by Harmony 4 All upon written confirmation.</div>
+  </div>
+
+  <div class="box">
+    <div class="box-title">Event Organizer</div>
+    <div class="box-desc">The office, group, or person hosting the event.</div>
+    <table>
+      <tr>
+        <td><span class="field-label">Contact:</span><span class="field-line">{{organizerName}}</span></td>
+        <td><span class="field-label">Title:</span><span class="field-line">{{organizerTitle}}</span></td>
+      </tr>
+      <tr>
+        <td><span class="field-label">Phone:</span><span class="field-line">{{organizerPhone}}</span></td>
+        <td><span class="field-label">Email:</span><span class="field-line">{{organizerEmail}}</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="box">
+    <div class="box-title">Venue Host <span style="font-weight:normal; font-style:italic; color:#666;">(only if different from the Organizer)</span></div>
+    <div class="box-desc">Whoever's responsible for the physical space.</div>
+    <table>
+      <tr>
+        <td><span class="field-label">Contact:</span><span class="field-line">{{venueHostName}}</span></td>
+        <td><span class="field-label">Title:</span><span class="field-line">{{venueHostTitle}}</span></td>
+      </tr>
+      <tr>
+        <td><span class="field-label">Phone:</span><span class="field-line">{{venueHostPhone}}</span></td>
+        <td><span class="field-label">Email:</span><span class="field-line">{{venueHostEmail}}</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <span class="badge">2</span><span class="section-title serif">Why We Have This Little Agreement</span>
+    <hr class="section-rule">
+    <p>It exists for happy reasons: so everyone shares the same plan, feels respected, and can focus on the music. In
+    short, it helps us all agree on what we'll do, who's responsible for what, how we'll stay in touch before and during
+    the event, and how we'll handle anything unexpected &mdash; calmly and kindly. It's here to prevent confusion before
+    it starts and to protect the time and dignity of everyone involved: your team, our musicians and volunteers, and
+    the community we're all there to serve. It's not about formality or distance &mdash; it's about starting with shared
+    understanding so the day feels smooth and joyful.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">3</span><span class="section-title serif">What We'll Do Together</span>
+    <hr class="section-rule">
+    <p>You've invited us to provide (check all that apply):</p>
+    {{servicesChecklistHTML}}
+    <div class="chk-row">{{otherServiceChk}} Other: <span class="field-blank">{{otherService}}</span></div>
+    <p><span class="field-label">Purpose of the event:</span><span class="field-line">{{purposeOfEvent}}</span></p>
+    <p>Our role is whatever we check here together. We'll pour our hearts into the music and into connecting with your
+    community &mdash; but we won't be the ones running general event management, crowd control, security, guest check-in, or
+    venue operations, and we don't take part in political, campaign, or fundraising activity. Those stay with your team, unless
+    we've happily agreed to something else in writing.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">4</span><span class="section-title serif">Picking the Day</span>
+    <hr class="section-rule">
+    <p>If you can share up to three date options in order of preference, it helps us line up our musicians and volunteers.</p>
+
+    <p class="field-label" style="margin-bottom:2px;">First choice</p>
+    <table style="width:100%; border-collapse:collapse;">
+      <tr>
+        <td style="width:50%; vertical-align:top;"><span class="field-label">Date:</span><span class="field-line">{{firstChoiceDate}}</span></td>
+        <td style="width:50%; vertical-align:top;"><span class="field-label">Event runs:</span><span class="field-line">{{firstChoiceRuns}}</span></td>
+      </tr>
+    </table>
+    <span class="field-label">We'd play around:</span><span class="field-line">{{firstChoicePlay}}</span>
+
+    <p class="field-label" style="margin-bottom:2px; margin-top:14px;">Second choice</p>
+    <table style="width:100%; border-collapse:collapse;">
+      <tr>
+        <td style="width:50%; vertical-align:top;"><span class="field-label">Date:</span><span class="field-line">{{secondChoiceDate}}</span></td>
+        <td style="width:50%; vertical-align:top;"><span class="field-label">Event runs:</span><span class="field-line">{{secondChoiceRuns}}</span></td>
+      </tr>
+    </table>
+    <span class="field-label">We'd play around:</span><span class="field-line">{{secondChoicePlay}}</span>
+
+    <p class="field-label" style="margin-bottom:2px; margin-top:14px;">Third choice</p>
+    <table style="width:100%; border-collapse:collapse;">
+      <tr>
+        <td style="width:50%; vertical-align:top;"><span class="field-label">Date:</span><span class="field-line">{{thirdChoiceDate}}</span></td>
+        <td style="width:50%; vertical-align:top;"><span class="field-label">Event runs:</span><span class="field-line">{{thirdChoiceRuns}}</span></td>
+      </tr>
+    </table>
+    <span class="field-label">We'd play around:</span><span class="field-line">{{thirdChoicePlay}}</span>
+
+    <div class="callout">
+      To plan well, we ask that this agreement be completed and signed at least <strong>30 days before</strong> the event whenever
+      possible. That month gives us time to confirm the happy little details &mdash; musician and volunteer availability,
+      transportation, the venue's suitability, setup and power needs, our outreach table and cameras, day-of contacts,
+      safety, and any special sensitivities &mdash; so everything runs smoothly. Closer than 30 days? Reach out anyway! We'll
+      do our best whenever our leadership can okay the exception. Nothing's locked until we send our written confirmation.
+    </div>
+  </div>
+
+  <div class="section">
+    <span class="badge">5</span><span class="section-title serif">Getting In &amp; Getting Out</span>
+    <hr class="section-rule">
+    <p>So we can set up calmly and pack up safely, we ask for about <strong>90 minutes before</strong> we play to set up, sound-
+    check, and place instruments, cameras, and our outreach table, and <strong>45 minutes after</strong> to break down and load
+    out. If your space can't allow that full window, please let us know well in advance so we can determine together
+    whether a simplified setup is possible &mdash; fewer musicians, a lighter footprint, and so on.</p>
+    <table style="width:100%; border-collapse:collapse;">
+      <tr>
+        <td style="width:50%; vertical-align:top;"><span class="field-label">We arrive / set up by:</span><span class="field-line">{{arriveSetupBy}}</span></td>
+        <td style="width:50%; vertical-align:top;"><span class="field-label">We play:</span><span class="field-line">{{wePlay}}</span></td>
+      </tr>
+      <tr>
+        <td style="width:50%; vertical-align:top;"><span class="field-label">We finish:</span><span class="field-line">{{weFinish}}</span></td>
+        <td style="width:50%; vertical-align:top;"><span class="field-label">Packed up &amp; out by:</span><span class="field-line">{{packedOutBy}}</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <span class="badge">6</span><span class="section-title serif">Who We'll Be Playing For</span>
+    <hr class="section-rule">
+    <p class="muted-note">This helps us choose the right music, tone, setup, and outreach. Check all that apply.</p>
+    <table style="width:100%; border-collapse:collapse;">
+      <tr>
+        <td style="width:50%; vertical-align:top; padding-right:10px;">{{audienceChecklistColA}}</td>
+        <td style="width:50%; vertical-align:top;">{{audienceChecklistColB}}</td>
+      </tr>
+    </table>
+    <table style="width:100%; border-collapse:collapse; margin-top:8px;">
+      <tr>
+        <td style="width:50%; vertical-align:top;"><span class="field-label">Estimated age range:</span><span class="field-line">{{ageRange}}</span></td>
+        <td style="width:50%; vertical-align:top;"><span class="field-label">Estimated number of attendees:</span><span class="field-line">{{estimatedAttendees}}</span></td>
+      </tr>
+    </table>
+    <p class="field-label" style="margin-bottom:4px; margin-top:12px;">How will folks move through the space?</p>
+    <div class="chk-row">{{audienceFlowChecklistInline}}</div>
+    <p><span class="field-label">Anything about your community we should know to prepare respectfully?</span><span class="field-line">{{communityNotes}}</span></p>
+  </div>
+
+  <div class="section">
+    <span class="badge">7</span><span class="section-title serif">The Space We'll Need</span>
+    <hr class="section-rule">
+    <p>We're easy to please &mdash; we just need a spot that's safe, clean, and comfortable for the music and for chatting
+    with neighbors. In practice that means:</p>
+    <ul class="plain">
+      <li>Enough room for our musicians, instruments, stands, cases, outreach table, and cameras, without crowding</li>
+      <li>Clear of fire exits, narrow walkways, kitchens, and busy doorways where folks might bump us or our gear</li>
+      <li>The exact performance and table spots identified before we start setting up</li>
+      <li>Available to us for the whole setup, performance, outreach, filming, and breakdown window</li>
+      <li>Protected from rain, harsh sun, wind, heat, or cold if we're outdoors</li>
+      <li>A clear line of sight for our cameras, and room for volunteers to chat with attendees safely</li>
+    </ul>
+    <p>If the spot turns out too small, unsafe, overcrowded, or very different from what we pictured, our event lead may make
+    small, good-faith adjustments on-site &mdash; shorten, relocate, or simplify &mdash; and only as a last resort step back. We'll always
+    talk it through with you first.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">8</span><span class="section-title serif">A Peek at the Space Beforehand</span>
+    <hr class="section-rule">
+    <p>A quick preview helps us plan and avoids surprises. Before the day, could you share any of these? (check what you'll send)</p>
+    {{previewChecklistHTML}}
+    <p class="muted-note">If the actual setup turns out materially different from what we discussed, we may need to adjust or, rarely, step back &mdash;
+    so a little preview really does help us both.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">9</span><span class="section-title serif">What We Bring &amp; What We'll Need</span>
+    <hr class="section-rule">
+    <p><strong>We bring:</strong> our musicians and volunteers, instruments, music stands, our own outreach materials (flyers, QR
+    codes, sign-up sheets), and up to a few cameras to document the performance. We also bring our branded
+    retractable banner for the tabling area &mdash; it features a QR code so arriving visitors can check themselves in
+    and opt into our community members' list right from their phones. And if your space allows, we'd love to set up
+    our branded backdrop behind the performers, featuring the Harmony 4 All logo, our &ldquo;Making Music Accessible&rdquo;
+    tagline, and web address (www.harmony4all.org). Our youth musicians always come supervised by Harmony 4 All adults or their guardians.</p>
+    <p><strong>We'll need from you:</strong> a safe performance spot, restrooms and drinking water, and a safe corner for cases and
+    bags. Here's the quick who-brings-what:</p>
+
+    <div class="chk-row"><span class="field-label">Chairs for musicians:</span> {{chairsForMusiciansInline}} &nbsp;(how many: <span class="field-blank">{{chairsForMusiciansCount}}</span>)</div>
+    <div class="chk-row"><span class="field-label">Chairs for our table volunteers:</span> {{chairsForVolunteersInline}} &nbsp;(how many: <span class="field-blank">{{chairsForVolunteersCount}}</span>)</div>
+    <div class="chk-row"><span class="field-label">One 6-ft outreach table:</span> {{outreachTableProviderInline}}</div>
+    <div class="chk-row"><span class="field-label">Power outlet near us:</span> {{powerOutletInline}}</div>
+    <div class="chk-row"><span class="field-label">Amplified sound:</span> {{amplifiedSoundInline}}</div>
+    <div class="chk-row"><span class="field-label">Floor space for our banner by the table:</span> {{bannerFloorSpaceInline}}</div>
+    <div class="chk-row"><span class="field-label">Room for our branded backdrop:</span> {{backdropRoomInline}}</div>
+
+    <p><span class="field-label">If there's a power outlet, where is it?</span><span class="field-line">{{powerOutletLocation}}</span></p>
+    <div class="chk-row"><span class="field-label">Where would you like our outreach table?</span> {{outreachTableLocationInline}}</div>
+    <p>Our table is where volunteers welcome attendees, share our mission, hand out flyers and QR codes, and invite anyone
+    interested to join our community list &mdash; always with enough room to chat without blocking walkways or exits. If a power
+    outlet is needed, we just ask that it be safe and reachable. And a gentle note: please ask our event lead before anyone
+    moves, touches, or unplugs our instruments, cameras, stands, cables, devices, outreach materials, or personal belongings.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">10</span><span class="section-title serif">Getting There</span> <span class="muted-note">(please share about 48 hours ahead)</span>
+    <hr class="section-rule">
+    <p>Clear arrival details let us show up on time and unload safely. Could you let us know about:</p>
+    <ul class="plain">
+      <li>Where to park, and the loading / unloading area</li>
+      <li>Which entrance to use, and any security check-in</li>
+      <li>Elevator, stair, or ramp access &mdash; and where to drop instruments, outreach materials, and camera gear</li>
+      <li>Any street closures, traffic rules, or special access for the event</li>
+      <li>Any ID, pass, credential, or approval we'll need to get in</li>
+    </ul>
+    <p><span class="field-label">Parking &amp; loading notes:</span><span class="field-line">{{parkingLoadingNotes}}</span></p>
+    <p><span class="field-label">Entry instructions:</span><span class="field-line">{{entryInstructions}}</span></p>
+    <table style="width:100%; border-collapse:collapse;">
+      <tr>
+        <td style="width:60%; vertical-align:top;"><span class="field-label">Day-of contact who can let us in:</span><span class="field-line">{{dayOfContactName}}</span></td>
+        <td style="width:40%; vertical-align:top;"><span class="field-label">Their phone:</span><span class="field-line">{{dayOfContactPhone}}</span></td>
+      </tr>
+    </table>
+    <p class="muted-note">If that info doesn't reach us by about 48 hours before, or if our team can't reasonably get in with instruments and gear,
+    we may need to adjust, delay, or simplify the plan &mdash; never out of fuss, just to keep things safe and on time.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">11</span><span class="section-title serif">A Few Comforts</span>
+    <hr class="section-rule">
+    <p>Since our team may be on-site for a few hours, we'd be grateful for reasonable access to restrooms, drinking
+    water, a safe place for instrument cases and personal belongings, a safe spot for outreach materials and
+    camera bags, and a short break area when possible. If we're with you longer than an hour, we may take a short
+    break or two unless we've planned otherwise.</p>
+    <p><span class="field-label">Break notes / food availability, if any:</span><span class="field-line">{{breakNotesFood}}</span></p>
+  </div>
+
+  <div class="section">
+    <span class="badge">12</span><span class="section-title serif">How This Event Works &mdash; Paid, Donated, or In-Kind</span>
+    <hr class="section-rule">
+    <p>Community events come in all shapes. Some have a budget; some are a gift we're glad to give. Let's just name
+    which this one is, so there are no surprises. <strong>Whichever it is, we bring the same care and professionalism &mdash;
+    free service is never informal service.</strong></p>
+    {{compensationChecklistHTML}}
+    <div class="chk-row">{{otherCompensationChk}} Other: <span class="field-blank">{{otherCompensationType}}</span></div>
+    <table style="width:100%; border-collapse:collapse;">
+      <tr>
+        <td style="width:50%; vertical-align:top;"><span class="field-label">Amount, if any:</span><span class="field-line">{{compensationAmount}}</span></td>
+        <td style="width:50%; vertical-align:top;"><span class="field-label">Due by:</span><span class="field-line">{{compensationDueBy}}</span></td>
+      </tr>
+    </table>
+    <p><span class="field-label">How it's paid:</span><span class="field-line">{{compensationHowPaid}}</span></p>
+  </div>
+
+  <div class="section">
+    <span class="badge">13</span><span class="section-title serif">Permits &amp; Permission to Be There</span>
+    <hr class="section-rule">
+    <p>Any permits, approvals, or permissions the event itself needs &mdash; venue booking, public-space or sound
+    approvals, security clearance, tabling or filming permission &mdash; are handled on your side. We're not the ones
+    securing event permits or venue authorization unless we've agreed otherwise in writing. By signing, you're
+    confirming that Harmony 4 All has permission to be there to perform, table, document our own participation, and
+    warmly connect with neighbors.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">14</span><span class="section-title serif">Staying in Touch Before the Day</span>
+    <hr class="section-rule">
+    <p>Verbal chats are wonderful &mdash; but let's put the final details in writing too (a quick email thread is perfect), so all
+    three of us remember the same plan. If anything important changes as the day approaches, a short note to the
+    contacts above keeps everyone in sync.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">15</span><span class="section-title serif">On the Day &mdash; Keeping Communication Clear</span>
+    <hr class="section-rule">
+    <p>To keep things calm, day-of requests flow like this:</p>
+    <p style="text-align:center; font-weight:bold;">Organizer / Venue Host &nbsp;&rarr;&nbsp; Harmony 4 All event lead &nbsp;&rarr;&nbsp; our musicians &amp; volunteers</p>
+    <p>Please send requests through our event lead rather than to individual musicians or our youth volunteers &mdash; it
+    prevents mixed messages and uncomfortable moments. The one exception is an immediate safety concern,
+    where of course anyone should speak up right away. If something urgent comes up, just find our lead.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">16</span><span class="section-title serif">Respect &amp; Courtesy, Both Ways</span>
+    <hr class="section-rule">
+    <p>We treat your team, your space, and your guests with patience and respect &mdash; and we warmly ask the same for
+    our musicians and volunteers, especially our young people. In practice, that means we all agree not to:</p>
+    <ul class="plain">
+      <li>Interrupt musicians mid-performance (unless it's a safety thing)</li>
+      <li>Give conflicting instructions to individual players or volunteers</li>
+      <li>Pressure anyone to continue past the agreed time</li>
+      <li>Move or touch instruments, gear, cameras, or belongings without asking our lead</li>
+      <li>Publicly criticize or confront our musicians or volunteers</li>
+      <li>Change our role without a word to our event lead</li>
+      <li>Treat our team's time or presence as informal just because the music is a community gift</li>
+    </ul>
+    <p>If a concern comes up, let's raise it calmly through our contacts. If something truly disrespectful continues after we've
+    gently flagged it, we may pause or wind down &mdash; but we'd always much rather simply talk it through.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">17</span><span class="section-title serif">If Plans Change on the Day</span>
+    <hr class="section-rule">
+    <p>Community events shift, and that's okay! For bigger changes, just check with our event lead first so we can
+    make it work together. Bigger changes include things like:</p>
+    <ul class="plain">
+      <li>Moving us to a different spot, or changing our performance time or length</li>
+      <li>Relocating, shrinking, or removing our 6-ft outreach table</li>
+      <li>Blocking or changing our agreed camera spots</li>
+      <li>Asking for a different kind of performance, or switching between background and featured music</li>
+      <li>Removing access to electricity</li>
+      <li>Changing how many musicians or volunteers we bring</li>
+      <li>Asking us to join political, campaign, fundraising, or public-messaging activity we hadn't discussed</li>
+      <li>Asking us to stay beyond the agreed time, or to set up in a space that's too small or unsafe</li>
+    </ul>
+    <p>We'll always try to say yes where we safely can &mdash; a quick conversation lets us adapt happily.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">18</span><span class="section-title serif">If We Ever Need to Pause or Step Back</span>
+    <hr class="section-rule">
+    <p>We truly hope it never comes up. But so everyone knows ahead of time, there are a few situations where our
+    event lead or leadership might pause, shorten, relocate, or &mdash; only as a last resort &mdash; step back: if the space is
+    unsafe or too small; if the setup is very different from what we agreed; if musicians are interrupted again and
+    again; if our team or volunteers are treated unkindly; if our gear or belongings are at risk; if there's no clear
+    contact; if things become chaotic or hostile; if we're asked to do things outside this plan; or if something
+    genuinely unexpected affects safety, dignity, or our ability to perform.</p>
+    <p>And for anything not spelled out here &mdash; because no plan can foresee everything &mdash; let's simply handle it in good
+    faith, using the spirit of this whole agreement: safety, respect, clear communication, transparency, and care for
+    our musicians, volunteers, and the community we're serving.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">19</span><span class="section-title serif">Photos &amp; Video</span>
+    <hr class="section-rule">
+    <p>We love to document our visits &mdash; for our records, social media, grant reports, and community storytelling. To
+    capture the performance well, we may set up a small camera arrangement around the stage:</p>
+    <ul class="plain">
+      <li>One camera straight on (about a 90&deg; angle to the stage), capturing the full performance</li>
+      <li>One camera at roughly 45&deg; from one side</li>
+      <li>One camera at roughly 45&deg; from the other side</li>
+      <li>One roaming camera, held by a volunteer, for candid audience reactions and outreach-table moments</li>
+    </ul>
+    <p>We'll discuss camera placement with you before the event and confirm the exact spots before setup begins,
+    always keeping everything clear of walkways. Once cameras are set, we just ask that they aren't moved or
+    unplugged without a quick word to our event lead. If our branded backdrop is set up behind the performers, it also
+    gives a lovely, consistent background for the footage.</p>
+    <p>Because community events include people who <em>aren't</em> with us, we ask that a simple &ldquo;filming in progress&rdquo; note be
+    posted near the entrance, and we'll gladly steer cameras away from anyone who'd rather not be filmed. Want copies
+    afterward? Just ask &mdash; we're happy to share photos and clips for your recap, appreciation posts, or reporting.</p>
+    <p><span class="field-label">Any photo / video sensitivities on your side?</span><span class="field-line">{{photoVideoSensitivities}}</span></p>
+  </div>
+
+  <div class="section">
+    <span class="badge">20</span><span class="section-title serif">Community Sign-Ups</span>
+    <hr class="section-rule">
+    <p>We may invite interested attendees to voluntarily share their contact info so we can let them know about future
+    performances, free music programs, volunteer chances, and community events. It's always optional &mdash; no one
+    ever has to sign up to enjoy the day. <strong>We keep that info to ourselves; we never sell or share it.</strong> We'd just ask for
+    a little space around our table and banner, and that the sign-up spot isn't moved without a quick word to our lead.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">21</span><span class="section-title serif">Safety, Security &amp; Crowds</span>
+    <hr class="section-rule">
+    <p>Overall event safety, security, guest behavior, crowd flow, emergency procedures, and venue rules are your
+    team's domain &mdash; you know your event best. We look after our own crew and our agreed music, outreach, and
+    filming role. If crowding, conflict, blocked exits, or any safety concern crops up near our area, we trust you'll
+    respond promptly, and we may gently pause until it's resolved.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">22</span><span class="section-title serif">Caring for Instruments &amp; Belongings</span>
+    <hr class="section-rule">
+    <p>Our musicians and volunteers bring instruments, cameras, tripods, stands, devices, outreach materials, and
+    personal belongings &mdash; some of it valuable and dearly loved by our young people. We'll treat your space with
+    great care, and we'd be grateful for a reasonably safe area for our things. We can't be responsible for damage
+    caused by guests, weather, crowding, spills, or unauthorized handling.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">23</span><span class="section-title serif">Weather &amp; Outdoor Events</span>
+    <hr class="section-rule">
+    <p>For outdoor events, let's plan for the weather together so everyone &mdash; and every instrument &mdash; stays happy. A
+    good plan covers rain, wind, heat, cold, and strong sun; safe electrical setup; protection for instruments,
+    cameras, and outreach materials; steady, safe ground; and a tent or covered area if needed.</p>
+    <p>Let's also pick a friendly &ldquo;go / no-go&rdquo; check-in by <span class="field-blank">{{goNoGoTime}}</span> (time) the morning of, so nobody's guessing. If
+    conditions could harm our instruments or make things unsafe, we may need to adjust or postpone.</p>
+    <p><span class="field-label">Weather backup plan:</span><span class="field-line">{{weatherBackupPlan}}</span></p>
+  </div>
+
+  <div class="section">
+    <span class="badge">24</span><span class="section-title serif">Cancellations &amp; Rescheduling</span>
+    <hr class="section-rule">
+    <p>If either of us needs to cancel or reschedule, we'll let the other know as soon as we possibly can, in writing. Life
+    happens &mdash; illness, weather, emergencies, transportation &mdash; and we'll always give as much notice as we can.
+    We can't take on losses or program gaps from circumstances outside our control, and if an event is rescheduled,
+    our participation isn't automatic &mdash; a fresh quick confirmation may be needed. We'll always approach it generously.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">25</span><span class="section-title serif">Good to Know About the Setting</span>
+    <hr class="section-rule">
+    <p class="muted-note">A quick heads-up on any of these helps us protect instruments, gear, and our young performers. Check all that apply.</p>
+    <table style="width:100%; border-collapse:collapse;">
+      <tr>
+        <td style="width:50%; vertical-align:top; padding-right:10px;">{{settingNotesColA}}</td>
+        <td style="width:50%; vertical-align:top;">{{settingNotesColB}}</td>
+      </tr>
+    </table>
+    <p class="muted-note">Where possible, we'd ask that food and drinks be kept a little away from instruments, cameras, and outreach materials. Thank you!</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">26</span><span class="section-title serif">Our Young Musicians</span>
+    <hr class="section-rule">
+    <p>When we bring youth musicians or volunteers, they're the heart of what we do &mdash; so we ask for an especially
+    warm, safe, and age-appropriate environment. Our young people won't be asked to stay past the agreed time,
+    perform without needed breaks, take part in political activity, handle crowd conflict, carry heavy gear, collect
+    information in an uncomfortable setting, or be photographed or interviewed in any way that isn't appropriate.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">27</span><span class="section-title serif">Accessibility &amp; Inclusion</span>
+    <hr class="section-rule">
+    <p>We want every neighbor to feel welcome. We'll make warm, reasonable efforts to support an inclusive
+    environment through our music and outreach. Overall venue accessibility &mdash; ramps, elevators, accessible
+    seating and restrooms, crowd access, translation, and accommodations &mdash; stays with the host, but a heads-up
+    about any features or limits helps us set up thoughtfully so we can do our part.</p>
+    <p><span class="field-label">Accessibility notes or accommodations to share:</span><span class="field-line">{{accessibilityNotes}}</span></p>
+  </div>
+
+  <div class="section">
+    <span class="badge">28</span><span class="section-title serif">How You Can Talk About Us</span>
+    <hr class="section-rule">
+    <p>We'd love a little thank-you! Accurate language is perfect &mdash; something like <em>&ldquo;Harmony 4 All joined us to support
+    community connection through live music and community outreach.&rdquo;</em> Please don't describe us as a sponsor,
+    vendor, endorser, an entertainment company, or a political or campaign supporter unless we've happily agreed in writing.</p>
+    <p><strong>We're proudly nonpartisan.</strong> We'll gladly play at community, civic, and government-hosted events in the spirit of
+    service, but our presence is never a political endorsement, and we can't perform, table, or provide media at campaign
+    events, partisan events, candidate events, or political fundraisers unless our leadership has reviewed and approved it in writing.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">29</span><span class="section-title serif">A Few Final Notes</span>
+    <hr class="section-rule">
+    <ul class="plain">
+      <li><strong>Booking our musicians directly:</strong> if you'd ever love a Harmony 4 All musician for another occasion, we're
+      flattered &mdash; please reach out through Harmony 4 All rather than arranging it one-on-one.</li>
+      <li><strong>No pressure for the future:</strong> one lovely event doesn't lock either of us into the next. We'll happily plan future
+      events fresh, based on fit, availability, and capacity.</li>
+    </ul>
+  </div>
+
+  <div class="promise-box">
+    <div class="promise-heading serif"><span class="badge">&hearts;</span>Our Promise to Each Other</div>
+    <p style="margin:0;">We'll treat your team, your space, and your community with real care and respect &mdash; and we ask the same
+    for our musicians and volunteers, especially our young people, who give their time freely. If a
+    misunderstanding ever comes up, let's talk it through directly and kindly first, and steer clear of public
+    blame. That's how good partnerships grow.</p>
+  </div>
+
+  <div class="section">
+    <span class="badge">30</span><span class="section-title serif">Quick Check-In, About a Week Out</span>
+    <hr class="section-rule">
+    <p>Around 7 days before, let's confirm the essentials together:</p>
+    <table style="width:100%; border-collapse:collapse;">
+      <tr>
+        <td style="width:50%; vertical-align:top; padding-right:10px;">
+          <div class="chk-row"><span class="chk"></span>Date &amp; times</div>
+          <div class="chk-row"><span class="chk"></span>Our arrival / setup time</div>
+          <div class="chk-row"><span class="chk"></span>Our performance &amp; finish time</div>
+          <div class="chk-row"><span class="chk"></span>Breakdown / exit time</div>
+          <div class="chk-row"><span class="chk"></span>Performance location</div>
+          <div class="chk-row"><span class="chk"></span>Outreach table location</div>
+          <div class="chk-row"><span class="chk"></span>Camera placement plan</div>
+          <div class="chk-row"><span class="chk"></span>Parking / loading plan</div>
+        </td>
+        <td style="width:50%; vertical-align:top;">
+          <div class="chk-row"><span class="chk"></span>Power / sound needs</div>
+          <div class="chk-row"><span class="chk"></span>Chairs &amp; 6-ft table</div>
+          <div class="chk-row"><span class="chk"></span>Weather plan (if outdoor)</div>
+          <div class="chk-row"><span class="chk"></span>Audience type &amp; flow</div>
+          <div class="chk-row"><span class="chk"></span>Payment / in-kind confirmed</div>
+          <div class="chk-row"><span class="chk"></span>Day-of contacts</div>
+          <div class="chk-row"><span class="chk"></span>Any special instructions</div>
+          <div class="chk-row"><span class="chk"></span>Anything changed since signing</div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <span class="badge">31</span><span class="section-title serif">Let's Make It Official</span>
+    <hr class="section-rule">
+    <p>By signing, each of us confirms we've read and understood this, we'll communicate clearly and treat one another
+    with respect, and we're genuinely excited to work together to create a wonderful event. This becomes official
+    once everyone's signed and Harmony 4 All sends a short written confirmation.</p>
+
+    <div class="sig-box">
+      <div class="box-title">Harmony 4 All</div>
+      <table>
+        <tr>
+          <td class="sig-name-cell"><div class="sig-value">&nbsp;</div><div class="sig-caption">Name &amp; signature &middot; Title</div></td>
+          <td class="sig-date-cell"><div class="sig-value">&nbsp;</div><div class="sig-caption">Date</div></td>
+        </tr>
+      </table>
+      <div class="muted-note" style="margin-top:6px;">To be countersigned by Harmony 4 All staff upon written confirmation.</div>
+    </div>
+
+    <div class="sig-box">
+      <div class="box-title">Event Organizer</div>
+      <table>
+        <tr>
+          <td class="sig-name-cell"><div class="sig-value">{{organizerSignatureName}}{{organizerSignatureTitleSuffix}}</div><div class="sig-caption">Name &amp; signature &middot; Title / office / organization</div></td>
+          <td class="sig-date-cell"><div class="sig-value">{{organizerSignatureDate}}</div><div class="sig-caption">Date</div></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="sig-box">
+      <div class="box-title">Venue Host <span style="font-weight:normal; font-style:italic; color:#666;">(only if different from the Organizer)</span></div>
+      <table>
+        <tr>
+          <td class="sig-name-cell"><div class="sig-value">{{venueHostSignatureName}}{{venueHostSignatureTitleSuffix}}</div><div class="sig-caption">Name &amp; signature &middot; Title / venue</div></td>
+          <td class="sig-date-cell"><div class="sig-value">{{venueHostSignatureDate}}</div><div class="sig-caption">Date</div></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <p class="closing">Thank you for inviting us to be part of your event &mdash; we can't wait to make music with your community.</p>
+  <p class="closing-brand"><strong>Harmony 4 All</strong><sup>&copy;</sup> &middot; Making Music Accessible</p>
+
+</body>
+</html>
