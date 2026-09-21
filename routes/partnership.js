@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const PartnershipAgreement = require('../models/partnershipAgreement');
 const emailService = require('../services/emailService');
+const { getUSPhoneValidationError, formatUSPhoneForStorage } = require('../utils/usPhone');
 
 // Get all partnership agreement submissions (for admin use)
 router.get('/', async (req, res) => {
@@ -63,7 +64,12 @@ router.post('/submit', async (req, res) => {
     if (!data.location || !String(data.location).trim()) errors.push('Location / address is required');
     if (!data.organizer?.name || !String(data.organizer.name).trim()) errors.push('Event Organizer contact name is required');
     if (!data.organizer?.email || !emailRegex.test(data.organizer.email)) errors.push('A valid Event Organizer email is required');
-    if (!data.organizer?.phone || !String(data.organizer.phone).trim()) errors.push('Event Organizer phone is required');
+    const organizerPhoneError = getUSPhoneValidationError(data.organizer?.phone, { required: true });
+    if (organizerPhoneError) errors.push(`Event Organizer phone: ${organizerPhoneError}`);
+    const venueHostPhoneError = getUSPhoneValidationError(data.venueHost?.phone);
+    if (venueHostPhoneError) errors.push(`Venue Host phone: ${venueHostPhoneError}`);
+    const dayOfContactPhoneError = getUSPhoneValidationError(data.dayOfContactPhone);
+    if (dayOfContactPhoneError) errors.push(`Day-of contact phone: ${dayOfContactPhoneError}`);
     if (!data.organizerSignature?.name || !String(data.organizerSignature.name).trim()) errors.push('A typed signature name is required');
     if (!data.organizerSignature?.date || !String(data.organizerSignature.date).trim()) errors.push('Signature date is required');
     if (!data.agreeToTerms) errors.push('Please confirm you have read and agree to the partnership agreement');
@@ -74,6 +80,16 @@ router.post('/submit', async (req, res) => {
         message: errors[0],
         errors,
       });
+    }
+
+    if (data.organizer) {
+      data.organizer = { ...data.organizer, phone: formatUSPhoneForStorage(data.organizer.phone) };
+    }
+    if (data.venueHost?.phone) {
+      data.venueHost = { ...data.venueHost, phone: formatUSPhoneForStorage(data.venueHost.phone) };
+    }
+    if (data.dayOfContactPhone) {
+      data.dayOfContactPhone = formatUSPhoneForStorage(data.dayOfContactPhone);
     }
 
     const agreement = new PartnershipAgreement({

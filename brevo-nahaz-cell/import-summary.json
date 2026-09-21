@@ -1,0 +1,747 @@
+{
+  "importedAt": "2026-09-11T11:20:05.591Z",
+  "listId": 6,
+  "listName": "Nahaz's Cell Phone",
+  "peopleAttempted": 92,
+  "successCount": 92,
+  "failureCount": 0,
+  "uniqueSubscribers": 92,
+  "results": [
+    {
+      "name": "April Rachmuth",
+      "email": "alrtodo@yahoo.com",
+      "sms": "+15163300172",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": ""
+    },
+    {
+      "name": "Paul Rachmuth",
+      "email": "paul@paresq.com",
+      "sms": null,
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12209
+    },
+    {
+      "name": "Frances Kweller",
+      "email": "fk@kwellerprep.com",
+      "sms": "+19174993913",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": ""
+    },
+    {
+      "name": "Ryan Khan",
+      "email": "ryank@masconrestoration.com",
+      "sms": "+19175236058",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12210
+    },
+    {
+      "name": "Mo Khan",
+      "email": "bmer777@aol.com",
+      "sms": "+13057850554",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12211
+    },
+    {
+      "name": "Jo-Ann Sternberg",
+      "email": "sternberg490@gmail.com",
+      "sms": "+19176641502",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": ""
+    },
+    {
+      "name": "Carla Rose",
+      "email": "scubacj@aol.com",
+      "sms": "+17187918276",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": ""
+    },
+    {
+      "name": "George Russo",
+      "email": null,
+      "sms": "+19173642858",
+      "status": "ok",
+      "detail": "created/updated by SMS",
+      "id": 12212
+    },
+    {
+      "name": "Helena Costa",
+      "email": null,
+      "sms": "+16315754128",
+      "status": "ok",
+      "detail": "created/updated by SMS",
+      "id": 12213
+    },
+    {
+      "name": "Isabelle Reyes",
+      "email": null,
+      "sms": "+17189027248",
+      "status": "ok",
+      "detail": "created/updated by SMS",
+      "id": 12214
+    },
+    {
+      "name": "Islam Sharif",
+      "email": null,
+      "sms": "+15162091954",
+      "status": "ok",
+      "detail": "created/updated by SMS",
+      "id": 12215
+    },
+    {
+      "name": "Jameela Shookhoo",
+      "email": null,
+      "sms": "+19177010250",
+      "status": "ok",
+      "detail": "created/updated by SMS",
+      "id": 12216
+    },
+    {
+      "name": "Janet Salazar",
+      "email": null,
+      "sms": "+19179690629",
+      "status": "ok",
+      "detail": "created/updated by SMS",
+      "id": 12217
+    },
+    {
+      "name": "Jeto Sookhoo",
+      "email": null,
+      "sms": "+19177551234",
+      "status": "ok",
+      "detail": "created/updated by SMS",
+      "id": 12218
+    },
+    {
+      "name": "Joey Oliveira",
+      "email": "jlomets1@aol.com",
+      "sms": "+16465232597",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12219
+    },
+    {
+      "name": "John Tsapelas",
+      "email": "toptwo22@aol.com",
+      "sms": "+19177495077",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12220
+    },
+    {
+      "name": "Kristina Kaykova",
+      "email": "ckovalyuk@aol.com",
+      "sms": "+19176672771",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12221
+    },
+    {
+      "name": "Leon Rambajan",
+      "email": "lgscom3@aol.com",
+      "sms": "+19172265468",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12222
+    },
+    {
+      "name": "Lisa Lieberman-Wang",
+      "email": "lisa@ylwconsulting.com",
+      "sms": "+19738689100",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12223
+    },
+    {
+      "name": "Niraj Mehta",
+      "email": "niraj.h.mehta@gmail.com",
+      "sms": "+19099732345",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12224
+    },
+    {
+      "name": "Jasmine Rodriguez",
+      "email": null,
+      "sms": "+19174567414",
+      "status": "ok",
+      "detail": "created/updated by SMS",
+      "id": 12225
+    },
+    {
+      "name": "Omar Feliciano",
+      "email": "omarfeliciano83@gmail.com",
+      "sms": "+19173747546",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12226
+    },
+    {
+      "name": "Sheonty Sultan",
+      "email": "sheonty@gmail.com",
+      "sms": "+13479323041",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12227
+    },
+    {
+      "name": "Tahmina Sultan",
+      "email": "tahminasultan@aol.com",
+      "sms": "+16466263897",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": ""
+    },
+    {
+      "name": "Syed Sultan",
+      "email": "stsultan1952@yahoo.com",
+      "sms": "+19172916289",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12228
+    },
+    {
+      "name": "Tania Sultan",
+      "email": null,
+      "sms": "+16464790446",
+      "status": "ok",
+      "detail": "created/updated by SMS",
+      "id": 12229
+    },
+    {
+      "name": "Tanvir Toy",
+      "email": null,
+      "sms": "+17183443376",
+      "status": "ok",
+      "detail": "created/updated by SMS",
+      "id": 12230
+    },
+    {
+      "name": "Tomoko Omori",
+      "email": "gogocurryusa2@gmail.com",
+      "sms": "+16464022501",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12231
+    },
+    {
+      "name": "Anthony Bacchus",
+      "email": "bacchus727@yahoo.com",
+      "sms": "+17183098226",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12232
+    },
+    {
+      "name": "Van Holmes",
+      "email": "vh2005yl@yahoo.com",
+      "sms": "+19177838624",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12233
+    },
+    {
+      "name": "Veeda Misir",
+      "email": "angeltash25@gmail.com",
+      "sms": "+13475723570",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12234
+    },
+    {
+      "name": "Vesna Kaljaj",
+      "email": "vesnavee@aol.com",
+      "sms": "+15169743340",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12235
+    },
+    {
+      "name": "Wahida Bhuyan",
+      "email": null,
+      "sms": "+15166508891",
+      "status": "ok",
+      "detail": "created/updated by SMS",
+      "id": 12236
+    },
+    {
+      "name": "William Sapienta",
+      "email": "william.sapienta@gmail.com",
+      "sms": "+17184144048",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": ""
+    },
+    {
+      "name": "Yuliya Sevastyanova",
+      "email": "yulok325@gmail.com",
+      "sms": "+19172505212",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12237
+    },
+    {
+      "name": "Yvonne Larrea",
+      "email": "yml1976@gmail.com",
+      "sms": "+19176278097",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12238
+    },
+    {
+      "name": "Zee Alli",
+      "email": "shavannaalli@gmail.com",
+      "sms": "+13472191370",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12239
+    },
+    {
+      "name": "Amrita Khan",
+      "email": "chivismom@hotmail.com",
+      "sms": "+15168508646",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12240
+    },
+    {
+      "name": "Arnaldo Coutinho",
+      "email": "acoutinho74@gmail.com",
+      "sms": "+19176813872",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12241
+    },
+    {
+      "name": "Aasha Ramnarine",
+      "email": "asharamnarine97@gmail.com",
+      "sms": "+13472642247",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12242
+    },
+    {
+      "name": "Aslan Mirkalami",
+      "email": "aslan.mirkalami@gmail.com",
+      "sms": "+14162580038",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12243
+    },
+    {
+      "name": "Asuka Elias",
+      "email": "asukaelias@gmail.com",
+      "sms": "+13478854566",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12244
+    },
+    {
+      "name": "Bjorn Symister",
+      "email": "bjorn.oso@gmail.com",
+      "sms": "+19172253570",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12245
+    },
+    {
+      "name": "Ceyan Birney",
+      "email": "ceyan99@yahoo.com",
+      "sms": "+19737682165",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12246
+    },
+    {
+      "name": "Courtney Minor",
+      "email": "courtneyminor@yahoo.com",
+      "sms": "+13108777751",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12247
+    },
+    {
+      "name": "Damaris Garguilo",
+      "email": "dandam1628@hotmail.com",
+      "sms": "+16462023220",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12248
+    },
+    {
+      "name": "Dinora Tejeda",
+      "email": "tejedazu_86@yahoo.com",
+      "sms": "+17185780470",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12249
+    },
+    {
+      "name": "Glenn Guidon",
+      "email": "gguidone61@gmail.com",
+      "sms": "+15167211828",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": ""
+    },
+    {
+      "name": "Hemwattie Carpen",
+      "email": "pari125@yahoo.com",
+      "sms": "+13475533016",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12250
+    },
+    {
+      "name": "Hindy Zeifman-Stegman",
+      "email": "fengshuichi@yahoo.com",
+      "sms": "+19546559119",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12251
+    },
+    {
+      "name": "Hitesh Dhakne",
+      "email": "hiteshdhakne@ymail.com",
+      "sms": "+13473019374",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12252
+    },
+    {
+      "name": "Ignatius Grande",
+      "email": "igrande@hotmail.com",
+      "sms": "+17182497203",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12253
+    },
+    {
+      "name": "Ilania Fowler",
+      "email": "ilania@iamilania.com",
+      "sms": "+14154088776",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12254
+    },
+    {
+      "name": "Karen Hoyos",
+      "email": "karen@karenhoyos.com",
+      "sms": "+13472734235",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12255
+    },
+    {
+      "name": "Karli Grace",
+      "email": "graceprospers@gmail.com",
+      "sms": "+17087384083",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12256
+    },
+    {
+      "name": "Kimberly Linert",
+      "email": "fbkimberley@gmail.com",
+      "sms": "+14042345773",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12257
+    },
+    {
+      "name": "Kiril Ravensong",
+      "email": "kirilravensong@gmail.com",
+      "sms": "+13477467706",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12258
+    },
+    {
+      "name": "Laura Ahumada",
+      "email": "laurahomes05@gmail.com",
+      "sms": "+17023284125",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12259
+    },
+    {
+      "name": "Laura Wittcoff",
+      "email": "lfizek@rcn.com",
+      "sms": "+16176940019",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12260
+    },
+    {
+      "name": "Laurin Seiden",
+      "email": "lmseiden@me.com",
+      "sms": "+19176533322",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12261
+    },
+    {
+      "name": "Lilly Meng",
+      "email": "xiangjimeng@gmail.com",
+      "sms": "+19177170161",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12262
+    },
+    {
+      "name": "Marvin Mitchell",
+      "email": "marvinmitchell@gmail.com",
+      "sms": "+19174059752",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12263
+    },
+    {
+      "name": "Matt Mateo",
+      "email": "mgmtaxgb@gmail.com",
+      "sms": "+19203620502",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12264
+    },
+    {
+      "name": "Melissa Gobin",
+      "email": "mgobiniq@icloud.com",
+      "sms": "+19174953592",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12265
+    },
+    {
+      "name": "Morgan Abraham",
+      "email": "morgantabraham@gmail.com",
+      "sms": "+16032529109",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12266
+    },
+    {
+      "name": "Natalie Nowicki",
+      "email": "natalie.nowicki@gmail.com",
+      "sms": "+17862816060",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12267
+    },
+    {
+      "name": "Neil Phillips",
+      "email": "nfp@msn.com",
+      "sms": "+15166523554",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12268
+    },
+    {
+      "name": "Patricia Brewington",
+      "email": "patriciabrewington@gmail.com",
+      "sms": "+15163501928",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12269
+    },
+    {
+      "name": "Paul Scialla",
+      "email": "paulscialla@gmail.com",
+      "sms": "+19178424554",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12270
+    },
+    {
+      "name": "Rasheida Smith",
+      "email": "nycrsmith@gmail.com",
+      "sms": "+13478706223",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12271
+    },
+    {
+      "name": "Roger Akiki",
+      "email": "rakiki17@aol.com",
+      "sms": "+19176875603",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12272
+    },
+    {
+      "name": "Roger Love",
+      "email": "rogerlove@mac.com",
+      "sms": "+13233148816",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12273
+    },
+    {
+      "name": "Roger Sahoudry",
+      "email": "drrogermgmt@gmail.com",
+      "sms": "+12019067650",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12274
+    },
+    {
+      "name": "Rubeena Defreitas",
+      "email": "rubeena.defreitas@gmail.com",
+      "sms": "+18628888399",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12275
+    },
+    {
+      "name": "Salahudin Baksh",
+      "email": "sbaksh@aol.com",
+      "sms": "+19147744944",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12276
+    },
+    {
+      "name": "Samantha Schilf",
+      "email": "sammycurl@gmail.com",
+      "sms": "+14158601814",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12277
+    },
+    {
+      "name": "Samantha Tannehill",
+      "email": "info@kidsfortomorrow.org",
+      "sms": "+19174202742",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12278
+    },
+    {
+      "name": "Sara Joo",
+      "email": "minzinh@msn.com",
+      "sms": "+19292640267",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12279
+    },
+    {
+      "name": "Sarwar Chaudri",
+      "email": "sarwarchaudri@gmail.com",
+      "sms": "+13474154546",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12280
+    },
+    {
+      "name": "Sayeeda",
+      "email": "sayeeda.afreen@gmail.com",
+      "sms": "+19177909664",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12281
+    },
+    {
+      "name": "Seline Bacchus",
+      "email": "selinebacchus@gmail.com",
+      "sms": "+13478061831",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": ""
+    },
+    {
+      "name": "Simon Hudson",
+      "email": "sihudson@yahoo.com",
+      "sms": "+19143096397",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12282
+    },
+    {
+      "name": "Stacee Nelson",
+      "email": "firstlightmanagement@gmail.com",
+      "sms": "+18052522855",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12283
+    },
+    {
+      "name": "Tanuja Raghoo",
+      "email": "tanujaraghoo@yahoo.com",
+      "sms": "+17188776945",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12284
+    },
+    {
+      "name": "Tory Wozny",
+      "email": "twoz7@aol.com",
+      "sms": "+14847885755",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12285
+    },
+    {
+      "name": "Toshi Koizumi",
+      "email": "toshiyukikoizumi@gmail.com",
+      "sms": "+16464984224",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12286
+    },
+    {
+      "name": "Tracy Piper",
+      "email": "tracy@thepipercenter.com",
+      "sms": "+19179024594",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12287
+    },
+    {
+      "name": "Farhana Akhter",
+      "email": "farhana.akhter@gmail.com",
+      "sms": "+17325702881",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12288
+    },
+    {
+      "name": "Victoria Viderman",
+      "email": "vpreys@gmail.com",
+      "sms": "+12035369130",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12289
+    },
+    {
+      "name": "Vineet Singhal",
+      "email": "vinnysinghal@gmail.com",
+      "sms": "+19083979529",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12290
+    },
+    {
+      "name": "Vivian Villacis",
+      "email": "vivianvillacia@hotmail.com",
+      "sms": "+12032498727",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12291
+    },
+    {
+      "name": "Taj Rajkumar",
+      "email": "tajkumar@aol.com",
+      "sms": "+13474321035",
+      "status": "ok",
+      "detail": "created/updated by email",
+      "id": 12292
+    }
+  ]
+}

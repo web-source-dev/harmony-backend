@@ -1,0 +1,15 @@
+{
+  "updatedAt": "2026-09-10T13:45:54.035Z",
+  "listId": 5,
+  "listName": "NYC EMAILS",
+  "keepDomain": "schools.nyc.gov",
+  "emailsOnListBefore": 8574,
+  "emailsOnListAfter": 7708,
+  "keepCount": 7708,
+  "removeAttempted": 866,
+  "removeSuccessCount": 866,
+  "removeFailureCount": 0,
+  "batchesOk": 6,
+  "batchesFailed": 0,
+  "failures": []
+}

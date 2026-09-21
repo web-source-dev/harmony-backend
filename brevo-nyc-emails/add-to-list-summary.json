@@ -1,0 +1,11 @@
+{
+  "addedAt": "2026-09-10T11:54:40.361Z",
+  "listId": 5,
+  "listName": "NYC EMAILS",
+  "emailsAttempted": 8574,
+  "batchesOk": 58,
+  "batchesFailed": 0,
+  "successCount": 8574,
+  "failureCount": 0,
+  "failures": []
+}

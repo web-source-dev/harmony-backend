@@ -1,8 +1,9 @@
 const Customer = require('../models/customer');
+const { getUSPhoneValidationError, validateOptionalUSPhones } = require('../utils/usPhone');
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-function validateRequiredCustomerFields({ firstName, lastName, email, phone }) {
+function validateRequiredCustomerFields({ firstName, lastName, email, phone, phone1, phone2 }) {
     const errors = [];
 
     if (!firstName?.trim()) {
@@ -16,9 +17,16 @@ function validateRequiredCustomerFields({ firstName, lastName, email, phone }) {
     } else if (!EMAIL_REGEX.test(email.trim())) {
         errors.push('Email is invalid');
     }
-    if (!phone?.trim()) {
-        errors.push('Phone number is required');
+
+    const phoneError = getUSPhoneValidationError(phone, { required: true });
+    if (phoneError) {
+        errors.push(phoneError);
     }
+
+    errors.push(...validateOptionalUSPhones([
+        { value: phone1, label: 'Phone 1' },
+        { value: phone2, label: 'Phone 2' },
+    ]));
 
     return errors;
 }

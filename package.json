@@ -11,7 +11,14 @@
     "send-donation-email": "node scripts/sendDonationEmail.js",
     "upload-images": "node scripts/upload-images-to-cloudinary.js",
     "test-sms": "node scripts/test-sms.js",
-    "send-batch-sms": "node scripts/send-batch-sms.js"
+    "preview-batch-sms": "node scripts/send-batch-sms.js",
+    "send-batch-sms": "node scripts/send-batch-sms.js",
+    "sms-batch-report": "node scripts/sms-batch-report.js",
+    "preview-resume-sms": "node scripts/send-remaining-sms.js",
+    "send-resume-sms": "node scripts/send-remaining-sms.js",
+    "cleanup-brevo": "node scripts/cleanup-brevo.js",
+    "delete-brevo-cleanup": "node scripts/delete-brevo-cleanup.js",
+    "count-brevo-phones": "node scripts/count-brevo-phones.js"
   },
   "keywords": [],
   "author": "",

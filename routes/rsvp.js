@@ -3,6 +3,7 @@ const router = express.Router();
 const Customer = require("../models/customer");
 const emailService = require("../services/emailService");
 const smsService = require("../services/smsService");
+const { getUSPhoneValidationError, formatUSPhoneForStorage } = require("../utils/usPhone");
 
 const RSVP_LABEL = "rsvp-page";
 
@@ -84,18 +85,18 @@ router.post("/submit", async (req, res) => {
       });
     }
 
-    const phoneDigits = cellNumber.replace(/\D/g, "");
-    if (phoneDigits.length < 10) {
+    const phoneError = getUSPhoneValidationError(cellNumber, { required: true });
+    if (phoneError) {
       return res.status(400).json({
         success: false,
-        message: "Please provide a valid phone number",
+        message: phoneError,
       });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
     const normalizedFirstName = firstName.trim();
     const normalizedLastName = lastName.trim();
-    const normalizedCell = cellNumber.trim();
+    const normalizedCell = formatUSPhoneForStorage(cellNumber);
 
     const existingCustomer = await Customer.findOne({ email: normalizedEmail });
     let isExisting = false;

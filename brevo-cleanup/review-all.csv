@@ -1,0 +1,42 @@
+listId,id,email,category,reason,firstName,lastName,createdAt
+3,1,media@harmony4all.org,REVIEW,Generic/role mailbox: media,Nahaz,Quddus,2026-08-08T23:56:24.880+02:00
+3,1001,media@gatesfoundation.org,REVIEW,Generic/role mailbox: media,"Rob Nabors, Director",,2026-08-10T09:56:58.417+02:00
+3,1251,inquiries@mellon.org,REVIEW,Generic/role mailbox: inquiries,"Emil Kang, Program DIrector",,2026-08-10T09:56:58.430+02:00
+3,1316,media@kresge.org,REVIEW,Generic/role mailbox: media,"Ines Miller, Program Manager",,2026-08-10T09:56:58.433+02:00
+3,1319,inquiries@musicmanfoundation.org,REVIEW,Generic/role mailbox: inquiries,"Sarah Lyding, Executive Director",,2026-08-10T09:56:58.433+02:00
+4,7087,administrator@grantinterface.com,REVIEW,Generic/role mailbox: administrator,New York Foundation,,2026-08-10T17:08:19.014+02:00
+4,7472,news@team.semrush.com,REVIEW,Generic/role mailbox: news,Semrush,,2026-08-10T17:08:19.040+02:00
+4,7749,business@t-mobile.com,REVIEW,Generic/role mailbox: business,T-Mobile for Business,,2026-08-10T17:08:19.057+02:00
+4,7751,business@us.lili.co,REVIEW,Generic/role mailbox: business,Lili,,2026-08-10T17:08:19.057+02:00
+4,8012,onboarding@nextiva.com,REVIEW,Generic/role mailbox: onboarding,Onboarding,,2026-08-10T17:08:19.072+02:00
+4,9155,events@fundraiseup.com,REVIEW,Generic/role mailbox: events,Fundraise Up,,2026-08-10T17:08:19.142+02:00
+4,9161,events@techsoup.org,REVIEW,Generic/role mailbox: events,TechSoup,,2026-08-10T17:08:19.143+02:00
+4,9268,team@a360.com,REVIEW,Generic/role mailbox: team,Kyle at Abundance360,,2026-08-10T17:08:19.149+02:00
+4,9270,team@anotherzero.com,REVIEW,Generic/role mailbox: team,"""Nick @ AnotherZero""",,2026-08-10T17:08:19.149+02:00
+4,9272,team@covve.com,REVIEW,Generic/role mailbox: team,Team at Covve,,2026-08-10T17:08:19.149+02:00
+4,9276,team@mail.goodstack.io,REVIEW,Generic/role mailbox: team,Adobe x Goodstack,,2026-08-10T17:08:19.149+02:00
+4,9278,team@mail.vapi.ai,REVIEW,Generic/role mailbox: team,Team Vapi,,2026-08-10T17:08:19.149+02:00
+4,9280,team@samcart.com,REVIEW,Generic/role mailbox: team,"""Brian @ Typeset""",,2026-08-10T17:08:19.150+02:00
+4,9282,team@theshareway.com,REVIEW,Generic/role mailbox: team,TheShareWay,,2026-08-10T17:08:19.150+02:00
+4,9284,team@typeset.com,REVIEW,Generic/role mailbox: team,The Typeset Team,,2026-08-10T17:08:19.150+02:00
+4,9615,hello@account.blinkist.com,REVIEW,Generic/role mailbox: hello,Blinkist,,2026-08-10T17:08:19.169+02:00
+4,9617,hello@breakoutclips.com,REVIEW,Generic/role mailbox: hello,Breakout Clips,,2026-08-10T17:08:19.169+02:00
+4,9619,hello@creativemarket.com,REVIEW,Generic/role mailbox: hello,Creative Market,,2026-08-10T17:08:19.169+02:00
+4,9627,hello@fundraising.ai,REVIEW,Generic/role mailbox: hello,"""Jen at Fundraising.AI""",,2026-08-10T17:08:19.169+02:00
+4,9629,hello@hiya.com,REVIEW,Generic/role mailbox: hello,Hiya Team,,2026-08-10T17:08:19.170+02:00
+4,9631,hello@instrumentl.com,REVIEW,Generic/role mailbox: hello,Instrumentl,,2026-08-10T17:08:19.170+02:00
+4,9633,hello@mail.blinkist.com,REVIEW,Generic/role mailbox: hello,Blinkist,,2026-08-10T17:08:19.170+02:00
+4,9635,hello@mail.grammarly.com,REVIEW,Generic/role mailbox: hello,Grammarly,,2026-08-10T17:08:19.170+02:00
+4,9637,hello@mail.idealist.org,REVIEW,Generic/role mailbox: hello,"""Jennifer, Idealist""",,2026-08-10T17:08:19.170+02:00
+4,9639,hello@namecheap.com,REVIEW,Generic/role mailbox: hello,Namecheap,,2026-08-10T17:08:19.170+02:00
+4,9641,hello@nonprofitmegaphone.org,REVIEW,Generic/role mailbox: hello,Nonprofit Megaphone,,2026-08-10T17:08:19.170+02:00
+4,9643,hello@pledge.to,REVIEW,Generic/role mailbox: hello,Pledge,,2026-08-10T17:08:19.170+02:00
+4,9645,hello@storyraise.com,REVIEW,Generic/role mailbox: hello,Storyraise,,2026-08-10T17:08:19.170+02:00
+4,9647,hello@students.udemy.com,REVIEW,Generic/role mailbox: hello,Udemy,,2026-08-10T17:08:19.171+02:00
+4,9649,hello@team-wonder.com,REVIEW,Generic/role mailbox: hello,Hello Email,,2026-08-10T17:08:19.171+02:00
+4,9651,hello@writeepicgrants.com,REVIEW,Generic/role mailbox: hello,Write Epic Grants,,2026-08-10T17:08:19.171+02:00
+4,9669,hi@nysad65.com,REVIEW,Generic/role mailbox: hi,Office of Assemblymember Grace Lee,,2026-08-10T17:08:19.172+02:00
+4,10632,hello@risingtideeffect.org,REVIEW,Generic/role mailbox: hello,Kate,Krause,2026-08-10T17:08:19.231+02:00
+4,10784,hello@cayenapress.org,REVIEW,Generic/role mailbox: hello,Raynelda,Calderon,2026-08-10T17:08:19.361+02:00
+4,11855,partners@speakhire.org,REVIEW,Generic/role mailbox: partners,Hetal,Jani,2026-08-10T17:08:19.832+02:00
+4,12061,hello@calmcitynyc.com,REVIEW,Generic/role mailbox: hello,Patricia,Sarnataro,2026-08-10T17:08:19.920+02:00

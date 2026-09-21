@@ -4,6 +4,7 @@ const customerService = require('../services/customerService');
 const router = express.Router();
 const Donation = require('../models/donation');
 const stripe = require('../config/stripe');
+const { getUSPhoneValidationError, formatUSPhoneForStorage } = require('../utils/usPhone');
 
 // Middleware to handle raw body for webhook
 const handleWebhook = express.raw({ type: 'application/json' });
@@ -78,6 +79,15 @@ router.post('/create-checkout-session', async (req, res) => {
       });
     }
 
+    const phoneError = getUSPhoneValidationError(phone);
+    if (phoneError) {
+      return res.status(400).json({
+        success: false,
+        message: phoneError
+      });
+    }
+    const formattedPhone = formatUSPhoneForStorage(phone);
+
     // Generate unique receipt number
     const receiptNumber = await generateReceiptNumber();
 
@@ -85,7 +95,7 @@ router.post('/create-checkout-session', async (req, res) => {
     const donation = new Donation({
       donorName,
       email,
-      phone,
+      phone: formattedPhone,
       amount: parseFloat(amount),
       donationType,
       paymentMethod: paymentMethod || 'credit-card',
@@ -104,7 +114,7 @@ router.post('/create-checkout-session', async (req, res) => {
             firstName: donorName.split(' ')[0] || '',
             lastName: donorName.split(' ').slice(1).join(' ') || '',
             email,
-            phone
+            phone: formattedPhone
         });
     } catch (customerError) {
         console.error("Failed to create customer:", customerError);

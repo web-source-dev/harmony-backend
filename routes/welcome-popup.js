@@ -4,6 +4,7 @@ const WelcomePopup = require("../models/welcome-popup");
 const emailService = require("../services/emailService");
 const smsService = require("../services/smsService");
 const customerService = require("../services/customerService");
+const { getUSPhoneValidationError, formatUSPhoneForStorage } = require("../utils/usPhone");
 
 // Helper function to send welcome communications
 async function sendWelcomeCommunications(customerData) {
@@ -132,13 +133,14 @@ router.post("/submit", async (req, res) => {
             });
         }
 
-        // Basic phone number validation (should contain at least 10 digits)
-        const phoneDigits = cellNumber.replace(/\D/g, '');
-        if (phoneDigits.length < 10) {
-            return res.status(400).json({ 
-                message: "Please provide a valid phone number" 
+        // Phone number validation
+        const phoneError = getUSPhoneValidationError(cellNumber, { required: true });
+        if (phoneError) {
+            return res.status(400).json({
+                message: phoneError
             });
         }
+        const formattedCellNumber = formatUSPhoneForStorage(cellNumber);
 
         // Check if email already exists
         const existingSubmission = await WelcomePopup.findOne({ email: email.toLowerCase().trim() });
@@ -151,7 +153,7 @@ router.post("/submit", async (req, res) => {
                     firstName: firstName.trim(),
                     lastName: lastName.trim(),
                     email: email.toLowerCase().trim(),
-                    cellNumber: cellNumber.trim(),
+                    cellNumber: formattedCellNumber,
                     promotionalUpdates: promotionalUpdates || false,
                     agreeToTerms: agreeToTerms,
                     updatedAt: new Date()
@@ -165,7 +167,7 @@ router.post("/submit", async (req, res) => {
                     firstName: firstName.trim(),
                     lastName: lastName.trim(),
                     email: email.toLowerCase().trim(),
-                    phone: cellNumber.trim(),
+                    phone: formattedCellNumber,
                     isSubscribed: promotionalUpdates
                 });
             } catch (customerError) {
@@ -177,7 +179,7 @@ router.post("/submit", async (req, res) => {
                 firstName: firstName.trim(),
                 lastName: lastName.trim(),
                 email: email.toLowerCase().trim(),
-                cellNumber: cellNumber.trim(),
+                cellNumber: formattedCellNumber,
                 promotionalUpdates: promotionalUpdates,
                 agreeToTerms: agreeToTerms
             });
@@ -193,7 +195,7 @@ router.post("/submit", async (req, res) => {
             firstName: firstName.trim(),
             lastName: lastName.trim(),
             email: email.toLowerCase().trim(),
-            cellNumber: cellNumber.trim(),
+            cellNumber: formattedCellNumber,
             promotionalUpdates: promotionalUpdates || false,
             agreeToTerms: agreeToTerms
         });
@@ -206,7 +208,7 @@ router.post("/submit", async (req, res) => {
                 firstName: firstName.trim(),
                 lastName: lastName.trim(),
                 email: email.toLowerCase().trim(),
-                phone: cellNumber.trim(),
+                phone: formattedCellNumber,
                 isSubscribed: promotionalUpdates
             });
         } catch (customerError) {
@@ -219,7 +221,7 @@ router.post("/submit", async (req, res) => {
             firstName: firstName.trim(),
             lastName: lastName.trim(),
             email: email.toLowerCase().trim(),
-            cellNumber: cellNumber.trim(),
+            cellNumber: formattedCellNumber,
             promotionalUpdates: promotionalUpdates,
             agreeToTerms: agreeToTerms
         });

@@ -1,0 +1,12 @@
+{
+  "generatedAt": "2026-09-03T16:36:11.217Z",
+  "input": "contacts - contacts.csv",
+  "output": "contacts - contacts-cleaned.csv",
+  "totalRows": 12611,
+  "keep": 11977,
+  "remove": 536,
+  "review": 40,
+  "duplicatesDropped": 58,
+  "protectedKept": 1,
+  "note": "Cleaned file is KEEP contacts plus @harmony4all.org. REVIEW and REMOVE were dropped, matching delete-brevo-cleanup.js."
+}

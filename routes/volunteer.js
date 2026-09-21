@@ -1,6 +1,7 @@
 const express = require('express');
 const emailService = require('../services/emailService');
 const customerService = require('../services/customerService');
+const { getUSPhoneValidationError, formatUSPhoneForStorage } = require('../utils/usPhone');
 const router = express.Router();
 const Volunteer = require('../models/volunteer');
 
@@ -40,6 +41,21 @@ router.post('/submit', async (req, res) => {
       });
     }
 
+    const phoneError = getUSPhoneValidationError(phone, { required: true });
+    if (phoneError) {
+      return res.status(400).json({ success: false, message: phoneError });
+    }
+
+    const emergencyPhoneError = getUSPhoneValidationError(emergencyContact?.phone);
+    if (emergencyPhoneError) {
+      return res.status(400).json({ success: false, message: `Emergency contact phone: ${emergencyPhoneError}` });
+    }
+
+    const formattedPhone = formatUSPhoneForStorage(phone);
+    const formattedEmergencyContact = emergencyContact
+      ? { ...emergencyContact, phone: formatUSPhoneForStorage(emergencyContact.phone) }
+      : emergencyContact;
+
     // Check if email already exists
     const existingVolunteer = await Volunteer.findOne({ email });
     if (existingVolunteer) {
@@ -54,10 +70,10 @@ router.post('/submit', async (req, res) => {
       firstName,
       lastName,
       email,
-      phone,
+      phone: formattedPhone,
       address,
       dateOfBirth: new Date(dateOfBirth),
-      emergencyContact,
+      emergencyContact: formattedEmergencyContact,
       availability,
       interests: interests || [],
       experience,

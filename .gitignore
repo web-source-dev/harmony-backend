@@ -8,6 +8,8 @@
 
 node_modules
 
+sms-logs/
+
 .DS_Store
 
 assets/

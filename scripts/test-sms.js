@@ -6,16 +6,10 @@ async function testSMSService() {
 
   try {
     // Test data
-    const testPhoneNumber = '+19176819891'; // The admin phone number
-    const testMessage = `Hi! This is Harmony 4 All 🎶
+    const testPhoneNumber = '+18703450042'; // The admin phone number
+    const testMessage = `Harmony 4 All: Discover how piano, bass, drums & guitar create the groove in jazz.
 
-Thank you for signing up at the Youth Action Resource Fair! Please complete your registration here:
-
-👉 https://www.h4a.us/registration-application
-
-After registering, please email us at info@harmony4all.org to confirm.
-
-Questions? Call/text us at (737) 427-6669. Reply STOP to opt out`;
+https://www.h4a.us/rhythm-section`;
 
     console.log('📱 Sending test SMS to:', testPhoneNumber);
     console.log('💬 Message:', testMessage);

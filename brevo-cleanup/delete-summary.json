@@ -1,0 +1,9 @@
+{
+  "generatedAt": "2026-08-12T09:27:39.760Z",
+  "totalTargets": 571,
+  "deleted": 570,
+  "skipped": 1,
+  "missing": 0,
+  "error": 0,
+  "logFile": "brevo-cleanup/delete-log.csv"
+}

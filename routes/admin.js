@@ -8,6 +8,7 @@ const Visitor = require("../models/visitor");
 const emailService = require("../services/emailService");
 const smsService = require("../services/smsService");
 const customerService = require("../services/customerService");
+const { formatUSPhoneForStorage } = require("../utils/usPhone");
 
 // Get comprehensive statistics for dashboard
 router.get("/stats", async (req, res) => {
@@ -284,15 +285,17 @@ router.post("/customers", async (req, res) => {
       firstName,
       lastName,
       email,
-      phone
+      phone,
+      phone1,
+      phone2
     });
     if (validationErrors.length > 0) {
       return res.status(400).json({ message: validationErrors.join('. ') });
     }
-    
+
     // Check if customer already exists
     const existingCustomer = await Customer.findOne({ email: email.toLowerCase().trim() });
-    
+
     if (existingCustomer) {
       // Update existing customer
       const updatedCustomer = await Customer.findByIdAndUpdate(
@@ -301,9 +304,9 @@ router.post("/customers", async (req, res) => {
           firstName: firstName?.trim() || existingCustomer.firstName,
           lastName: lastName?.trim() || existingCustomer.lastName,
           email: email?.toLowerCase().trim() || existingCustomer.email,
-          phone: phone?.trim() || existingCustomer.phone,
-          phone1: phone1?.trim() || existingCustomer.phone1,
-          phone2: phone2?.trim() || existingCustomer.phone2,
+          phone: phone ? formatUSPhoneForStorage(phone) : existingCustomer.phone,
+          phone1: phone1 ? formatUSPhoneForStorage(phone1) : existingCustomer.phone1,
+          phone2: phone2 ? formatUSPhoneForStorage(phone2) : existingCustomer.phone2,
           address: address?.trim() || existingCustomer.address,
           address1Street: address1Street?.trim() || existingCustomer.address1Street,
           address1City: address1City?.trim() || existingCustomer.address1City,
@@ -356,9 +359,9 @@ router.post("/customers", async (req, res) => {
         firstName: firstName?.trim() || existingCustomer.firstName,
         lastName: lastName?.trim() || existingCustomer.lastName,
         email: email.toLowerCase().trim(),
-        phone: phone?.trim() || existingCustomer.phone,
-        phone1: phone1?.trim() || existingCustomer.phone1,
-        phone2: phone2?.trim() || existingCustomer.phone2,
+        phone: phone ? formatUSPhoneForStorage(phone) : existingCustomer.phone,
+        phone1: phone1 ? formatUSPhoneForStorage(phone1) : existingCustomer.phone1,
+        phone2: phone2 ? formatUSPhoneForStorage(phone2) : existingCustomer.phone2,
         isSubscribed: isSubscribed !== undefined ? isSubscribed : existingCustomer.isSubscribed
       });
 
@@ -374,9 +377,9 @@ router.post("/customers", async (req, res) => {
       firstName: firstName?.trim() || '',
       lastName: lastName?.trim() || '',
       email: email.toLowerCase().trim(),
-      phone: phone?.trim() || '',
-      phone1: phone1?.trim() || '',
-      phone2: phone2?.trim() || '',
+      phone: phone ? formatUSPhoneForStorage(phone) : '',
+      phone1: phone1 ? formatUSPhoneForStorage(phone1) : '',
+      phone2: phone2 ? formatUSPhoneForStorage(phone2) : '',
       address: address?.trim() || '',
       address1Street: address1Street?.trim() || '',
       address1City: address1City?.trim() || '',
@@ -429,9 +432,9 @@ router.post("/customers", async (req, res) => {
       firstName: firstName?.trim() || '',
       lastName: lastName?.trim() || '',
       email: email.toLowerCase().trim(),
-      phone: phone?.trim() || '',
-      phone1: phone1?.trim() || '',
-      phone2: phone2?.trim() || '',
+      phone: phone ? formatUSPhoneForStorage(phone) : '',
+      phone1: phone1 ? formatUSPhoneForStorage(phone1) : '',
+      phone2: phone2 ? formatUSPhoneForStorage(phone2) : '',
       isSubscribed: isSubscribed !== undefined ? isSubscribed : true
     });
 
@@ -461,12 +464,14 @@ router.put("/customers/:id", async (req, res) => {
       firstName,
       lastName,
       email,
-      phone
+      phone,
+      phone1,
+      phone2
     });
     if (validationErrors.length > 0) {
       return res.status(400).json({ message: validationErrors.join('. ') });
     }
-    
+
     // Check if email is being changed and if it already exists
     const customer = await Customer.findById(req.params.id);
     if (!customer) {
@@ -486,9 +491,9 @@ router.put("/customers/:id", async (req, res) => {
         firstName: firstName?.trim() || '',
         lastName: lastName?.trim() || '',
         email: email?.toLowerCase().trim() || customer.email,
-        phone: phone?.trim() || '',
-        phone1: phone1?.trim() || '',
-        phone2: phone2?.trim() || '',
+        phone: phone ? formatUSPhoneForStorage(phone) : '',
+        phone1: phone1 ? formatUSPhoneForStorage(phone1) : '',
+        phone2: phone2 ? formatUSPhoneForStorage(phone2) : '',
         address: address?.trim() || '',
         address1Street: address1Street?.trim() || '',
         address1City: address1City?.trim() || '',

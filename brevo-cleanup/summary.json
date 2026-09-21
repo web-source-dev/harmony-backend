@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-08-12T09:20:43.328Z",
+  "listIds": [
+    3,
+    4
+  ],
+  "lists": [
+    {
+      "generatedAt": "2026-08-12T09:20:36.502Z",
+      "listId": 3,
+      "total": 6938,
+      "keep": 6906,
+      "remove": 27,
+      "review": 5
+    },
+    {
+      "generatedAt": "2026-08-12T09:20:42.781Z",
+      "listId": 4,
+      "total": 5263,
+      "keep": 4724,
+      "remove": 503,
+      "review": 36
+    }
+  ],
+  "total": 12201,
+  "keep": 11630,
+  "remove": 530,
+  "review": 41
+}

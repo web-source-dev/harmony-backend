@@ -4,6 +4,7 @@ const Customer = require("../models/customer");
 const customerService = require("../services/customerService");
 const emailService = require("../services/emailService");
 const smsService = require("../services/smsService");
+const { getUSPhoneValidationError, formatUSPhoneForStorage } = require("../utils/usPhone");
 
 // Subscribe to text updates
 router.post("/subscribe", async (req, res) => {
@@ -27,14 +28,15 @@ router.post("/subscribe", async (req, res) => {
             });
         }
 
-        // Basic phone number validation (should contain at least 10 digits)
-        const phoneDigits = phone.replace(/\D/g, '');
-        if (phoneDigits.length < 10) {
-            return res.status(400).json({ 
+        // Phone number validation
+        const phoneError = getUSPhoneValidationError(phone, { required: true });
+        if (phoneError) {
+            return res.status(400).json({
                 success: false,
-                message: "Please provide a valid phone number" 
+                message: phoneError
             });
         }
+        const formattedPhone = formatUSPhoneForStorage(phone);
 
         // Check if customer already exists
         const existingCustomer = await Customer.findOne({ email: email.toLowerCase().trim() });
@@ -45,7 +47,7 @@ router.post("/subscribe", async (req, res) => {
             // Update existing customer
             existingCustomer.firstName = firstName.trim();
             existingCustomer.lastName = lastName.trim();
-            existingCustomer.phone = phone.trim();
+            existingCustomer.phone = formattedPhone;
             
             // Update SMS subscription status based on consent
             if (smsConsent) {
@@ -67,7 +69,7 @@ router.post("/subscribe", async (req, res) => {
                 firstName: firstName.trim(),
                 lastName: lastName.trim(),
                 email: email.toLowerCase().trim(),
-                phone: phone.trim(),
+                phone: formattedPhone,
                 isSubscribed: true, // General subscription status
                 emailSubscriberStatus: 'subscribed',
                 smsSubscriberStatus: smsConsent ? 'subscribed' : 'unsubscribed',
@@ -85,7 +87,7 @@ router.post("/subscribe", async (req, res) => {
             firstName: firstName.trim(),
             lastName: lastName.trim(),
             email: email.toLowerCase().trim(),
-            phone: phone.trim(),
+            phone: formattedPhone,
             smsConsent: smsConsent,
             isExisting: isExisting
         };
@@ -95,7 +97,7 @@ router.post("/subscribe", async (req, res) => {
             try {
                 await smsService.sendTextUpdatesConfirmationSMS({
                     firstName: firstName.trim(),
-                    phone: phone.trim()
+                    phone: formattedPhone
                 });
             } catch (smsError) {
                 console.error("Failed to send text updates confirmation SMS to user:", smsError);
