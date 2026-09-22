@@ -1,7 +1,6 @@
 const Customer = require('../models/customer');
 const { getUSPhoneValidationError, validateOptionalUSPhones } = require('../utils/usPhone');
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const { getEmailFormatError, isValidEmailFormat } = require('../utils/email');
 
 function validateRequiredCustomerFields({ firstName, lastName, email, phone, phone1, phone2 }) {
     const errors = [];
@@ -12,10 +11,9 @@ function validateRequiredCustomerFields({ firstName, lastName, email, phone, pho
     if (!lastName?.trim()) {
         errors.push('Last name is required');
     }
-    if (!email?.trim()) {
-        errors.push('Email is required');
-    } else if (!EMAIL_REGEX.test(email.trim())) {
-        errors.push('Email is invalid');
+    const emailFormatError = getEmailFormatError(email);
+    if (emailFormatError) {
+        errors.push(emailFormatError);
     }
 
     const phoneError = getUSPhoneValidationError(phone, { required: true });
@@ -49,8 +47,8 @@ async function createCustomerIfNotExists(customerData) {
         const { email, firstName, lastName, phone, address, isSubscribed = true, smsConsent, source = 'website' } = customerData;
         
         // Validate email
-        if (!email) {
-            console.error('Customer creation failed: Email is required');
+        if (!email || !isValidEmailFormat(email)) {
+            console.error('Customer creation failed: a valid email is required');
             return null;
         }
 

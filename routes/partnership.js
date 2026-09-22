@@ -3,6 +3,7 @@ const router = express.Router();
 const PartnershipAgreement = require('../models/partnershipAgreement');
 const emailService = require('../services/emailService');
 const { getUSPhoneValidationError, formatUSPhoneForStorage } = require('../utils/usPhone');
+const { getEmailFormatError, getEmailDeliverabilityError } = require('../utils/email');
 
 // Get all partnership agreement submissions (for admin use)
 router.get('/', async (req, res) => {
@@ -57,13 +58,12 @@ router.post('/submit', async (req, res) => {
   try {
     const data = req.body || {};
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
     const errors = [];
     if (!data.eventName || !String(data.eventName).trim()) errors.push('Event name is required');
     if (!data.location || !String(data.location).trim()) errors.push('Location / address is required');
     if (!data.organizer?.name || !String(data.organizer.name).trim()) errors.push('Event Organizer contact name is required');
-    if (!data.organizer?.email || !emailRegex.test(data.organizer.email)) errors.push('A valid Event Organizer email is required');
+    const organizerEmailFormatError = getEmailFormatError(data.organizer?.email);
+    if (organizerEmailFormatError) errors.push(`Event Organizer email: ${organizerEmailFormatError}`);
     const organizerPhoneError = getUSPhoneValidationError(data.organizer?.phone, { required: true });
     if (organizerPhoneError) errors.push(`Event Organizer phone: ${organizerPhoneError}`);
     const venueHostPhoneError = getUSPhoneValidationError(data.venueHost?.phone);
@@ -73,6 +73,11 @@ router.post('/submit', async (req, res) => {
     if (!data.organizerSignature?.name || !String(data.organizerSignature.name).trim()) errors.push('A typed signature name is required');
     if (!data.organizerSignature?.date || !String(data.organizerSignature.date).trim()) errors.push('Signature date is required');
     if (!data.agreeToTerms) errors.push('Please confirm you have read and agree to the partnership agreement');
+
+    if (!organizerEmailFormatError && data.organizer?.email) {
+      const organizerEmailDeliverabilityError = await getEmailDeliverabilityError(data.organizer.email);
+      if (organizerEmailDeliverabilityError) errors.push(`Event Organizer email: ${organizerEmailDeliverabilityError}`);
+    }
 
     if (errors.length > 0) {
       return res.status(400).json({

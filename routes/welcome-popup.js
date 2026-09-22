@@ -5,6 +5,7 @@ const emailService = require("../services/emailService");
 const smsService = require("../services/smsService");
 const customerService = require("../services/customerService");
 const { getUSPhoneValidationError, formatUSPhoneForStorage } = require("../utils/usPhone");
+const { getEmailFormatError, getEmailDeliverabilityError } = require("../utils/email");
 
 // Helper function to send welcome communications
 async function sendWelcomeCommunications(customerData) {
@@ -126,10 +127,16 @@ router.post("/submit", async (req, res) => {
         }
 
         // Validate email format
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        if (!emailRegex.test(email)) {
-            return res.status(400).json({ 
-                message: "Please provide a valid email address" 
+        const emailFormatError = getEmailFormatError(email);
+        if (emailFormatError) {
+            return res.status(400).json({
+                message: emailFormatError
+            });
+        }
+        const emailDeliverabilityError = await getEmailDeliverabilityError(email);
+        if (emailDeliverabilityError) {
+            return res.status(400).json({
+                message: emailDeliverabilityError
             });
         }
 

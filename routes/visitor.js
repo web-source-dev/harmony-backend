@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Visitor = require("../models/visitor");
 const Customer = require("../models/customer");
+const { getEmailFormatError } = require("../utils/email");
 
 // Generate session ID
 const generateSessionId = () => {
@@ -14,9 +15,17 @@ router.post("/find-or-create", async (req, res) => {
     const { name, email, source = 'public-form', referrer, userAgent } = req.body;
     
     if (!name || !email) {
-      return res.status(400).json({  
+      return res.status(400).json({
         message: "Name and email are required",
         error: "MISSING_REQUIRED_FIELDS"
+      });
+    }
+
+    const emailFormatError = getEmailFormatError(email);
+    if (emailFormatError) {
+      return res.status(400).json({
+        message: emailFormatError,
+        error: "INVALID_EMAIL"
       });
     }
 

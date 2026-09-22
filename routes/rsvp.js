@@ -4,6 +4,7 @@ const Customer = require("../models/customer");
 const emailService = require("../services/emailService");
 const smsService = require("../services/smsService");
 const { getUSPhoneValidationError, formatUSPhoneForStorage } = require("../utils/usPhone");
+const { getEmailFormatError, getEmailDeliverabilityError } = require("../utils/email");
 
 const RSVP_LABEL = "rsvp-page";
 
@@ -77,11 +78,18 @@ router.post("/submit", async (req, res) => {
       });
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    const emailFormatError = getEmailFormatError(email);
+    if (emailFormatError) {
       return res.status(400).json({
         success: false,
-        message: "Please provide a valid email address",
+        message: emailFormatError,
+      });
+    }
+    const emailDeliverabilityError = await getEmailDeliverabilityError(email);
+    if (emailDeliverabilityError) {
+      return res.status(400).json({
+        success: false,
+        message: emailDeliverabilityError,
       });
     }
 

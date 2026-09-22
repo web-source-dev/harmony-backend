@@ -2,6 +2,7 @@ const express = require('express');
 const emailService = require('../services/emailService');
 const customerService = require('../services/customerService');
 const { getUSPhoneValidationError, formatUSPhoneForStorage } = require('../utils/usPhone');
+const { getEmailFormatError, getEmailDeliverabilityError } = require('../utils/email');
 const router = express.Router();
 const Volunteer = require('../models/volunteer');
 
@@ -39,6 +40,15 @@ router.post('/submit', async (req, res) => {
         success: false,
         message: 'Please fill in all required fields'
       });
+    }
+
+    const emailFormatError = getEmailFormatError(email);
+    if (emailFormatError) {
+      return res.status(400).json({ success: false, message: emailFormatError });
+    }
+    const emailDeliverabilityError = await getEmailDeliverabilityError(email);
+    if (emailDeliverabilityError) {
+      return res.status(400).json({ success: false, message: emailDeliverabilityError });
     }
 
     const phoneError = getUSPhoneValidationError(phone, { required: true });

@@ -5,6 +5,8 @@ const customerService = require("../services/customerService");
 const emailService = require("../services/emailService");
 const smsService = require("../services/smsService");
 const { getUSPhoneValidationError, formatUSPhoneForStorage } = require("../utils/usPhone");
+const { getEmailFormatError, getEmailDeliverabilityError } = require("../utils/email");
+const { getNamePartError } = require("../utils/name");
 
 // Subscribe to text updates
 router.post("/subscribe", async (req, res) => {
@@ -13,18 +15,41 @@ router.post("/subscribe", async (req, res) => {
 
         // Validate required fields
         if (!firstName || !lastName || !email || !phone) {
-            return res.status(400).json({ 
+            return res.status(400).json({
                 success: false,
-                message: "Please fill in all required fields" 
+                message: "Please fill in all required fields"
+            });
+        }
+
+        const firstNameError = getNamePartError(firstName, { label: "First name" });
+        if (firstNameError) {
+            return res.status(400).json({
+                success: false,
+                message: firstNameError
+            });
+        }
+
+        const lastNameError = getNamePartError(lastName, { label: "Last name" });
+        if (lastNameError) {
+            return res.status(400).json({
+                success: false,
+                message: lastNameError
             });
         }
 
         // Validate email format
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            return res.status(400).json({ 
+        const emailFormatError = getEmailFormatError(email);
+        if (emailFormatError) {
+            return res.status(400).json({
                 success: false,
-                message: "Please provide a valid email address" 
+                message: emailFormatError
+            });
+        }
+        const emailDeliverabilityError = await getEmailDeliverabilityError(email);
+        if (emailDeliverabilityError) {
+            return res.status(400).json({
+                success: false,
+                message: emailDeliverabilityError
             });
         }
 

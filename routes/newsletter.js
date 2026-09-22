@@ -3,6 +3,7 @@ const emailService = require("../services/emailService");
 const customerService = require("../services/customerService");
 const router = express.Router();
 const Newsletter = require("../models/newsletter");
+const { getEmailFormatError, getEmailDeliverabilityError } = require("../utils/email");
 
 // Get all newsletter subscriptions (for analytics)
 router.get("/", async (req, res) => {
@@ -19,11 +20,15 @@ router.get("/", async (req, res) => {
 router.post("/subscribe", async (req, res) => {
     try {
         const { email, source = "website" } = req.body;
-        
+
         // Validate email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        if (!email || !emailRegex.test(email)) {
-            return res.status(400).json({ message: "Please provide a valid email address" });
+        const emailFormatError = getEmailFormatError(email);
+        if (emailFormatError) {
+            return res.status(400).json({ message: emailFormatError });
+        }
+        const emailDeliverabilityError = await getEmailDeliverabilityError(email);
+        if (emailDeliverabilityError) {
+            return res.status(400).json({ message: emailDeliverabilityError });
         }
 
         // Check if already subscribed
@@ -80,14 +85,10 @@ router.post("/unsubscribe", async (req, res) => {
     try {
         const { email } = req.body;
         
-        if (!email) {
-            return res.status(400).json({ message: "Email is required" });
-        }
-
         // Validate email format
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        if (!emailRegex.test(email)) {
-            return res.status(400).json({ message: "Please provide a valid email address" });
+        const emailFormatError = getEmailFormatError(email);
+        if (emailFormatError) {
+            return res.status(400).json({ message: emailFormatError });
         }
 
         const subscription = await Newsletter.findOne({ email: email.toLowerCase() });

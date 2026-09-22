@@ -5,6 +5,8 @@ const router = express.Router();
 const Donation = require('../models/donation');
 const stripe = require('../config/stripe');
 const { getUSPhoneValidationError, formatUSPhoneForStorage } = require('../utils/usPhone');
+const { getEmailFormatError, getEmailDeliverabilityError } = require('../utils/email');
+const { getFullNameError } = require('../utils/name');
 
 // Middleware to handle raw body for webhook
 const handleWebhook = express.raw({ type: 'application/json' });
@@ -76,6 +78,29 @@ router.post('/create-checkout-session', async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Donation amount must be greater than 0'
+      });
+    }
+
+    const nameError = getFullNameError(donorName, { label: 'Full name' });
+    if (nameError) {
+      return res.status(400).json({
+        success: false,
+        message: nameError
+      });
+    }
+
+    const emailFormatError = getEmailFormatError(email);
+    if (emailFormatError) {
+      return res.status(400).json({
+        success: false,
+        message: emailFormatError
+      });
+    }
+    const emailDeliverabilityError = await getEmailDeliverabilityError(email);
+    if (emailDeliverabilityError) {
+      return res.status(400).json({
+        success: false,
+        message: emailDeliverabilityError
       });
     }
 
