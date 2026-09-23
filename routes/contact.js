@@ -1,7 +1,7 @@
 const express = require("express");
 const emailService = require("../services/emailService");
 const customerService = require("../services/customerService");
-const { getUSPhoneValidationError, formatUSPhoneForStorage } = require("../utils/usPhone");
+const { getUSPhoneError, formatUSPhoneForStorage } = require("../utils/usPhone");
 const { getEmailFormatError, getEmailDeliverabilityError } = require("../utils/email");
 
 const router = express.Router();
@@ -31,7 +31,7 @@ router.post("/", async (req, res) => {
             return res.status(400).json({ message: emailDeliverabilityError });
         }
 
-        const phoneError = getUSPhoneValidationError(req.body.phone, { required: true });
+        const phoneError = await getUSPhoneError(req.body.phone, { required: true });
         if (phoneError) {
             return res.status(400).json({ message: phoneError });
         }

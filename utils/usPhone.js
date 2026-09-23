@@ -1,4 +1,13 @@
 const INVALID_US_PHONE_MESSAGE = 'Enter a valid 10-digit US phone number.';
+const NONEXISTENT_US_PHONE_MESSAGE = "That phone number doesn't exist. Please double-check it.";
+
+const LOOKUP_TIMEOUT_MS = 5000;
+const LOOKUP_CACHE_MAX_ENTRIES = 5000;
+const LOOKUP_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+
+// Twilio Lookup reports +1 numbers from every NANP country; accept the US,
+// its territories and Canada, which all share the (XXX) XXX-XXXX format.
+const ACCEPTED_LOOKUP_COUNTRIES = new Set(['US', 'PR', 'VI', 'GU', 'AS', 'MP', 'CA']);
 
 function getUSPhoneDigits(raw) {
   if (raw === null || raw === undefined) return '';
@@ -44,12 +53,19 @@ function hasInvalidNanpCode(threeDigits) {
   return false;
 }
 
+// The 555 exchange is reserved for fiction and directory assistance (e.g. the
+// classic "(212) 555-0123") and is never a real person's line.
+function isFictional555(digits) {
+  return digits.slice(3, 6) === '555';
+}
+
 function isValidUSPhone(raw) {
   const digits = getUSPhoneDigits(raw);
   if (digits.length !== 10) return false;
   if (isTrivialDigitPattern(digits)) return false;
   if (hasInvalidNanpCode(digits.slice(0, 3))) return false; // area code
   if (hasInvalidNanpCode(digits.slice(3, 6))) return false; // exchange code
+  if (isFictional555(digits)) return false;
   return true;
 }
 
@@ -67,6 +83,12 @@ function formatUSPhoneForStorage(raw) {
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
 
+function toE164(raw) {
+  const digits = getUSPhoneDigits(raw);
+  return digits.length === 10 ? `+1${digits}` : '';
+}
+
+// Fast, synchronous checks only (length, NANP rules, fake patterns).
 function getUSPhoneValidationError(raw, { required = false } = {}) {
   const trimmed = String(raw ?? '').trim();
   if (!trimmed) {
@@ -90,12 +112,128 @@ function validateOptionalUSPhones(fields) {
   return errors;
 }
 
+// --- Twilio Lookup v2 (Basic: free formatting & validation) ---------------
+
+let twilioClient = null;
+function getTwilioClient() {
+  if (twilioClient) return twilioClient;
+  const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } = process.env;
+  if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN) return null;
+  twilioClient = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+  return twilioClient;
+}
+
+function isLookupEnabled() {
+  return process.env.PHONE_LOOKUP_ENABLED !== 'false' && Boolean(getTwilioClient());
+}
+
+const lookupCache = new Map();
+
+function readLookupCache(e164) {
+  const entry = lookupCache.get(e164);
+  if (!entry) return undefined;
+  if (entry.expiresAt < Date.now()) {
+    lookupCache.delete(e164);
+    return undefined;
+  }
+  return entry.result;
+}
+
+function writeLookupCache(e164, result) {
+  if (lookupCache.size >= LOOKUP_CACHE_MAX_ENTRIES) {
+    lookupCache.delete(lookupCache.keys().next().value);
+  }
+  lookupCache.set(e164, { result, expiresAt: Date.now() + LOOKUP_CACHE_TTL_MS });
+}
+
+function withTimeout(promise, ms) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(Object.assign(new Error('Lookup timed out'), { code: 'LOOKUP_TIMEOUT' })), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+// Asks Twilio whether the number exists in the numbering plan (assigned area
+// code + exchange, correct length for its country). Basic Lookup has no
+// per-request charge. Fails open if Twilio is unreachable or unconfigured so
+// an outage never blocks a real person - the local NANP checks still apply.
+// Returns { valid, error, code, e164, nationalFormat, countryCode }.
+async function lookupUSPhone(raw) {
+  const e164 = toE164(raw);
+  if (!e164) return { valid: false, error: INVALID_US_PHONE_MESSAGE, code: 'invalid_format' };
+  if (!isLookupEnabled()) return { valid: true, error: null, code: 'lookup_disabled', e164 };
+
+  const cached = readLookupCache(e164);
+  if (cached) return cached;
+
+  let result;
+  try {
+    const response = await withTimeout(getTwilioClient().lookups.v2.phoneNumbers(e164).fetch(), LOOKUP_TIMEOUT_MS);
+    if (!response.valid) {
+      result = {
+        valid: false,
+        error: NONEXISTENT_US_PHONE_MESSAGE,
+        code: 'lookup_invalid',
+        reasons: response.validationErrors || [],
+        e164,
+      };
+    } else if (!ACCEPTED_LOOKUP_COUNTRIES.has(response.countryCode)) {
+      result = { valid: false, error: INVALID_US_PHONE_MESSAGE, code: 'unsupported_country', e164, countryCode: response.countryCode };
+    } else {
+      result = {
+        valid: true,
+        error: null,
+        code: 'lookup_valid',
+        e164: response.phoneNumber || e164,
+        nationalFormat: response.nationalFormat,
+        countryCode: response.countryCode,
+      };
+    }
+  } catch (err) {
+    // 404 / 20404 means Twilio has no record of the number at all.
+    if (err.status === 404 || err.code === 20404) {
+      result = { valid: false, error: NONEXISTENT_US_PHONE_MESSAGE, code: 'lookup_not_found', e164 };
+    } else {
+      console.error(`Twilio phone lookup failed for ${e164}:`, err.code || err.status || err.message);
+      return { valid: true, error: null, code: 'lookup_unavailable', e164 };
+    }
+  }
+
+  writeLookupCache(e164, result);
+  return result;
+}
+
+// Full check: local NANP/fake-pattern rules, then Twilio Lookup.
+async function getUSPhoneError(raw, { required = false } = {}) {
+  const localError = getUSPhoneValidationError(raw, { required });
+  if (localError) return localError;
+  if (!String(raw ?? '').trim()) return null;
+  return (await lookupUSPhone(raw)).error;
+}
+
+// Same as getUSPhoneError but returns the structured result for the live
+// validation endpoint.
+async function verifyUSPhone(raw, { required = false } = {}) {
+  const trimmed = String(raw ?? '').trim();
+  const localError = getUSPhoneValidationError(trimmed, { required });
+  if (localError) return { valid: false, error: localError, code: trimmed ? 'invalid_format' : 'required' };
+  if (!trimmed) return { valid: true, error: null };
+  const lookup = await lookupUSPhone(trimmed);
+  return { ...lookup, formatted: lookup.valid ? formatUSPhoneForStorage(trimmed) : undefined };
+}
+
 module.exports = {
   INVALID_US_PHONE_MESSAGE,
+  NONEXISTENT_US_PHONE_MESSAGE,
   getUSPhoneDigits,
   isValidUSPhone,
   formatUSPhoneInput,
   formatUSPhoneForStorage,
+  toE164,
   getUSPhoneValidationError,
   validateOptionalUSPhones,
+  lookupUSPhone,
+  getUSPhoneError,
+  verifyUSPhone,
 };

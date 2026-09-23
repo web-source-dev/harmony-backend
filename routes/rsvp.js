@@ -3,7 +3,7 @@ const router = express.Router();
 const Customer = require("../models/customer");
 const emailService = require("../services/emailService");
 const smsService = require("../services/smsService");
-const { getUSPhoneValidationError, formatUSPhoneForStorage } = require("../utils/usPhone");
+const { getUSPhoneError, formatUSPhoneForStorage } = require("../utils/usPhone");
 const { getEmailFormatError, getEmailDeliverabilityError } = require("../utils/email");
 
 const RSVP_LABEL = "rsvp-page";
@@ -93,7 +93,7 @@ router.post("/submit", async (req, res) => {
       });
     }
 
-    const phoneError = getUSPhoneValidationError(cellNumber, { required: true });
+    const phoneError = await getUSPhoneError(cellNumber, { required: true });
     if (phoneError) {
       return res.status(400).json({
         success: false,

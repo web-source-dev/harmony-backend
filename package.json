@@ -31,6 +31,7 @@
     "cloudinary": "^1.41.3",
     "cors": "^2.8.5",
     "csv-parser": "^3.2.0",
+    "disposable-email-domains": "^1.0.62",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "googleapis": "^144.0.0",

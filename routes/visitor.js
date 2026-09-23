@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Visitor = require("../models/visitor");
 const Customer = require("../models/customer");
-const { getEmailFormatError } = require("../utils/email");
+const { getEmailFormatError, getEmailDeliverabilityError } = require("../utils/email");
 
 // Generate session ID
 const generateSessionId = () => {
@@ -21,7 +21,7 @@ router.post("/find-or-create", async (req, res) => {
       });
     }
 
-    const emailFormatError = getEmailFormatError(email);
+    const emailFormatError = getEmailFormatError(email) || await getEmailDeliverabilityError(email);
     if (emailFormatError) {
       return res.status(400).json({
         message: emailFormatError,

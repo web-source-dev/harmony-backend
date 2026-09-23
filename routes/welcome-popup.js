@@ -4,7 +4,7 @@ const WelcomePopup = require("../models/welcome-popup");
 const emailService = require("../services/emailService");
 const smsService = require("../services/smsService");
 const customerService = require("../services/customerService");
-const { getUSPhoneValidationError, formatUSPhoneForStorage } = require("../utils/usPhone");
+const { getUSPhoneError, formatUSPhoneForStorage } = require("../utils/usPhone");
 const { getEmailFormatError, getEmailDeliverabilityError } = require("../utils/email");
 
 // Helper function to send welcome communications
@@ -141,7 +141,7 @@ router.post("/submit", async (req, res) => {
         }
 
         // Phone number validation
-        const phoneError = getUSPhoneValidationError(cellNumber, { required: true });
+        const phoneError = await getUSPhoneError(cellNumber, { required: true });
         if (phoneError) {
             return res.status(400).json({
                 message: phoneError

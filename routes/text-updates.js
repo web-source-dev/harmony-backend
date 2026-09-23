@@ -4,7 +4,7 @@ const Customer = require("../models/customer");
 const customerService = require("../services/customerService");
 const emailService = require("../services/emailService");
 const smsService = require("../services/smsService");
-const { getUSPhoneValidationError, formatUSPhoneForStorage } = require("../utils/usPhone");
+const { getUSPhoneError, formatUSPhoneForStorage } = require("../utils/usPhone");
 const { getEmailFormatError, getEmailDeliverabilityError } = require("../utils/email");
 const { getNamePartError } = require("../utils/name");
 
@@ -54,7 +54,7 @@ router.post("/subscribe", async (req, res) => {
         }
 
         // Phone number validation
-        const phoneError = getUSPhoneValidationError(phone, { required: true });
+        const phoneError = await getUSPhoneError(phone, { required: true });
         if (phoneError) {
             return res.status(400).json({
                 success: false,

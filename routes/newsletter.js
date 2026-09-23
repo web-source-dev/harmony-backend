@@ -3,7 +3,7 @@ const emailService = require("../services/emailService");
 const customerService = require("../services/customerService");
 const router = express.Router();
 const Newsletter = require("../models/newsletter");
-const { getEmailFormatError, getEmailDeliverabilityError } = require("../utils/email");
+const { getEmailFormatError, getEmailDeliverabilityError, isValidEmailFormat } = require("../utils/email");
 
 // Get all newsletter subscriptions (for analytics)
 router.get("/", async (req, res) => {
@@ -85,10 +85,10 @@ router.post("/unsubscribe", async (req, res) => {
     try {
         const { email } = req.body;
         
-        // Validate email format
-        const emailFormatError = getEmailFormatError(email);
-        if (emailFormatError) {
-            return res.status(400).json({ message: emailFormatError });
+        // Syntax only: anyone already on the list must be able to leave it,
+        // even if their address would fail today's stricter sign-up checks.
+        if (!isValidEmailFormat(email)) {
+            return res.status(400).json({ message: 'Enter a valid email address' });
         }
 
         const subscription = await Newsletter.findOne({ email: email.toLowerCase() });

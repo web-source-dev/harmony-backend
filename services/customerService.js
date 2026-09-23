@@ -1,8 +1,8 @@
 const Customer = require('../models/customer');
-const { getUSPhoneValidationError, validateOptionalUSPhones } = require('../utils/usPhone');
-const { getEmailFormatError, isValidEmailFormat } = require('../utils/email');
+const { getUSPhoneError } = require('../utils/usPhone');
+const { getEmailFormatError, getEmailDeliverabilityError, isValidEmailFormat } = require('../utils/email');
 
-function validateRequiredCustomerFields({ firstName, lastName, email, phone, phone1, phone2 }) {
+async function validateRequiredCustomerFields({ firstName, lastName, email, phone, phone1, phone2 }) {
     const errors = [];
 
     if (!firstName?.trim()) {
@@ -11,20 +11,19 @@ function validateRequiredCustomerFields({ firstName, lastName, email, phone, pho
     if (!lastName?.trim()) {
         errors.push('Last name is required');
     }
-    const emailFormatError = getEmailFormatError(email);
-    if (emailFormatError) {
-        errors.push(emailFormatError);
+    const emailError = getEmailFormatError(email) || await getEmailDeliverabilityError(email);
+    if (emailError) {
+        errors.push(emailError);
     }
 
-    const phoneError = getUSPhoneValidationError(phone, { required: true });
-    if (phoneError) {
-        errors.push(phoneError);
-    }
-
-    errors.push(...validateOptionalUSPhones([
-        { value: phone1, label: 'Phone 1' },
-        { value: phone2, label: 'Phone 2' },
-    ]));
+    const [phoneError, phone1Error, phone2Error] = await Promise.all([
+        getUSPhoneError(phone, { required: true }),
+        getUSPhoneError(phone1),
+        getUSPhoneError(phone2),
+    ]);
+    if (phoneError) errors.push(phoneError);
+    if (phone1Error) errors.push(`Phone 1: ${phone1Error}`);
+    if (phone2Error) errors.push(`Phone 2: ${phone2Error}`);
 
     return errors;
 }

@@ -281,7 +281,7 @@ router.post("/customers", async (req, res) => {
       visitorEmail, visitorName, isOffline = false, localId = null
     } = req.body;
 
-    const validationErrors = customerService.validateRequiredCustomerFields({
+    const validationErrors = await customerService.validateRequiredCustomerFields({
       firstName,
       lastName,
       email,
@@ -460,7 +460,7 @@ router.put("/customers/:id", async (req, res) => {
       position, labels, isSubscribed, emailSubscriberStatus, smsSubscriberStatus, source
     } = req.body;
 
-    const validationErrors = customerService.validateRequiredCustomerFields({
+    const validationErrors = await customerService.validateRequiredCustomerFields({
       firstName,
       lastName,
       email,

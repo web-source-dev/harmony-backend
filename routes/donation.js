@@ -4,7 +4,7 @@ const customerService = require('../services/customerService');
 const router = express.Router();
 const Donation = require('../models/donation');
 const stripe = require('../config/stripe');
-const { getUSPhoneValidationError, formatUSPhoneForStorage } = require('../utils/usPhone');
+const { getUSPhoneError, formatUSPhoneForStorage } = require('../utils/usPhone');
 const { getEmailFormatError, getEmailDeliverabilityError } = require('../utils/email');
 const { getFullNameError } = require('../utils/name');
 
@@ -104,7 +104,7 @@ router.post('/create-checkout-session', async (req, res) => {
       });
     }
 
-    const phoneError = getUSPhoneValidationError(phone);
+    const phoneError = await getUSPhoneError(phone);
     if (phoneError) {
       return res.status(400).json({
         success: false,

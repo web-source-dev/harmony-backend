@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const PartnershipAgreement = require('../models/partnershipAgreement');
 const emailService = require('../services/emailService');
-const { getUSPhoneValidationError, formatUSPhoneForStorage } = require('../utils/usPhone');
+const { getUSPhoneError, formatUSPhoneForStorage } = require('../utils/usPhone');
 const { getEmailFormatError, getEmailDeliverabilityError } = require('../utils/email');
 
 // Get all partnership agreement submissions (for admin use)
@@ -64,11 +64,11 @@ router.post('/submit', async (req, res) => {
     if (!data.organizer?.name || !String(data.organizer.name).trim()) errors.push('Event Organizer contact name is required');
     const organizerEmailFormatError = getEmailFormatError(data.organizer?.email);
     if (organizerEmailFormatError) errors.push(`Event Organizer email: ${organizerEmailFormatError}`);
-    const organizerPhoneError = getUSPhoneValidationError(data.organizer?.phone, { required: true });
+    const organizerPhoneError = await getUSPhoneError(data.organizer?.phone, { required: true });
     if (organizerPhoneError) errors.push(`Event Organizer phone: ${organizerPhoneError}`);
-    const venueHostPhoneError = getUSPhoneValidationError(data.venueHost?.phone);
+    const venueHostPhoneError = await getUSPhoneError(data.venueHost?.phone);
     if (venueHostPhoneError) errors.push(`Venue Host phone: ${venueHostPhoneError}`);
-    const dayOfContactPhoneError = getUSPhoneValidationError(data.dayOfContactPhone);
+    const dayOfContactPhoneError = await getUSPhoneError(data.dayOfContactPhone);
     if (dayOfContactPhoneError) errors.push(`Day-of contact phone: ${dayOfContactPhoneError}`);
     if (!data.organizerSignature?.name || !String(data.organizerSignature.name).trim()) errors.push('A typed signature name is required');
     if (!data.organizerSignature?.date || !String(data.organizerSignature.date).trim()) errors.push('Signature date is required');

@@ -1,7 +1,7 @@
 const express = require('express');
 const emailService = require('../services/emailService');
 const customerService = require('../services/customerService');
-const { getUSPhoneValidationError, formatUSPhoneForStorage } = require('../utils/usPhone');
+const { getUSPhoneError, formatUSPhoneForStorage } = require('../utils/usPhone');
 const { getEmailFormatError, getEmailDeliverabilityError } = require('../utils/email');
 const router = express.Router();
 const Volunteer = require('../models/volunteer');
@@ -51,12 +51,12 @@ router.post('/submit', async (req, res) => {
       return res.status(400).json({ success: false, message: emailDeliverabilityError });
     }
 
-    const phoneError = getUSPhoneValidationError(phone, { required: true });
+    const phoneError = await getUSPhoneError(phone, { required: true });
     if (phoneError) {
       return res.status(400).json({ success: false, message: phoneError });
     }
 
-    const emergencyPhoneError = getUSPhoneValidationError(emergencyContact?.phone);
+    const emergencyPhoneError = await getUSPhoneError(emergencyContact?.phone);
     if (emergencyPhoneError) {
       return res.status(400).json({ success: false, message: `Emergency contact phone: ${emergencyPhoneError}` });
     }

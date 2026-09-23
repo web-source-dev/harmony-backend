@@ -103,6 +103,7 @@ const visitorRoute = require("./routes/visitor");
 const textUpdatesRoute = require("./routes/text-updates");
 const rsvpRoute = require("./routes/rsvp");
 const partnershipRoute = require("./routes/partnership");
+const validateRoute = require("./routes/validate");
 
 // Initialize scheduler services
 const blogSchedulerService = require("./services/blogSchedulerService");
@@ -126,6 +127,7 @@ app.use("/api/visitor", visitorRoute);
 app.use("/api/text-updates", textUpdatesRoute);
 app.use("/api/rsvp", rsvpRoute);
 app.use("/api/partnership", partnershipRoute);
+app.use("/api/validate", validateRoute);
 
 // Error handling middleware - must be after all routes
 app.use((error, req, res, next) => {
