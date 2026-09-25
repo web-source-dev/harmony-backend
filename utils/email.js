@@ -1,6 +1,7 @@
 const dns = require('dns');
 const disposableDomains = require('disposable-email-domains');
 const disposableWildcardDomains = require('disposable-email-domains/wildcard.json');
+const { probeMailbox } = require('./smtpProbe');
 
 const DNS_TIMEOUT_MS = 3000;
 const DNS_TRIES = 2;
@@ -25,6 +26,8 @@ const MESSAGES = {
   typo: (suggestion) => `Did you mean ${suggestion}? Please check your email for typos.`,
   noDomain: "That email domain doesn't exist. Please check for typos.",
   noMail: "That email domain can't receive mail. Please check for typos.",
+  noMailServer: "We couldn't connect to the mail server for that email. Please check for typos.",
+  noMailbox: "That email address doesn't exist. Please check for typos.",
 };
 
 // Placeholder domains people type to get past a form. The large community
@@ -305,11 +308,28 @@ function readDomainCache(domain) {
 }
 
 function writeDomainCache(domain, result) {
-  if (domainCache.size >= CACHE_MAX_ENTRIES) {
-    domainCache.delete(domainCache.keys().next().value);
+  writeCache(domainCache, domain, result);
+}
+
+function writeCache(cache, key, result) {
+  if (cache.size >= CACHE_MAX_ENTRIES) {
+    cache.delete(cache.keys().next().value);
   }
   const ttl = result.error ? CACHE_TTL_BAD_MS : CACHE_TTL_OK_MS;
-  domainCache.set(domain, { result, expiresAt: Date.now() + ttl });
+  cache.set(key, { result, expiresAt: Date.now() + ttl });
+}
+
+// Per-address results of the SMTP mailbox probe.
+const mailboxCache = new Map();
+
+function readMailboxCache(email) {
+  const entry = mailboxCache.get(email);
+  if (!entry) return undefined;
+  if (entry.expiresAt < Date.now()) {
+    mailboxCache.delete(email);
+    return undefined;
+  }
+  return entry.result;
 }
 
 const NOT_FOUND_CODES = new Set(['ENOTFOUND', 'NXDOMAIN']);
@@ -337,13 +357,9 @@ async function domainExists(domain) {
 // Network check of the domain: it exists in DNS, publishes MX records, isn't a
 // "null MX" (RFC 7505, explicitly refuses mail), and at least one mail server
 // actually resolves to an IP address. Fails open on resolver outages so a
-// DNS hiccup never blocks a real person.
-async function checkEmailDeliverability(raw) {
-  const trimmed = normalizeEmail(raw);
-  if (!trimmed) return { error: null };
-  const domain = getEmailDomain(trimmed.toLowerCase());
-  if (!domain) return { error: MESSAGES.invalid, code: 'invalid_syntax' };
-
+// DNS hiccup never blocks a real person. A passing result carries the
+// reachable MX hosts (`mxHosts`) for the mailbox probe.
+async function checkDomainDeliverability(domain) {
   const cached = readDomainCache(domain);
   if (cached) return cached;
 
@@ -360,8 +376,9 @@ async function checkEmailDeliverability(raw) {
     } else {
       const candidates = hosts.filter((r) => r.exchange && r.exchange !== '.').slice(0, MAX_MX_HOSTS_TO_CHECK);
       const reachable = await Promise.all(candidates.map((r) => hostHasAddress(r.exchange)));
-      result = reachable.some(Boolean)
-        ? { error: null }
+      const mxHosts = candidates.filter((r, i) => reachable[i]).map((r) => r.exchange);
+      result = mxHosts.length
+        ? { error: null, mxHosts }
         : { error: MESSAGES.noMail, code: 'mx_unresolvable' };
     }
   } catch (err) {
@@ -382,6 +399,47 @@ async function checkEmailDeliverability(raw) {
   }
 
   writeDomainCache(domain, result);
+  return result;
+}
+
+// Full network check: the domain (DNS/MX, above), then connect to its mail
+// server and ask whether this mailbox exists, without sending anything.
+async function checkEmailDeliverability(raw) {
+  const trimmed = normalizeEmail(raw);
+  if (!trimmed) return { error: null };
+  const lower = trimmed.toLowerCase();
+  const domain = getEmailDomain(lower);
+  if (!domain) return { error: MESSAGES.invalid, code: 'invalid_syntax' };
+
+  const domainResult = await checkDomainDeliverability(domain);
+  if (domainResult.error || !domainResult.mxHosts) {
+    return { error: domainResult.error, code: domainResult.code };
+  }
+
+  const cached = readMailboxCache(lower);
+  if (cached) return cached;
+
+  let probe;
+  try {
+    probe = await probeMailbox(lower, domainResult.mxHosts);
+  } catch (err) {
+    console.error(`SMTP probe failed for domain "${domain}":`, err.code || err.message);
+    return { error: null, code: 'smtp_unavailable' };
+  }
+
+  let result;
+  if (probe.status === 'rejected') {
+    result = { error: MESSAGES.noMailbox, code: 'mailbox_not_found' };
+  } else if (probe.status === 'unreachable') {
+    result = { error: MESSAGES.noMailServer, code: 'mail_server_unreachable' };
+  } else if (probe.status === 'accepted' || probe.status === 'catch_all') {
+    result = { error: null, code: probe.status === 'catch_all' ? 'catch_all' : 'mailbox_exists' };
+  } else {
+    // unknown / skipped - don't cache so a later attempt can probe again
+    return { error: null, code: `smtp_${probe.reason || probe.status}` };
+  }
+
+  writeCache(mailboxCache, lower, result);
   return result;
 }
 

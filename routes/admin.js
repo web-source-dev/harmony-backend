@@ -460,6 +460,12 @@ router.put("/customers/:id", async (req, res) => {
       position, labels, isSubscribed, emailSubscriberStatus, smsSubscriberStatus, source
     } = req.body;
 
+    const customer = await Customer.findById(req.params.id);
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    const emailChanged = Boolean(email) && email.toLowerCase().trim() !== customer.email;
     const validationErrors = await customerService.validateRequiredCustomerFields({
       firstName,
       lastName,
@@ -467,16 +473,12 @@ router.put("/customers/:id", async (req, res) => {
       phone,
       phone1,
       phone2
-    });
+    }, { checkEmailDeliverability: emailChanged });
     if (validationErrors.length > 0) {
       return res.status(400).json({ message: validationErrors.join('. ') });
     }
 
     // Check if email is being changed and if it already exists
-    const customer = await Customer.findById(req.params.id);
-    if (!customer) {
-      return res.status(404).json({ message: "Customer not found" });
-    }
 
     if (email && email.toLowerCase().trim() !== customer.email) {
       const existingCustomer = await Customer.findOne({ email: email.toLowerCase().trim() });

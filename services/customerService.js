@@ -2,7 +2,9 @@ const Customer = require('../models/customer');
 const { getUSPhoneError } = require('../utils/usPhone');
 const { getEmailFormatError, getEmailDeliverabilityError, isValidEmailFormat } = require('../utils/email');
 
-async function validateRequiredCustomerFields({ firstName, lastName, email, phone, phone1, phone2 }) {
+// checkEmailDeliverability: false skips the network email checks (DNS/MX/SMTP),
+// e.g. when an existing contact is edited without changing their email.
+async function validateRequiredCustomerFields({ firstName, lastName, email, phone, phone1, phone2 }, { checkEmailDeliverability = true } = {}) {
     const errors = [];
 
     if (!firstName?.trim()) {
@@ -11,7 +13,8 @@ async function validateRequiredCustomerFields({ firstName, lastName, email, phon
     if (!lastName?.trim()) {
         errors.push('Last name is required');
     }
-    const emailError = getEmailFormatError(email) || await getEmailDeliverabilityError(email);
+    const emailError = getEmailFormatError(email)
+        || (checkEmailDeliverability ? await getEmailDeliverabilityError(email) : null);
     if (emailError) {
         errors.push(emailError);
     }

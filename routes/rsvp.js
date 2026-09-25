@@ -1,12 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const Customer = require("../models/customer");
+const QrRsvp = require("../models/qrRsvp");
+const QrScan = require("../models/qrScan");
 const emailService = require("../services/emailService");
 const smsService = require("../services/smsService");
 const { getUSPhoneError, formatUSPhoneForStorage } = require("../utils/usPhone");
 const { getEmailFormatError, getEmailDeliverabilityError } = require("../utils/email");
 
 const RSVP_LABEL = "rsvp-page";
+const QR_RSVP_LABEL = "rsvp-qr";
 
 // Send notifications for RSVP submissions (user + H4A admin)
 async function sendRSVPCommunications(submissionData) {
@@ -69,7 +72,10 @@ router.post("/submit", async (req, res) => {
       cellNumber,
       promotionalUpdates = true,
       agreeToTerms,
+      source,
+      guests,
     } = req.body;
+    const isQr = source === "qr";
 
     if (!firstName || !lastName || !email || !cellNumber || !agreeToTerms) {
       return res.status(400).json({
@@ -122,6 +128,9 @@ router.post("/submit", async (req, res) => {
       if (!existingCustomer.labels.includes(RSVP_LABEL)) {
         existingCustomer.labels.push(RSVP_LABEL);
       }
+      if (isQr && !existingCustomer.labels.includes(QR_RSVP_LABEL)) {
+        existingCustomer.labels.push(QR_RSVP_LABEL);
+      }
 
       await existingCustomer.save();
       isExisting = true;
@@ -131,7 +140,7 @@ router.post("/submit", async (req, res) => {
         lastName: normalizedLastName,
         email: normalizedEmail,
         phone: normalizedCell,
-        labels: [RSVP_LABEL],
+        labels: isQr ? [RSVP_LABEL, QR_RSVP_LABEL] : [RSVP_LABEL],
         isSubscribed: Boolean(promotionalUpdates),
         emailSubscriberStatus: promotionalUpdates ? "subscribed" : "unsubscribed",
         smsSubscriberStatus: "subscribed",
@@ -142,6 +151,23 @@ router.post("/submit", async (req, res) => {
       });
 
       await customer.save();
+    }
+
+    // QR code RSVPs also go into their own collection; one entry per email so re-submits don't double count
+    if (isQr) {
+      const guestCount = Math.min(Math.max(parseInt(guests, 10) || 1, 1), 20);
+      await QrRsvp.findOneAndUpdate(
+        { email: normalizedEmail },
+        {
+          firstName: normalizedFirstName,
+          lastName: normalizedLastName,
+          cellNumber: normalizedCell,
+          guests: guestCount,
+          promotionalUpdates: Boolean(promotionalUpdates),
+          submittedAt: new Date(),
+        },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
     }
 
     await sendRSVPCommunications({
@@ -167,6 +193,61 @@ router.post("/submit", async (req, res) => {
       success: false,
       message: "Internal server error",
     });
+  }
+});
+
+// Record a visit to the QR RSVP page
+router.post("/qr/scan", async (req, res) => {
+  try {
+    await QrScan.create({ userAgent: String(req.headers["user-agent"] || "").slice(0, 500) });
+    return res.status(201).json({ success: true });
+  } catch (error) {
+    console.error("QR scan tracking error:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+// QR RSVP totals (for admin use)
+router.get("/qr/stats", async (req, res) => {
+  try {
+    const [scans, rsvps, guestTotals] = await Promise.all([
+      QrScan.countDocuments(),
+      QrRsvp.countDocuments(),
+      QrRsvp.aggregate([{ $group: { _id: null, total: { $sum: "$guests" } } }]),
+    ]);
+    return res.json({
+      scans,
+      rsvps,
+      expectedAttendees: guestTotals[0]?.total || 0,
+    });
+  } catch (error) {
+    console.error("QR RSVP stats error:", error);
+    return res.status(500).json({ message: "Failed to fetch QR RSVP stats" });
+  }
+});
+
+// All QR RSVP submissions (for admin use)
+router.get("/qr", async (req, res) => {
+  try {
+    const rsvps = await QrRsvp.find().sort({ submittedAt: -1 });
+    return res.json(rsvps);
+  } catch (error) {
+    console.error("QR RSVP list error:", error);
+    return res.status(500).json({ message: "Failed to fetch QR RSVPs" });
+  }
+});
+
+// Remove a QR RSVP entry, e.g. a test submission (for admin use)
+router.delete("/qr/:id", async (req, res) => {
+  try {
+    const deleted = await QrRsvp.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ message: "QR RSVP not found" });
+    }
+    return res.json({ success: true });
+  } catch (error) {
+    console.error("QR RSVP delete error:", error);
+    return res.status(500).json({ message: "Failed to delete QR RSVP" });
   }
 });
 

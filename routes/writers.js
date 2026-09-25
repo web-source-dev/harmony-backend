@@ -1,4 +1,5 @@
 const express = require('express');
+const { getEmailFormatError, getEmailDeliverabilityError } = require('../utils/email');
 const router = express.Router();
 const { Writer } = require('../models/writer');
 const { writerImageUpload, deleteImageFromCloudinary } = require('../config/cloudinary');
@@ -44,6 +45,11 @@ router.post('/upload-image', writerImageUpload.single('image'), async (req, res)
 // Create new writer
 router.post('/', async (req, res) => {
   try {
+    const emailError = getEmailFormatError(req.body.email) || await getEmailDeliverabilityError(req.body.email);
+    if (emailError) {
+      return res.status(400).json({ message: emailError });
+    }
+
     const writer = new Writer({
       name: req.body.name,
       email: req.body.email,
@@ -62,6 +68,13 @@ router.post('/', async (req, res) => {
 // Update writer
 router.patch('/:id', async (req, res) => {
   try {
+    if (req.body.email !== undefined) {
+      const emailError = getEmailFormatError(req.body.email) || await getEmailDeliverabilityError(req.body.email);
+      if (emailError) {
+        return res.status(400).json({ message: emailError });
+      }
+    }
+
     const writer = await Writer.findByIdAndUpdate(
       req.params.id, 
       req.body, 
