@@ -1,5 +1,6 @@
 const INVALID_US_PHONE_MESSAGE = 'Enter a valid 10-digit US phone number.';
 const NONEXISTENT_US_PHONE_MESSAGE = "That phone number doesn't exist. Please double-check it.";
+const INACTIVE_US_PHONE_MESSAGE = "That phone number isn't active. Please enter a number you can be reached at.";
 
 const LOOKUP_TIMEOUT_MS = 5000;
 const LOOKUP_CACHE_MAX_ENTRIES = 5000;
@@ -112,7 +113,12 @@ function validateOptionalUSPhones(fields) {
   return errors;
 }
 
-// --- Twilio Lookup v2 (Basic: free formatting & validation) ---------------
+// --- Twilio Lookup v2 -------------------------------------------------------
+// Basic (free): is the number structurally valid, E.164 + national formatting.
+// Line Status (paid add-on, no SMS sent): active / inactive / unreachable /
+// unknown. Only "inactive" (disconnected / not assigned to anyone) is
+// rejected; "unreachable" (phone off, out of coverage) and "unknown" are
+// often temporary or unreported, so those numbers are allowed through.
 
 let twilioClient = null;
 function getTwilioClient() {
@@ -125,6 +131,36 @@ function getTwilioClient() {
 
 function isLookupEnabled() {
   return process.env.PHONE_LOOKUP_ENABLED !== 'false' && Boolean(getTwilioClient());
+}
+
+function isLineStatusEnabled() {
+  return process.env.PHONE_LINE_STATUS_ENABLED !== 'false';
+}
+
+// Basic lookup plus Line Status. If the Line Status add-on isn't available on
+// the account (the whole request errors), retry with Basic only so formatting
+// and validation still work.
+async function fetchLookup(e164) {
+  const lookup = getTwilioClient().lookups.v2.phoneNumbers(e164);
+  if (!isLineStatusEnabled()) {
+    return withTimeout(lookup.fetch(), LOOKUP_TIMEOUT_MS);
+  }
+  try {
+    return await withTimeout(lookup.fetch({ fields: 'line_status' }), LOOKUP_TIMEOUT_MS);
+  } catch (err) {
+    if (err.status === 404 || err.code === 20404 || err.code === 'LOOKUP_TIMEOUT') throw err;
+    console.error(`Twilio line status lookup failed for ${e164}, falling back to basic lookup:`, err.code || err.status || err.message);
+    return withTimeout(lookup.fetch(), LOOKUP_TIMEOUT_MS);
+  }
+}
+
+// Returns 'active' | 'inactive' | 'unreachable' | 'unknown', or null when
+// Line Status wasn't requested or Twilio couldn't provide it.
+function readLineStatus(response) {
+  const lineStatus = response.lineStatus;
+  if (!lineStatus || lineStatus.error_code) return null;
+  const status = String(lineStatus.status || '').toLowerCase();
+  return ['active', 'inactive', 'unreachable', 'unknown'].includes(status) ? status : null;
 }
 
 const lookupCache = new Map();
@@ -158,7 +194,7 @@ function withTimeout(promise, ms) {
 // code + exchange, correct length for its country). Basic Lookup has no
 // per-request charge. Fails open if Twilio is unreachable or unconfigured so
 // an outage never blocks a real person - the local NANP checks still apply.
-// Returns { valid, error, code, e164, nationalFormat, countryCode }.
+// Returns { valid, error, code, e164, nationalFormat, countryCode, lineStatus }.
 async function lookupUSPhone(raw) {
   const e164 = toE164(raw);
   if (!e164) return { valid: false, error: INVALID_US_PHONE_MESSAGE, code: 'invalid_format' };
@@ -169,7 +205,8 @@ async function lookupUSPhone(raw) {
 
   let result;
   try {
-    const response = await withTimeout(getTwilioClient().lookups.v2.phoneNumbers(e164).fetch(), LOOKUP_TIMEOUT_MS);
+    const response = await fetchLookup(e164);
+    const lineStatus = readLineStatus(response);
     if (!response.valid) {
       result = {
         valid: false,
@@ -180,6 +217,15 @@ async function lookupUSPhone(raw) {
       };
     } else if (!ACCEPTED_LOOKUP_COUNTRIES.has(response.countryCode)) {
       result = { valid: false, error: INVALID_US_PHONE_MESSAGE, code: 'unsupported_country', e164, countryCode: response.countryCode };
+    } else if (lineStatus === 'inactive') {
+      result = {
+        valid: false,
+        error: INACTIVE_US_PHONE_MESSAGE,
+        code: 'line_inactive',
+        lineStatus,
+        e164: response.phoneNumber || e164,
+        countryCode: response.countryCode,
+      };
     } else {
       result = {
         valid: true,
@@ -188,6 +234,7 @@ async function lookupUSPhone(raw) {
         e164: response.phoneNumber || e164,
         nationalFormat: response.nationalFormat,
         countryCode: response.countryCode,
+        lineStatus,
       };
     }
   } catch (err) {
@@ -226,6 +273,7 @@ async function verifyUSPhone(raw, { required = false } = {}) {
 module.exports = {
   INVALID_US_PHONE_MESSAGE,
   NONEXISTENT_US_PHONE_MESSAGE,
+  INACTIVE_US_PHONE_MESSAGE,
   getUSPhoneDigits,
   isValidUSPhone,
   formatUSPhoneInput,

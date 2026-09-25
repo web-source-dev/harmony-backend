@@ -48,8 +48,8 @@ router.post("/email", rateLimit, async (req, res) => {
 
 router.post("/phone", rateLimit, async (req, res) => {
     try {
-        const { valid, error, code, formatted } = await verifyUSPhone(req.body?.phone, { required: true });
-        res.json({ valid, message: error, code, formatted });
+        const { valid, error, code, formatted, e164, nationalFormat, lineStatus } = await verifyUSPhone(req.body?.phone, { required: true });
+        res.json({ valid, message: error, code, formatted, e164, nationalFormat, lineStatus });
     } catch (error) {
         console.error("Phone validation error:", error);
         res.json({ valid: true, skipped: true });
