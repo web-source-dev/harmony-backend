@@ -100,6 +100,18 @@ const customerSchema = new mongoose.Schema({
         type: String,
         default: 'website'
     },
+    // RSVP events this contact has signed up for (full RSVP records live in EventRsvp)
+    rsvpEvents: {
+        type: [{
+            _id: false,
+            event: { type: mongoose.Schema.Types.ObjectId, ref: 'RsvpEvent' },
+            title: { type: String },
+            eventDate: { type: Date },
+            guests: { type: Number, default: 1 },
+            submittedAt: { type: Date, default: Date.now }
+        }],
+        default: []
+    },
     lastActivity: {
         type: Date,
     },

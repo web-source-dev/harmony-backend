@@ -1,5 +1,6 @@
 const twilio = require('twilio');
 require('dotenv').config();
+const { isMessagingMocked, logMockSMS } = require('../utils/devMessaging');
 
 class SMSService {
   constructor() {
@@ -19,10 +20,18 @@ class SMSService {
       process.env.TWILIO_ACCOUNT_SID,
       process.env.TWILIO_AUTH_TOKEN
     );
+
+    if (isMessagingMocked()) {
+      console.log('[DEV] SMS service in development mode: SMS will be logged, not sent');
+    }
   }
 
   // Send SMS to a single recipient
   async sendSMS(to, message) {
+    if (isMessagingMocked()) {
+      return logMockSMS(to, message);
+    }
+
     try {
       const result = await this.client.messages.create({
         body: message,

@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const router = express.Router();
 const Contact = require("../models/contact");
 const { Blog } = require("../models/blog");
@@ -174,6 +175,11 @@ router.get("/customers", async (req, res) => {
     // Labels filter
     if (req.query.labels) {
       filterQuery.labels = { $in: req.query.labels.split(',') };
+    }
+
+    // RSVP event filter (contacts who RSVP'd to this event)
+    if (req.query.rsvpEvent && mongoose.Types.ObjectId.isValid(req.query.rsvpEvent)) {
+      filterQuery['rsvpEvents.event'] = new mongoose.Types.ObjectId(req.query.rsvpEvent);
     }
     
     // Date range filter

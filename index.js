@@ -51,16 +51,28 @@ app.use((req, res, next) => {
   }
 });
 
-const connectDB = async () => {
-    try { 
-        await mongoose.connect(process.env.MONGO_URI);
+const DB_RETRY_DELAY_MS = 5000;
+
+mongoose.connection.on("disconnected", () => console.warn("MongoDB disconnected"));
+mongoose.connection.on("reconnected", () => console.log("MongoDB reconnected"));
+
+// Keep retrying the initial connection: if MongoDB isn't up yet when the server
+// starts, a single failed attempt would otherwise leave every query buffering
+// until it times out (500s on every route).
+const connectDB = async (attempt = 1) => {
+    try {
+        await mongoose.connect(process.env.MONGO_URI, {
+            serverSelectionTimeoutMS: 10000,
+            family: 4, // avoid "localhost" resolving to IPv6 (::1) when mongod only listens on 127.0.0.1
+        });
         console.log("Connected to MongoDB");
     } catch (error) {
-        console.error("MongoDB connection error:", {
+        console.error(`MongoDB connection error (attempt ${attempt}), retrying in ${DB_RETRY_DELAY_MS / 1000}s:`, {
             message: error.message,
             name: error.name,
             code: error.code
         });
+        setTimeout(() => connectDB(attempt + 1), DB_RETRY_DELAY_MS);
     }
 }
 

@@ -17,12 +17,19 @@ const {
   PartnershipAgreementConfirmationEmailTemplate,
 } = require('./templates');
 const CustomEmailTemplate = require('./templates/customEmail');
+const { isMessagingMocked, logMockEmail } = require('../utils/devMessaging');
 require('dotenv').config();
 
 class EmailService {
   constructor() {
     this.apiInstance = new Brevo.TransactionalEmailsApi();
     this.apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+    if (isMessagingMocked()) {
+      console.log('[DEV] Email service in development mode: emails will be logged, not sent');
+      this.apiInstance.sendTransacEmail = async (email) => logMockEmail('Brevo', {
+        to: email.to, cc: email.cc, bcc: email.bcc, subject: email.subject, attachments: email.attachment,
+      });
+    }
     this.donationReceiptTemplate = this.loadDonationReceiptTemplate();
     this.inKindAcknowledgmentTemplate = this.loadInKindAcknowledgmentTemplate();
     this.partnershipAgreementTemplate = this.loadPartnershipAgreementTemplate();
@@ -175,10 +182,11 @@ class EmailService {
   }
 
   // Send welcome email
-  async sendWelcomeEmail(userData) {
+  // extraAttachments: additional Brevo attachments ({ name, content }), e.g. an RSVP event flyer
+  async sendWelcomeEmail(userData, extraAttachments = []) {
     try {
       const sendSmtpEmail = new Brevo.SendSmtpEmail();
-      
+
       sendSmtpEmail.subject = `Welcome to Harmony 4 All, ${userData.firstName}!`;
       sendSmtpEmail.htmlContent = await WelcomeEmailTemplate.generateHTML(userData);
       sendSmtpEmail.textContent = WelcomeEmailTemplate.generateText(userData);
@@ -189,7 +197,7 @@ class EmailService {
       }];
 
       // Add welcome email attachments (includes PDF)
-      const attachments = this.getWelcomeEmailAttachments();
+      const attachments = [...this.getWelcomeEmailAttachments(), ...extraAttachments];
       if (attachments.length > 0) {
         sendSmtpEmail.attachment = attachments;
       }
@@ -410,7 +418,11 @@ class EmailService {
   // Create Gmail transporter
   createGmailTransporter(accountIndex) {
     const account = this.getGmailAccount(accountIndex);
-    
+
+    if (isMessagingMocked()) {
+      return { sendMail: async (mail) => logMockEmail(`Gmail (${account.email})`, mail) };
+    }
+
     return nodemailer.createTransport({
       service: 'gmail',
       auth: {
