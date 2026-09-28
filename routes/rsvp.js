@@ -185,21 +185,10 @@ router.post("/submit", async (req, res) => {
       guests,
     } = req.body;
 
-    if (!eventId || !isObjectId(eventId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Please choose an event to RSVP for",
-      });
-    }
-
-    // The form must be for the event active right now (it may have ended or been switched while the form was open)
-    const event = await getCurrentEvent();
-    if (!event || String(event._id) !== String(eventId)) {
-      return res.status(400).json({
-        success: false,
-        message: "RSVPs for this event are closed. Please refresh the page.",
-      });
-    }
+    // Tie the RSVP to the event only if it is still the active one. With no open event (or one that
+    // closed while the form was open) the contact is still saved with the RSVP label, just without an event.
+    const currentEvent = eventId && isObjectId(eventId) ? await getCurrentEvent() : null;
+    const event = currentEvent && String(currentEvent._id) === String(eventId) ? currentEvent : null;
 
     if (!firstName || !lastName || !email || !cellNumber || !agreeToTerms) {
       return res.status(400).json({
@@ -238,7 +227,7 @@ router.post("/submit", async (req, res) => {
     const guestCount = Math.min(Math.max(parseInt(guests, 10) || 1, 1), MAX_GUESTS);
     const now = new Date();
 
-    const eventEntry = {
+    const eventEntry = event && {
       event: event._id,
       title: event.title,
       eventDate: event.eventDate,
@@ -262,10 +251,12 @@ router.post("/submit", async (req, res) => {
         customer.labels.push(RSVP_LABEL);
       }
       // Replace this event's entry if they RSVP'd to it before, keep their other events
-      customer.rsvpEvents = [
-        ...(customer.rsvpEvents || []).filter((entry) => String(entry.event) !== String(event._id)),
-        eventEntry,
-      ];
+      if (event) {
+        customer.rsvpEvents = [
+          ...(customer.rsvpEvents || []).filter((entry) => String(entry.event) !== String(event._id)),
+          eventEntry,
+        ];
+      }
 
       await customer.save();
     } else {
@@ -275,7 +266,7 @@ router.post("/submit", async (req, res) => {
         email: normalizedEmail,
         phone: normalizedCell,
         labels: [RSVP_LABEL],
-        rsvpEvents: [eventEntry],
+        rsvpEvents: event ? [eventEntry] : [],
         isSubscribed: Boolean(promotionalUpdates),
         emailSubscriberStatus: promotionalUpdates ? "subscribed" : "unsubscribed",
         smsSubscriberStatus: "subscribed",
@@ -289,20 +280,22 @@ router.post("/submit", async (req, res) => {
     }
 
     // One RSVP per email per event; re-submitting updates the party size instead of double counting
-    const existingRsvp = await EventRsvp.exists({ event: event._id, email: normalizedEmail });
-    await EventRsvp.findOneAndUpdate(
-      { event: event._id, email: normalizedEmail },
-      {
-        customer: customer._id,
-        firstName: normalizedFirstName,
-        lastName: normalizedLastName,
-        cellNumber: normalizedCell,
-        guests: guestCount,
-        promotionalUpdates: Boolean(promotionalUpdates),
-        submittedAt: now,
-      },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
-    );
+    const existingRsvp = event && (await EventRsvp.exists({ event: event._id, email: normalizedEmail }));
+    if (event) {
+      await EventRsvp.findOneAndUpdate(
+        { event: event._id, email: normalizedEmail },
+        {
+          customer: customer._id,
+          firstName: normalizedFirstName,
+          lastName: normalizedLastName,
+          cellNumber: normalizedCell,
+          guests: guestCount,
+          promotionalUpdates: Boolean(promotionalUpdates),
+          submittedAt: now,
+        },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
+    }
 
     await sendRSVPCommunications({
       firstName: normalizedFirstName,
@@ -316,9 +309,11 @@ router.post("/submit", async (req, res) => {
     const isUpdate = Boolean(existingRsvp);
     return res.status(isUpdate ? 200 : 201).json({
       success: true,
-      message: isUpdate
-        ? `Thanks! Your RSVP for ${event.title} has been updated.`
-        : `Thanks for your RSVP to ${event.title}! We have received your details.`,
+      message: !event
+        ? "Thanks for your RSVP! We have received your details."
+        : isUpdate
+          ? `Thanks! Your RSVP for ${event.title} has been updated.`
+          : `Thanks for your RSVP to ${event.title}! We have received your details.`,
       isExisting: isUpdate,
       label: RSVP_LABEL,
     });
