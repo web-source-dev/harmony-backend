@@ -7,6 +7,7 @@ const RsvpEvent = require("../models/rsvpEvent");
 const EventRsvp = require("../models/eventRsvp");
 const emailService = require("../services/emailService");
 const smsService = require("../services/smsService");
+const rsvpSheets = require("../services/rsvpSheetsService");
 const { flyerUpload, uploadFlyer, deleteFlyer, getFlyerAttachment } = require("../services/rsvpFlyerService");
 const { getUSPhoneError, formatUSPhoneForStorage } = require("../utils/usPhone");
 const { getEmailFormatError, getEmailDeliverabilityError } = require("../utils/email");
@@ -22,7 +23,11 @@ const hasEnded = (event) => Boolean(event.endDate) && event.endDate < new Date()
 // Switches off the active event once its end date has passed. Runs before anything reads the
 // active event, so expiry takes effect immediately without a scheduled job.
 async function deactivateExpiredEvents() {
-  await RsvpEvent.updateMany({ isActive: true, endDate: { $lt: new Date() } }, { isActive: false });
+  const expired = await RsvpEvent.find({ isActive: true, endDate: { $lt: new Date() } }).select("_id").lean();
+  if (!expired.length) return;
+  const ids = expired.map((event) => event._id);
+  await RsvpEvent.updateMany({ _id: { $in: ids } }, { isActive: false });
+  rsvpSheets.syncEvents(ids);
 }
 
 // The one event shown on /rsvp, or null
@@ -33,7 +38,11 @@ async function getCurrentEvent() {
 
 // Only one event can be active: switch off every other event
 async function deactivateOtherEvents(eventId) {
-  await RsvpEvent.updateMany({ _id: { $ne: eventId }, isActive: true }, { isActive: false });
+  const others = await RsvpEvent.find({ _id: { $ne: eventId }, isActive: true }).select("_id").lean();
+  if (!others.length) return;
+  const ids = others.map((event) => event._id);
+  await RsvpEvent.updateMany({ _id: { $in: ids } }, { isActive: false });
+  rsvpSheets.syncEvents(ids);
 }
 
 // Fields shown on the public website (no Cloudinary ids)
@@ -297,6 +306,21 @@ router.post("/submit", async (req, res) => {
       );
     }
 
+    // Mirror to Google Sheets in the background: the event's tab, or the "No Active Event" tab
+    if (event) {
+      rsvpSheets.syncEvent(event._id);
+    } else {
+      rsvpSheets.recordNoEventRsvp({
+        firstName: normalizedFirstName,
+        lastName: normalizedLastName,
+        email: normalizedEmail,
+        cellNumber: normalizedCell,
+        guests: guestCount,
+        promotionalUpdates: Boolean(promotionalUpdates),
+        submittedAt: now,
+      });
+    }
+
     await sendRSVPCommunications({
       firstName: normalizedFirstName,
       lastName: normalizedLastName,
@@ -373,6 +397,7 @@ router.post("/admin/events", handleFlyerUpload, async (req, res) => {
 
     const event = await RsvpEvent.create({ ...fields, flyer });
     if (event.isActive) await deactivateOtherEvents(event._id);
+    rsvpSheets.syncEvent(event._id); // every new event gets its own tab
     return res.status(201).json({ ...event.toObject(), rsvps: 0, expectedAttendees: 0 });
   } catch (error) {
     if (flyer) await deleteFlyer(flyer);
@@ -418,6 +443,7 @@ router.put("/admin/events/:id", handleFlyerUpload, async (req, res) => {
       { $set: { "rsvpEvents.$[entry].title": event.title, "rsvpEvents.$[entry].eventDate": event.eventDate } },
       { arrayFilters: [{ "entry.event": event._id }] }
     );
+    rsvpSheets.syncEvent(event._id);
 
     const totals = await getEventTotals([event._id]);
     return res.json({ ...event.toObject(), ...(totals.get(String(event._id)) || { rsvps: 0, expectedAttendees: 0 }) });
@@ -441,6 +467,7 @@ router.patch("/admin/events/:id/active", async (req, res) => {
     event.isActive = isActive;
     await event.save();
     if (isActive) await deactivateOtherEvents(event._id);
+    rsvpSheets.syncEvent(event._id);
     return res.json(event);
   } catch (error) {
     console.error("RSVP event activate error:", error);
@@ -454,6 +481,12 @@ router.delete("/admin/events/:id", async (req, res) => {
     if (!isObjectId(req.params.id)) return res.status(404).json({ message: "Event not found" });
     const event = await RsvpEvent.findByIdAndDelete(req.params.id);
     if (!event) return res.status(404).json({ message: "Event not found" });
+
+    // The event's sheet tab is kept as an archive ("Deleted – …") with the RSVPs it had
+    if (rsvpSheets.isEnabled()) {
+      const rsvps = await EventRsvp.find({ event: event._id }).sort({ submittedAt: 1 }).lean();
+      rsvpSheets.archiveEvent(event.toObject(), rsvps);
+    }
 
     await Promise.all([
       EventRsvp.deleteMany({ event: event._id }),
@@ -487,10 +520,31 @@ router.delete("/admin/rsvps/:id", async (req, res) => {
     if (!rsvp) return res.status(404).json({ message: "RSVP not found" });
 
     await Customer.updateOne({ email: rsvp.email }, { $pull: { rsvpEvents: { event: rsvp.event } } });
+    rsvpSheets.syncEvent(rsvp.event);
     return res.json({ success: true });
   } catch (error) {
     console.error("RSVP delete error:", error);
     return res.status(500).json({ message: "Failed to delete RSVP" });
+  }
+});
+
+// Google Sheets status for the admin dashboard
+router.get("/admin/sheets", (req, res) => {
+  return res.json({ enabled: rsvpSheets.isEnabled(), url: rsvpSheets.getSpreadsheetUrl() });
+});
+
+// Rebuilds every event tab and the Overview (e.g. to backfill events created before Sheets was set up)
+router.post("/admin/sheets/sync", async (req, res) => {
+  try {
+    if (!rsvpSheets.isEnabled()) {
+      return res.status(400).json({ message: "Google Sheets is not configured on the server" });
+    }
+    const result = await rsvpSheets.syncAll();
+    return res.json({ success: true, ...result, url: rsvpSheets.getSpreadsheetUrl() });
+  } catch (error) {
+    console.error("RSVP Google Sheets sync error:", error);
+    const detail = error.response?.data?.error?.message || error.message;
+    return res.status(502).json({ message: `Google Sheets sync failed: ${detail}` });
   }
 });
 

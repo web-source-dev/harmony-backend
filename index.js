@@ -86,6 +86,8 @@ const initializeSchedulers = async () => {
         
         await videoSchedulerService.initialize();
         console.log("Video scheduler initialized successfully");
+
+        rsvpSheetsService.scheduleDailySync();
     } catch (error) {
         console.error("Failed to initialize schedulers:", error);
     }
@@ -120,6 +122,7 @@ const validateRoute = require("./routes/validate");
 // Initialize scheduler services
 const blogSchedulerService = require("./services/blogSchedulerService");
 const videoSchedulerService = require("./services/videoSchedulerService");
+const rsvpSheetsService = require("./services/rsvpSheetsService");
 
 app.get("/status", (req, res) => {
     res.send("Server is running");

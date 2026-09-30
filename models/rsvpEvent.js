@@ -51,6 +51,11 @@ const rsvpEventSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    // Id of this event's tab in the RSVP Google Spreadsheet (set by rsvpSheetsService on first sync)
+    sheetTabId: {
+        type: Number,
+        default: null,
+    },
 }, { timestamps: true });
 
 rsvpEventSchema.index({ isActive: 1 });

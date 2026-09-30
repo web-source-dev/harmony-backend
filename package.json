@@ -18,7 +18,8 @@
     "send-resume-sms": "node scripts/send-remaining-sms.js",
     "cleanup-brevo": "node scripts/cleanup-brevo.js",
     "delete-brevo-cleanup": "node scripts/delete-brevo-cleanup.js",
-    "count-brevo-phones": "node scripts/count-brevo-phones.js"
+    "count-brevo-phones": "node scripts/count-brevo-phones.js",
+    "sync-rsvp-sheets": "node scripts/sync-rsvp-sheets.js"
   },
   "keywords": [],
   "author": "",
