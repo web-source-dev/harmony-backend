@@ -1,10 +1,16 @@
 const Customer = require('../models/customer');
-const { getUSPhoneError } = require('../utils/usPhone');
+const { getUSPhoneError, getUSPhoneValidationError } = require('../utils/usPhone');
 const { getEmailFormatError, getEmailDeliverabilityError, isValidEmailFormat } = require('../utils/email');
 
 // checkEmailDeliverability: false skips the network email checks (DNS/MX/SMTP),
 // e.g. when an existing contact is edited without changing their email.
-async function validateRequiredCustomerFields({ firstName, lastName, email, phone, phone1, phone2 }, { checkEmailDeliverability = true } = {}) {
+// checkPhoneLookup: false skips the Twilio carrier lookup and keeps the local
+// 10-digit check. Offline event records were already checked on the iPad;
+// the live lookup is what stalls or rejects the whole queue once Wi-Fi returns.
+async function validateRequiredCustomerFields(
+    { firstName, lastName, email, phone, phone1, phone2 },
+    { checkEmailDeliverability = true, checkPhoneLookup = true } = {}
+) {
     const errors = [];
 
     if (!firstName?.trim()) {
@@ -19,11 +25,20 @@ async function validateRequiredCustomerFields({ firstName, lastName, email, phon
         errors.push(emailError);
     }
 
-    const [phoneError, phone1Error, phone2Error] = await Promise.all([
-        getUSPhoneError(phone, { required: true }),
-        getUSPhoneError(phone1),
-        getUSPhoneError(phone2),
-    ]);
+    let phoneError;
+    let phone1Error;
+    let phone2Error;
+    if (checkPhoneLookup) {
+        [phoneError, phone1Error, phone2Error] = await Promise.all([
+            getUSPhoneError(phone, { required: true }),
+            getUSPhoneError(phone1),
+            getUSPhoneError(phone2),
+        ]);
+    } else {
+        phoneError = getUSPhoneValidationError(phone, { required: true });
+        phone1Error = getUSPhoneValidationError(phone1);
+        phone2Error = getUSPhoneValidationError(phone2);
+    }
     if (phoneError) errors.push(phoneError);
     if (phone1Error) errors.push(`Phone 1: ${phone1Error}`);
     if (phone2Error) errors.push(`Phone 2: ${phone2Error}`);

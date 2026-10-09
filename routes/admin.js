@@ -284,19 +284,26 @@ router.post("/customers", async (req, res) => {
       address2Street, address2City, address2State, address2Zip, address2Country,
       address3Street, address3StreetLine2, address3City, address3Country,
       position, labels, isSubscribed, emailSubscriberStatus, smsSubscriberStatus, source,
-      visitorEmail, visitorName, isOffline = false, localId = null
+      visitorEmail, visitorName, isOffline = false, localId = null,
+      fromPublicForm = false
     } = req.body;
 
-    const validationErrors = await customerService.validateRequiredCustomerFields({
-      firstName,
-      lastName,
-      email,
-      phone,
-      phone1,
-      phone2
-    });
-    if (validationErrors.length > 0) {
-      return res.status(400).json({ message: validationErrors.join('. ') });
+    // The public intake form checks required fields itself, including offline.
+    // Do not re-check email or phone here — that rejection is what left event
+    // contacts stuck on the iPad. Other customer creates still validate.
+    const publicIntake = fromPublicForm === true || source === 'public';
+    if (!publicIntake) {
+      const validationErrors = await customerService.validateRequiredCustomerFields({
+        firstName,
+        lastName,
+        email,
+        phone,
+        phone1,
+        phone2
+      });
+      if (validationErrors.length > 0) {
+        return res.status(400).json({ message: validationErrors.join('. ') });
+      }
     }
 
     // Check if customer already exists
@@ -360,16 +367,19 @@ router.post("/customers", async (req, res) => {
         }
       }
 
-      // Send welcome communications for existing customer
-      await sendWelcomeCommunications({
-        firstName: firstName?.trim() || existingCustomer.firstName,
-        lastName: lastName?.trim() || existingCustomer.lastName,
-        email: email.toLowerCase().trim(),
-        phone: phone ? formatUSPhoneForStorage(phone) : existingCustomer.phone,
-        phone1: phone1 ? formatUSPhoneForStorage(phone1) : existingCustomer.phone1,
-        phone2: phone2 ? formatUSPhoneForStorage(phone2) : existingCustomer.phone2,
-        isSubscribed: isSubscribed !== undefined ? isSubscribed : existingCustomer.isSubscribed
-      });
+      // A retry of an offline sync updates the same person. Welcome mail and
+      // SMS already went out on the first successful save, so don't send them again.
+      if (!isOffline) {
+        await sendWelcomeCommunications({
+          firstName: firstName?.trim() || existingCustomer.firstName,
+          lastName: lastName?.trim() || existingCustomer.lastName,
+          email: email.toLowerCase().trim(),
+          phone: phone ? formatUSPhoneForStorage(phone) : existingCustomer.phone,
+          phone1: phone1 ? formatUSPhoneForStorage(phone1) : existingCustomer.phone1,
+          phone2: phone2 ? formatUSPhoneForStorage(phone2) : existingCustomer.phone2,
+          isSubscribed: isSubscribed !== undefined ? isSubscribed : existingCustomer.isSubscribed
+        });
+      }
 
       return res.status(200).json({
         customer: updatedCustomer,
