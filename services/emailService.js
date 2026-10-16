@@ -15,8 +15,10 @@ const {
   TextUpdatesEmailTemplate,
   PartnershipAgreementEmailTemplate,
   PartnershipAgreementConfirmationEmailTemplate,
+  RsvpConfirmationEmailTemplate,
 } = require('./templates');
 const CustomEmailTemplate = require('./templates/customEmail');
+const { prepareEmailImages } = require('./rsvpEmailImages');
 const { isMessagingMocked, logMockEmail } = require('../utils/devMessaging');
 require('dotenv').config();
 
@@ -207,6 +209,50 @@ class EmailService {
       return result;
     } catch (error) {
       console.error(`Failed to send welcome email to ${userData.email}:`, error);
+      throw error;
+    }
+  }
+
+  // RSVP confirmation, or a reminder (variant "weekBefore" / "dayBefore"), with the guest's check-in QR.
+  // rsvp: { firstName, lastName, email, guests, checkInCode }; extraAttachments: Brevo attachments ({ name, content })
+  async sendRsvpConfirmationEmail(rsvp, event, { variant = 'confirmation', extraAttachments = [] } = {}) {
+    try {
+      const sendSmtpEmail = new Brevo.SendSmtpEmail();
+      // Hosted QR + icons so they show in every email client
+      const images = await prepareEmailImages(rsvp);
+      const data = { rsvp, event, variant, images };
+
+      // The attached QR gets the guest's name underneath, like the download button
+      if (images.qrWithNameUrl) {
+        try {
+          const response = await fetch(images.qrWithNameUrl);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const content = Buffer.from(await response.arrayBuffer()).toString('base64');
+          extraAttachments = extraAttachments.map((file) =>
+            file.name.startsWith('Harmony4All-check-in-') ? { ...file, content } : file
+          );
+        } catch (error) {
+          console.error('Could not load the named QR for the attachment, sending the plain QR:', error.message);
+        }
+      }
+
+      sendSmtpEmail.subject = RsvpConfirmationEmailTemplate.getSubject(event, variant);
+      sendSmtpEmail.htmlContent = RsvpConfirmationEmailTemplate.generateHTML(data);
+      sendSmtpEmail.textContent = RsvpConfirmationEmailTemplate.generateText(data);
+      sendSmtpEmail.sender = this.getSenderConfig();
+      sendSmtpEmail.to = [{
+        email: rsvp.email,
+        name: `${rsvp.firstName} ${rsvp.lastName}`
+      }];
+      if (extraAttachments.length > 0) {
+        sendSmtpEmail.attachment = extraAttachments;
+      }
+
+      const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
+      console.log(`RSVP ${variant} email sent to ${rsvp.email}:`, result.messageId);
+      return result;
+    } catch (error) {
+      console.error(`Failed to send RSVP ${variant} email to ${rsvp.email}:`, error);
       throw error;
     }
   }

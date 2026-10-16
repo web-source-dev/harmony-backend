@@ -63,6 +63,20 @@ class SMSService {
     }
   }
 
+  // RSVP confirmation text for an event; the check-in QR is in the email
+  async sendRsvpConfirmationSMS(rsvpData, event, when) {
+    try {
+      const people = Number(rsvpData.guests) === 1 ? '1 person' : `${rsvpData.guests} people`;
+      const message = `Hi ${rsvpData.firstName}! Your RSVP for ${event.title}${when ? ` (${when})` : ''} is confirmed for ${people}. Your check-in QR code is in your email. Questions: info@harmony4all.org 🎶`;
+
+      await this.sendSMS(rsvpData.cellNumber, message);
+      return { success: true, message: 'RSVP confirmation SMS sent to user' };
+    } catch (error) {
+      console.error('Failed to send RSVP confirmation SMS:', error);
+      throw error;
+    }
+  }
+
   // Send admin notification SMS for new submission
   async sendAdminNotificationSMS(submissionData) {
     try {

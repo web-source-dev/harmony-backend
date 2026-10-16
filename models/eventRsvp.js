@@ -47,9 +47,24 @@ const eventRsvpSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    // Random code in the confirmation email's QR, scanned at the door. Kept when the RSVP is re-submitted.
+    checkInCode: {
+        type: String,
+        trim: true,
+    },
+    checkedInAt: {
+        type: Date,
+        default: null,
+    },
+    // When each reminder email went out, so the daily job never sends one twice
+    reminders: {
+        weekBefore: { type: Date, default: null },
+        dayBefore: { type: Date, default: null },
+    },
 }, { timestamps: true });
 
 eventRsvpSchema.index({ event: 1, email: 1 }, { unique: true });
+eventRsvpSchema.index({ checkInCode: 1 }, { unique: true, sparse: true });
 eventRsvpSchema.index({ email: 1 });
 
 module.exports = mongoose.model("EventRsvp", eventRsvpSchema);

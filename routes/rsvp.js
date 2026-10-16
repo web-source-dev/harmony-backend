@@ -11,6 +11,7 @@ const rsvpSheets = require("../services/rsvpSheetsService");
 const { flyerUpload, uploadFlyer, deleteFlyer, getFlyerAttachment } = require("../services/rsvpFlyerService");
 const { getUSPhoneError, formatUSPhoneForStorage } = require("../utils/usPhone");
 const { getEmailFormatError, getEmailDeliverabilityError } = require("../utils/email");
+const eventDetails = require("../services/rsvpEventDetails");
 
 const RSVP_LABEL = "rsvp-page";
 const MAX_GUESTS = 20;
@@ -99,10 +100,17 @@ function parseEventFields(body) {
 
 const endedMessage = "This event's end date has passed. Set a later end date to make it active.";
 
-// Send notifications for RSVP submissions (user + H4A admin); the event flyer goes to the user as an attachment
-async function sendRSVPCommunications(submissionData, event) {
-  const { firstName, lastName, email, cellNumber, promotionalUpdates, agreeToTerms } = submissionData;
+// Gives an RSVP its check-in code if it doesn't have one yet (RSVPs made before check-in existed)
+async function ensureCheckInCode(rsvp) {
+  if (rsvp.checkInCode) return rsvp;
+  rsvp.checkInCode = eventDetails.generateCheckInCode();
+  await rsvp.save();
+  return rsvp;
+}
 
+// Sends the RSVP confirmation email (name, party size, check-in QR, calendar + directions) with the
+// QR, calendar invite and event flyer attached
+async function sendRsvpConfirmation(rsvp, event) {
   let flyerAttachments = [];
   try {
     const flyer = await getFlyerAttachment(event);
@@ -110,14 +118,21 @@ async function sendRSVPCommunications(submissionData, event) {
   } catch (flyerError) {
     console.error(`Failed to load flyer for RSVP event ${event?._id}:`, flyerError.message);
   }
+  const attachments = [...(await eventDetails.buildEmailAttachments(rsvp, event)), ...flyerAttachments];
+  return emailService.sendRsvpConfirmationEmail(rsvp, event, { extraAttachments: attachments });
+}
+
+// Send notifications for RSVP submissions (user + H4A admin). With an event the guest gets the event
+// confirmation; without one (no event open) they get the general welcome email.
+async function sendRSVPCommunications(submissionData, event, rsvp) {
+  const { firstName, lastName, email, cellNumber, promotionalUpdates, agreeToTerms, guests } = submissionData;
 
   try {
-    await emailService.sendWelcomeEmail({
-      firstName,
-      lastName,
-      email,
-      cellNumber,
-    }, flyerAttachments);
+    if (event && rsvp) {
+      await sendRsvpConfirmation(rsvp, event);
+    } else {
+      await emailService.sendWelcomeEmail({ firstName, lastName, email, cellNumber });
+    }
   } catch (emailError) {
     console.error("Failed to send RSVP email to user:", emailError);
   }
@@ -130,18 +145,19 @@ async function sendRSVPCommunications(submissionData, event) {
       cellNumber,
       promotionalUpdates,
       agreeToTerms,
+      eventTitle: event?.title,
+      guests,
     });
   } catch (emailError) {
     console.error("Failed to send RSVP email notification to admin:", emailError);
   }
 
   try {
-    await smsService.sendWelcomeSMS({
-      firstName,
-      lastName,
-      email,
-      cellNumber,
-    });
+    if (event) {
+      await smsService.sendRsvpConfirmationSMS({ firstName, cellNumber, guests }, event, eventDetails.formatEventWhen(event));
+    } else {
+      await smsService.sendWelcomeSMS({ firstName, lastName, email, cellNumber });
+    }
   } catch (smsError) {
     console.error("Failed to send RSVP SMS to user:", smsError);
   }
@@ -157,6 +173,16 @@ async function sendRSVPCommunications(submissionData, event) {
     console.error("Failed to send RSVP admin notification SMS:", smsError);
   }
 }
+
+// What the confirmation screen shows: the guest's pass and the event links. The QR comes inline as a
+// data URL so it shows (and downloads) without another request to the API.
+const toPublicRsvp = async (rsvp) => ({
+  firstName: rsvp.firstName,
+  lastName: rsvp.lastName,
+  guests: rsvp.guests,
+  checkInCode: eventDetails.formatCheckInCode(rsvp.checkInCode),
+  qrDataUrl: `data:image/png;base64,${(await eventDetails.qrPng(rsvp.checkInCode)).toString("base64")}`,
+});
 
 // Runs multer for the flyer field and turns upload errors into a 400
 const handleFlyerUpload = (req, res, next) => {
@@ -289,9 +315,10 @@ router.post("/submit", async (req, res) => {
     }
 
     // One RSVP per email per event; re-submitting updates the party size instead of double counting
-    const existingRsvp = event && (await EventRsvp.exists({ event: event._id, email: normalizedEmail }));
+    const existingRsvp = event && (await EventRsvp.findOne({ event: event._id, email: normalizedEmail }).select("checkInCode").lean());
+    let rsvp = null;
     if (event) {
-      await EventRsvp.findOneAndUpdate(
+      rsvp = await EventRsvp.findOneAndUpdate(
         { event: event._id, email: normalizedEmail },
         {
           customer: customer._id,
@@ -301,6 +328,8 @@ router.post("/submit", async (req, res) => {
           guests: guestCount,
           promotionalUpdates: Boolean(promotionalUpdates),
           submittedAt: now,
+          // Re-submitting keeps the same check-in code, so an earlier email's QR still works
+          checkInCode: existingRsvp?.checkInCode || eventDetails.generateCheckInCode(),
         },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       );
@@ -328,7 +357,8 @@ router.post("/submit", async (req, res) => {
       cellNumber: normalizedCell,
       promotionalUpdates: Boolean(promotionalUpdates),
       agreeToTerms: Boolean(agreeToTerms),
-    }, event);
+      guests: guestCount,
+    }, event, rsvp);
 
     const isUpdate = Boolean(existingRsvp);
     return res.status(isUpdate ? 200 : 201).json({
@@ -340,6 +370,9 @@ router.post("/submit", async (req, res) => {
           : `Thanks for your RSVP to ${event.title}! We have received your details.`,
       isExisting: isUpdate,
       label: RSVP_LABEL,
+      guests: guestCount,
+      rsvp: rsvp ? await toPublicRsvp(rsvp) : null,
+      eventLinks: event ? eventDetails.getEventLinks(event) : null,
     });
   } catch (error) {
     console.error("RSVP submission error:", error);
@@ -347,6 +380,43 @@ router.post("/submit", async (req, res) => {
       success: false,
       message: "Internal server error",
     });
+  }
+});
+
+// Calendar invite for an event (the "Apple / Outlook" button in the email and on the confirmation screen)
+router.get("/events/:id/calendar.ics", async (req, res) => {
+  try {
+    if (!isObjectId(req.params.id)) return res.status(404).send("Event not found");
+    const event = await RsvpEvent.findById(req.params.id).lean();
+    const ics = event && eventDetails.buildIcs(event);
+    if (!ics) return res.status(404).send("Event not found");
+    res.set({
+      "Content-Type": "text/calendar; charset=utf-8",
+      "Content-Disposition": 'attachment; filename="Harmony4All-event.ics"',
+      "Cache-Control": "public, max-age=300",
+    });
+    return res.send(ics);
+  } catch (error) {
+    console.error("RSVP calendar file error:", error);
+    return res.status(500).send("Failed to build calendar file");
+  }
+});
+
+// Check-in QR image shown in the email and on the confirmation screen. It encodes the admin check-in link.
+router.get("/check-in/:code/qr.png", async (req, res) => {
+  try {
+    const code = String(req.params.code).replace(/-/g, "").toUpperCase();
+    if (!eventDetails.isCheckInCode(code) || !(await EventRsvp.exists({ checkInCode: code }))) {
+      return res.status(404).send("Not found");
+    }
+    const png = await eventDetails.qrPng(code);
+    res.set({ "Content-Type": "image/png", "Cache-Control": "public, max-age=31536000, immutable" });
+    // ?download=1 is the email's download button: save the file instead of opening it
+    if (req.query.download) res.set("Content-Disposition", `attachment; filename="Harmony4All-check-in-${code}.png"`);
+    return res.send(png);
+  } catch (error) {
+    console.error("RSVP QR image error:", error);
+    return res.status(500).send("Failed to build QR code");
   }
 });
 
@@ -525,6 +595,55 @@ router.delete("/admin/rsvps/:id", async (req, res) => {
   } catch (error) {
     console.error("RSVP delete error:", error);
     return res.status(500).json({ message: "Failed to delete RSVP" });
+  }
+});
+
+// The RSVP behind a scanned check-in QR (or a code typed in by hand), with its event
+router.get("/admin/check-in/:code", async (req, res) => {
+  try {
+    const code = String(req.params.code).replace(/[\s-]/g, "").toUpperCase();
+    if (!eventDetails.isCheckInCode(code)) return res.status(404).json({ message: "Check-in code not found" });
+    const rsvp = await EventRsvp.findOne({ checkInCode: code }).populate("event", "title eventDate eventTime location");
+    if (!rsvp) return res.status(404).json({ message: "Check-in code not found" });
+    return res.json(rsvp);
+  } catch (error) {
+    console.error("RSVP check-in lookup error:", error);
+    return res.status(500).json({ message: "Failed to look up check-in code" });
+  }
+});
+
+// Mark an RSVP as arrived (checkedIn: true) or undo it (checkedIn: false)
+router.patch("/admin/rsvps/:id/check-in", async (req, res) => {
+  try {
+    if (!isObjectId(req.params.id)) return res.status(404).json({ message: "RSVP not found" });
+    const checkedIn = req.body.checkedIn !== false;
+    const rsvp = await EventRsvp.findByIdAndUpdate(
+      req.params.id,
+      { checkedInAt: checkedIn ? new Date() : null },
+      { new: true }
+    ).populate("event", "title eventDate eventTime location");
+    if (!rsvp) return res.status(404).json({ message: "RSVP not found" });
+    return res.json(rsvp);
+  } catch (error) {
+    console.error("RSVP check-in error:", error);
+    return res.status(500).json({ message: "Failed to update check-in" });
+  }
+});
+
+// Re-send the confirmation email (e.g. a guest lost it, or RSVPs made before the check-in QR existed)
+router.post("/admin/rsvps/:id/resend-confirmation", async (req, res) => {
+  try {
+    if (!isObjectId(req.params.id)) return res.status(404).json({ message: "RSVP not found" });
+    const rsvp = await EventRsvp.findById(req.params.id);
+    if (!rsvp) return res.status(404).json({ message: "RSVP not found" });
+    const event = await RsvpEvent.findById(rsvp.event);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+    await ensureCheckInCode(rsvp);
+    await sendRsvpConfirmation(rsvp, event);
+    return res.json({ success: true, checkInCode: rsvp.checkInCode });
+  } catch (error) {
+    console.error("RSVP resend confirmation error:", error);
+    return res.status(500).json({ message: "Failed to send the confirmation email" });
   }
 });
 

@@ -110,6 +110,15 @@ class WelcomePopupAdminEmailTemplate {
                 <span class="detail-label">Phone Number:</span>
                 <span class="detail-value">${welcomeData.cellNumber}</span>
               </div>
+              ${welcomeData.eventTitle ? `
+              <div class="detail-row">
+                <span class="detail-label">RSVP Event:</span>
+                <span class="detail-value">${welcomeData.eventTitle}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">People Attending:</span>
+                <span class="detail-value">${welcomeData.guests}</span>
+              </div>` : ''}
               <div class="detail-row">
                 <span class="detail-label">Submitted At:</span>
                 <span class="detail-value">${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })}</span>
@@ -132,7 +141,9 @@ SUBMISSION INFORMATION:
 Full Name: ${welcomeData.firstName} ${welcomeData.lastName}
 Email Address: ${welcomeData.email}
 Phone Number: ${welcomeData.cellNumber}
-Submitted At: ${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })}
+${welcomeData.eventTitle ? `RSVP Event: ${welcomeData.eventTitle}
+People Attending: ${welcomeData.guests}
+` : ''}Submitted At: ${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })}
 
 A new submission has been made.
     `;

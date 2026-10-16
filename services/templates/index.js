@@ -9,6 +9,7 @@ const VolunteerEmailTemplate = require('./volunteerEmail');
 const TextUpdatesEmailTemplate = require('./textUpdatesEmail');
 const PartnershipAgreementEmailTemplate = require('./partnershipAgreementEmail');
 const PartnershipAgreementConfirmationEmailTemplate = require('./partnershipAgreementConfirmationEmail');
+const RsvpConfirmationEmailTemplate = require('./rsvpConfirmationEmail');
 
 module.exports = {
   WelcomeEmailTemplate,
@@ -22,4 +23,5 @@ module.exports = {
   TextUpdatesEmailTemplate,
   PartnershipAgreementEmailTemplate,
   PartnershipAgreementConfirmationEmailTemplate,
+  RsvpConfirmationEmailTemplate,
 };

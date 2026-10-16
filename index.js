@@ -66,6 +66,12 @@ const connectDB = async (attempt = 1) => {
             family: 4, // avoid "localhost" resolving to IPv6 (::1) when mongod only listens on 127.0.0.1
         });
         console.log("Connected to MongoDB");
+
+        // Drop indexes the RSVP models no longer define (e.g. an old unique "slug" index that made
+        // every event after the first fail with a duplicate key on slug: null)
+        for (const model of [require("./models/rsvpEvent"), require("./models/eventRsvp")]) {
+            model.syncIndexes().catch((error) => console.error(`Index sync failed for ${model.modelName}:`, error.message));
+        }
     } catch (error) {
         console.error(`MongoDB connection error (attempt ${attempt}), retrying in ${DB_RETRY_DELAY_MS / 1000}s:`, {
             message: error.message,
@@ -88,6 +94,8 @@ const initializeSchedulers = async () => {
         console.log("Video scheduler initialized successfully");
 
         rsvpSheetsService.scheduleDailySync();
+        rsvpReminderService.scheduleReminders();
+        console.log("RSVP reminder scheduler initialized successfully");
     } catch (error) {
         console.error("Failed to initialize schedulers:", error);
     }
@@ -116,6 +124,7 @@ const videoRoute = require("./routes/video");
 const visitorRoute = require("./routes/visitor");
 const textUpdatesRoute = require("./routes/text-updates");
 const rsvpRoute = require("./routes/rsvp");
+const checkInRoute = require("./routes/checkIn");
 const partnershipRoute = require("./routes/partnership");
 const validateRoute = require("./routes/validate");
 
@@ -123,6 +132,7 @@ const validateRoute = require("./routes/validate");
 const blogSchedulerService = require("./services/blogSchedulerService");
 const videoSchedulerService = require("./services/videoSchedulerService");
 const rsvpSheetsService = require("./services/rsvpSheetsService");
+const rsvpReminderService = require("./services/rsvpReminderService");
 
 app.get("/status", (req, res) => {
     res.send("Server is running");
@@ -141,6 +151,7 @@ app.use("/api/video", videoRoute);
 app.use("/api/visitor", visitorRoute);
 app.use("/api/text-updates", textUpdatesRoute);
 app.use("/api/rsvp", rsvpRoute);
+app.use("/api/check-in", checkInRoute);
 app.use("/api/partnership", partnershipRoute);
 app.use("/api/validate", validateRoute);
 
