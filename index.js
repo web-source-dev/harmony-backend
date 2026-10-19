@@ -125,6 +125,7 @@ const visitorRoute = require("./routes/visitor");
 const textUpdatesRoute = require("./routes/text-updates");
 const rsvpRoute = require("./routes/rsvp");
 const checkInRoute = require("./routes/checkIn");
+const authRoute = require("./routes/auth");
 const partnershipRoute = require("./routes/partnership");
 const validateRoute = require("./routes/validate");
 
@@ -152,6 +153,7 @@ app.use("/api/visitor", visitorRoute);
 app.use("/api/text-updates", textUpdatesRoute);
 app.use("/api/rsvp", rsvpRoute);
 app.use("/api/check-in", checkInRoute);
+app.use("/api/auth", authRoute);
 app.use("/api/partnership", partnershipRoute);
 app.use("/api/validate", validateRoute);
 

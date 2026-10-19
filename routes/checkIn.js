@@ -1,4 +1,3 @@
-const crypto = require("crypto");
 const express = require("express");
 const mongoose = require("mongoose");
 const moment = require("moment-timezone");
@@ -6,55 +5,16 @@ const router = express.Router();
 const RsvpEvent = require("../models/rsvpEvent");
 const EventRsvp = require("../models/eventRsvp");
 const eventDetails = require("../services/rsvpEventDetails");
+const { requireAdmin } = require("../utils/adminAuth");
 
-// Door check-in for volunteers (no admin login). Every request needs the check-in PIN
-// (CHECKIN_PIN in .env) as "Authorization: Bearer <pin>", and only what the door needs is returned:
+// Door check-in at the event, for anyone logged in to the admin dashboard (the admin session token as
+// "Authorization: Bearer <token>"). Only what the door needs is returned:
 // names, party size and check-in status — never full emails or phone numbers.
 
 const isObjectId = (value) => mongoose.Types.ObjectId.isValid(value);
 
-// ─── PIN ───────────────────────────────────────────────────────────────────
-
-// Too many wrong PINs from one address locks it out for a while
-const MAX_FAILURES = 10;
-const LOCKOUT_MS = 15 * 60 * 1000;
-const failures = new Map(); // ip -> { count, firstAt }
-
-// nginx appends the real client address last, so that entry can't be spoofed by the client
-const clientIp = (req) => {
-  const forwarded = String(req.headers["x-forwarded-for"] || "").split(",").map((part) => part.trim()).filter(Boolean);
-  return forwarded[forwarded.length - 1] || req.ip;
-};
-
-const pinMatches = (given, expected) => {
-  const a = crypto.createHash("sha256").update(String(given)).digest();
-  const b = crypto.createHash("sha256").update(String(expected)).digest();
-  return crypto.timingSafeEqual(a, b);
-};
-
-function requirePin(req, res, next) {
-  const expected = process.env.CHECKIN_PIN;
-  if (!expected) return res.status(503).json({ message: "Check-in isn't set up yet: CHECKIN_PIN is missing on the server." });
-
-  const ip = clientIp(req);
-  const record = failures.get(ip);
-  if (record && Date.now() - record.firstAt > LOCKOUT_MS) failures.delete(ip);
-  if (failures.get(ip)?.count >= MAX_FAILURES) {
-    return res.status(429).json({ message: "Too many wrong PINs. Please wait 15 minutes and try again." });
-  }
-
-  const given = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
-  if (!given || !pinMatches(given, expected)) {
-    const current = failures.get(ip) || { count: 0, firstAt: Date.now() };
-    failures.set(ip, { ...current, count: current.count + 1 });
-    return res.status(401).json({ message: "Wrong check-in PIN" });
-  }
-
-  failures.delete(ip);
-  return next();
-}
-
-router.use(requirePin);
+// Only logged-in admins (the dashboard login) can use check-in
+router.use(requireAdmin);
 
 // ─── Shapes ────────────────────────────────────────────────────────────────
 
@@ -106,9 +66,6 @@ async function getTotals(eventId) {
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 // ─── Routes ────────────────────────────────────────────────────────────────
-
-// Lets the volunteer screen check the PIN before showing anything
-router.post("/verify", (req, res) => res.json({ success: true }));
 
 // Events a volunteer can check guests in for: the active one, and any from yesterday onward.
 // Soonest first, so the default is today's event.

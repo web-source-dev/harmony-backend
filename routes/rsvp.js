@@ -420,6 +420,37 @@ router.get("/check-in/:code/qr.png", async (req, res) => {
   }
 });
 
+// The guest's own pass, for when a guest opens their QR link themselves instead of staff scanning it.
+// Only what is already in their confirmation email: name, party size and the event; never email or phone.
+router.get("/pass/:code", async (req, res) => {
+  try {
+    const code = String(req.params.code).replace(/[\s-]/g, "").toUpperCase();
+    if (!eventDetails.isCheckInCode(code)) return res.status(404).json({ message: "Pass not found" });
+    const rsvp = await EventRsvp.findOne({ checkInCode: code }).populate("event").lean();
+    if (!rsvp || !rsvp.event) return res.status(404).json({ message: "Pass not found" });
+    const event = rsvp.event;
+    const links = eventDetails.getEventLinks(event);
+    return res.json({
+      firstName: rsvp.firstName,
+      lastName: rsvp.lastName,
+      guests: rsvp.guests,
+      checkedInAt: rsvp.checkedInAt,
+      checkInCode: eventDetails.formatCheckInCode(code),
+      qrUrl: eventDetails.qrImageUrl(code),
+      event: {
+        title: event.title,
+        when: links.when,
+        location: event.location,
+        googleCalendarUrl: links.googleCalendarUrl,
+        directionsUrl: links.directionsUrl,
+      },
+    });
+  } catch (error) {
+    console.error("RSVP pass lookup error:", error);
+    return res.status(500).json({ message: "Failed to load the pass" });
+  }
+});
+
 // ─── Admin ─────────────────────────────────────────────────────────────────
 
 // All events with RSVP totals, newest first
