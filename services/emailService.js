@@ -411,7 +411,7 @@ class EmailService {
     try {
       const sendSmtpEmail = new Brevo.SendSmtpEmail();
 
-      sendSmtpEmail.subject = `New Submission - ${welcomeData.firstName} ${welcomeData.lastName}`;
+      sendSmtpEmail.subject = WelcomePopupAdminEmailTemplate.getSubject(welcomeData);
       sendSmtpEmail.htmlContent = WelcomePopupAdminEmailTemplate.generateHTML(welcomeData);
       sendSmtpEmail.textContent = WelcomePopupAdminEmailTemplate.generateText(welcomeData);
       sendSmtpEmail.sender = this.getSenderConfig();
