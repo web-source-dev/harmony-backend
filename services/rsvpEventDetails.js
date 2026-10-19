@@ -34,8 +34,20 @@ function formatEventDate(event) {
   return day ? moment(day, "YYYY-MM-DD").format("dddd, MMMM D, YYYY") : "";
 }
 
+// Only the start of the free-text time: "6:00 PM – 9:00 PM" → "6:00 PM", "6-9pm" → "6 PM"
+function formatStartTime(event) {
+  const text = String(event?.eventTime || "").trim();
+  const parts = text.split(/\s*(?:[-–—]|\bto\b|\buntil\b)\s*/i);
+  let start = parts[0].trim();
+  // "6-9 PM": the start borrows the end's AM/PM
+  const meridiem = text.match(/[ap]\.?m\.?/i);
+  if (parts.length > 1 && /\d/.test(start) && !/[ap]\.?m/i.test(start) && meridiem) start += ` ${meridiem[0]}`;
+  // "8:00 Am" / "8pm" → "8:00 AM" / "8 PM"
+  return start.replace(/(\d)\s*([ap])\.?m\.?(?![a-z])/gi, (_, digit, ap) => `${digit} ${ap.toUpperCase()}M`);
+}
+
 // "Sunday, December 20, 2026 · 6 PM"
-const formatEventWhen = (event) => [formatEventDate(event), event?.eventTime].filter(Boolean).join(" · ");
+const formatEventWhen = (event) => [formatEventDate(event), formatStartTime(event)].filter(Boolean).join(" · ");
 
 // Reads start/end times out of the free-text time ("6 PM", "6:00 PM – 9:00 PM", "6-9pm").
 // Returns null when no time can be read, and calendars then get an all-day event.
@@ -212,6 +224,7 @@ module.exports = {
   generateCheckInCode,
   formatCheckInCode,
   formatEventDate,
+  formatStartTime,
   formatEventWhen,
   getEventTimes,
   getEventStart,
