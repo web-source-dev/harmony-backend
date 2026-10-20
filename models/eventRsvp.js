@@ -56,10 +56,17 @@ const eventRsvpSchema = new mongoose.Schema({
         type: Date,
         default: null,
     },
-    // When each reminder email went out, so the daily job never sends one twice
+    // When each reminder email went out, so the reminder job never sends one twice
     reminders: {
         weekBefore: { type: Date, default: null },
         dayBefore: { type: Date, default: null },
+        sixHours: { type: Date, default: null },
+    },
+    // The same for the reminder texts
+    smsReminders: {
+        weekBefore: { type: Date, default: null },
+        dayBefore: { type: Date, default: null },
+        sixHours: { type: Date, default: null },
     },
 }, { timestamps: true });
 

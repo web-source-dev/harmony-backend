@@ -1,7 +1,10 @@
 const details = require('../rsvpEventDetails');
+const { getReminderCopy, fill } = require('./rsvpReminderCopy');
 
-// RSVP confirmation email, also used for the one-week and day-before reminders.
+// RSVP confirmation email, also used for the one-week, day-before and six-hours-before reminders.
 // Shows the guest's name, party size and a check-in QR so staff can verify them at the door.
+// A reminder uses the team's own wording when rsvpReminderCopy has some for the event, with the
+// date and place in bold; otherwise the general wording below.
 
 const escapeHtml = (value) =>
   String(value ?? '')
@@ -23,7 +26,20 @@ const VARIANTS = {
     heading: '🎶 See You Tomorrow! 🎶',
     intro: 'Just a friendly reminder that the concert is tomorrow. We can’t wait to see you!',
   },
+  sixHours: {
+    heading: '🎶 See You Tonight! 🎶',
+    intro: 'The concert is tonight and we’re delighted to share it with you. Here are your details.',
+  },
 };
+
+// The contact details in custom wording become tappable links
+const linkContacts = (html) =>
+  html
+    .replace(/info@harmony4all\.org/g, `<a href="mailto:${details.CONTACT.email}" style="color: #000000;">info@harmony4all.org</a>`)
+    .replace(/\(737\) 427-6669/g, `<a href="tel:${details.CONTACT.phoneTel}" style="color: #000000; white-space: nowrap;">(737) 427-6669</a>`);
+
+const paragraphs = (lines, rsvp, style) =>
+  lines.map((line) => `<p style="${style}">${linkContacts(escapeHtml(fill(line, rsvp)))}</p>`).join('\n              ');
 
 // Keeps the emoji on each end of a heading on the same line as the word next to it
 const glueEnds = (html) => html.replace(/^(\S+) /, '$1&nbsp;').replace(/ (\S+)$/, '&nbsp;$1');
@@ -48,6 +64,7 @@ class RsvpConfirmationEmailTemplate {
   static getSubject(event, variant = 'confirmation') {
     if (variant === 'weekBefore') return `One week to go: ${event.title}`;
     if (variant === 'dayBefore') return `See you tomorrow: ${event.title}`;
+    if (variant === 'sixHours') return `Tonight’s the night: ${event.title}`;
     return `Your RSVP is confirmed: ${event.title}`;
   }
 
@@ -55,6 +72,7 @@ class RsvpConfirmationEmailTemplate {
   // images (from rsvpEmailImages.prepareEmailImages): hosted QR, its download link and the icons
   static generateHTML({ rsvp, event, variant = 'confirmation', images = {} }) {
     const copy = VARIANTS[variant] || VARIANTS.confirmation;
+    const custom = getReminderCopy(event, variant)?.email;
     const links = details.getEventLinks(event);
     const fullName = `${rsvp.firstName} ${rsvp.lastName}`.trim();
 
@@ -99,11 +117,25 @@ class RsvpConfirmationEmailTemplate {
           <tr>
             <td class="px" style="padding: 40px 32px 12px; text-align: center;">
               <h1 class="heading" style="margin: 0 0 24px; font-size: 24px; line-height: 1.3; color: #000000;">${glueEnds(escapeHtml(copy.heading))}</h1>
-              <p style="margin: 0 0 12px; font-size: 16px; line-height: 1.6;">Hi <strong>${escapeHtml(rsvp.firstName)}</strong>,</p>
-              <p style="margin: 0; font-size: 16px; line-height: 1.7; color: #444444;">${escapeHtml(copy.intro)}</p>
+              <p style="margin: 0 0 12px; font-size: 16px; line-height: 1.6;">${custom ? 'Dear' : 'Hi'} <strong>${escapeHtml(rsvp.firstName)}</strong>,</p>
+              ${custom
+                ? paragraphs(custom.intro, rsvp, 'margin: 0 0 12px; font-size: 16px; line-height: 1.7; color: #444444;')
+                : `<p style="margin: 0; font-size: 16px; line-height: 1.7; color: #444444;">${escapeHtml(copy.intro)}</p>`}
             </td>
           </tr>
 
+          ${custom ? `
+          <tr>
+            <td class="px" style="padding: 32px 32px 8px; text-align: center;">
+              ${paragraphs(custom.details, rsvp, 'margin: 0 0 6px; font-size: 17px; line-height: 1.6; font-weight: bold; color: #000000;')}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="px" style="padding: 24px 32px 0; text-align: center;">
+              ${paragraphs(custom.after, rsvp, 'margin: 0 0 16px; font-size: 16px; line-height: 1.7; color: #444444;')}
+            </td>
+          </tr>` : `
           <tr>
             <td class="px" style="padding: 32px 32px 8px; text-align: center;">
               <p class="title" style="margin: 0 0 16px; font-size: 20px; line-height: 1.3; font-weight: bold; color: #000000;">${escapeHtml(event.title)}</p>
@@ -111,7 +143,7 @@ class RsvpConfirmationEmailTemplate {
               ${event.location ? `<p style="margin: 0; font-size: 16px; line-height: 1.7; color: #333333;">${escapeHtml(event.location).replace(/\n/g, '<br>')}</p>` : ''}
               ${event.description ? `<p style="margin: 24px 0 0; font-size: 15px; line-height: 1.8; color: #444444; white-space: pre-line;">${escapeHtml(event.description)}</p>` : ''}
             </td>
-          </tr>
+          </tr>`}
 
           ${rsvp.checkInCode ? `
           <tr>
@@ -139,6 +171,12 @@ class RsvpConfirmationEmailTemplate {
             </td>
           </tr>` : ''}
 
+          ${custom ? `
+          <tr>
+            <td class="px" style="padding: 40px 32px 8px; text-align: center;">
+              ${paragraphs(custom.contact, rsvp, 'margin: 0 0 6px; font-size: 15px; line-height: 1.7; color: #444444;')}
+            </td>
+          </tr>` : `
           <tr>
             <td class="px" style="padding: 40px 32px 8px; text-align: center;">
               <p style="margin: 0 0 10px; font-size: 15px; font-weight: bold; color: #000000;">Questions or guest-count changes?</p>
@@ -148,7 +186,7 @@ class RsvpConfirmationEmailTemplate {
                 ${nowrap(`<a href="tel:${details.CONTACT.phoneTel}" style="color: #000000;">${details.CONTACT.phoneDisplay}</a>`)}
               </p>
             </td>
-          </tr>
+          </tr>`}
 
           <tr>
             <td class="px" style="padding: 32px 32px 44px; text-align: center;">
@@ -166,28 +204,28 @@ class RsvpConfirmationEmailTemplate {
 
   static generateText({ rsvp, event, variant = 'confirmation', images = {} }) {
     const copy = VARIANTS[variant] || VARIANTS.confirmation;
+    const custom = getReminderCopy(event, variant)?.email;
     const links = details.getEventLinks(event);
     const fullName = `${rsvp.firstName} ${rsvp.lastName}`.trim();
+    const lines = (list) => list.map((line) => fill(line, rsvp)).join('\n\n');
 
     return [
       copy.heading,
       '',
-      `Hi ${rsvp.firstName},`,
+      `${custom ? 'Dear' : 'Hi'} ${rsvp.firstName},`,
       '',
-      copy.intro,
-      '',
-      event.title,
-      links.when,
-      event.location,
-      event.description ? `\n${event.description}` : '',
+      ...(custom
+        ? [lines(custom.intro), '', custom.details.map((line) => fill(line, rsvp)).join('\n'), '', lines(custom.after)]
+        : [copy.intro, '', event.title, links.when, event.location, event.description ? `\n${event.description}` : '']),
       '',
       rsvp.checkInCode ? `YOUR CHECK-IN PASS\n${fullName} · ${partySize(rsvp.guests)}\nCheck-in code: ${details.formatCheckInCode(rsvp.checkInCode)}\nDownload QR code: ${images.qrDownloadUrl || `${details.qrImageUrl(rsvp.checkInCode)}?download=1`}` : '',
       '',
       links.googleCalendarUrl ? `Add to Google Calendar: ${links.googleCalendarUrl}` : '',
       links.directionsUrl ? `Directions: ${links.directionsUrl}` : '',
       '',
-      'Questions or guest-count changes?',
-      `${details.CONTACT.email} · ${details.CONTACT.phoneDisplay}`,
+      ...(custom
+        ? [lines(custom.contact)]
+        : ['Questions or guest-count changes?', `${details.CONTACT.email} · ${details.CONTACT.phoneDisplay}`]),
       '',
       'With Love and Gratitude,',
       'Harmony 4 All',

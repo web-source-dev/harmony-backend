@@ -1,6 +1,8 @@
 const twilio = require('twilio');
 require('dotenv').config();
 const { isMessagingMocked, logMockSMS } = require('../utils/devMessaging');
+const eventDetails = require('./rsvpEventDetails');
+const { getReminderCopy, fill } = require('./templates/rsvpReminderCopy');
 
 class SMSService {
   constructor() {
@@ -82,6 +84,24 @@ class SMSService {
       console.error('Failed to send RSVP confirmation SMS:', error);
       throw error;
     }
+  }
+
+  // RSVP reminder text (variant "weekBefore" / "dayBefore" / "sixHours"): the team's own wording when
+  // rsvpReminderCopy has some for the event, otherwise a general reminder with the event details
+  async sendRsvpReminderSMS(rsvp, event, variant) {
+    const custom = getReminderCopy(event, variant)?.sms;
+    const location = String(event.location || '').split(/\s*\n\s*/).filter(Boolean).join(', ');
+    const lead = { weekBefore: 'One week to go', dayBefore: 'See you tomorrow', sixHours: 'See you tonight' }[variant] || 'A reminder';
+    const message = custom
+      ? custom.map((line) => fill(line, rsvp)).join('\n\n')
+      : [
+          `Hi ${rsvp.firstName}! 🎶`,
+          `${lead}: ${event.title}.`,
+          [`📅 ${eventDetails.formatEventWhen(event)}`, location && `📍 ${location}`].filter(Boolean).join('\n'),
+          'Please have your QR check-in pass from your email ready.',
+          'Questions? info@harmony4all.org',
+        ].join('\n\n');
+    return this.sendSMS(rsvp.cellNumber, message);
   }
 
   // Send admin notification SMS for new submission
